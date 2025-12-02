@@ -86,11 +86,11 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
     <div className="flex items-center justify-between w-full">
       {/* Left: Logo & Projects */}
       <div className="flex items-center space-x-8">
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-600 rounded-md flex items-center justify-center font-bold text-xs">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 via-blue-600 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-shadow duration-300">
             B
           </div>
-          <span className="font-bold tracking-wider text-sm text-gray-200">BUSINESS OS</span>
+          <span className="font-bold tracking-wide text-base bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">BUSINESS OS</span>
         </div>
 
         <nav className="flex items-center space-x-1">
@@ -105,40 +105,46 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
             >
               <button
                 onClick={() => handleProjectClick(project)}
-                className="px-3 py-1.5 rounded-md text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5 transition-all duration-300 flex items-center gap-2 border border-transparent hover:border-white/10 hover:shadow-lg"
                 style={{
                   color: openDropdown === project.id ? project.color : undefined,
+                  borderColor: openDropdown === project.id ? `${project.color}40` : undefined,
+                  backgroundColor: openDropdown === project.id ? `${project.color}15` : undefined,
                 }}
               >
-                <span>{project.icon}</span>
+                <span className="text-base">{project.icon}</span>
                 <span>{project.shortName}</span>
                 <svg
-                  className={`w-3 h-3 transition-transform ${
+                  className={`w-3.5 h-3.5 transition-transform duration-300 ${
                     openDropdown === project.id ? 'rotate-180' : ''
                   }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {/* Dropdown Menu */}
               {openDropdown === project.id && project.links && (
                 <div
-                  className="absolute top-full left-0 mt-1 w-56 bg-[#1e1e1e] border border-gray-700 rounded-md shadow-xl z-50"
-                  style={{ borderTopColor: project.color }}
+                  className="absolute top-full left-0 mt-2 w-64 bg-gradient-to-b from-[#252525] to-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-50 backdrop-blur-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+                  style={{
+                    borderTopWidth: '2px',
+                    borderTopColor: project.color,
+                    boxShadow: `0 10px 40px -10px ${project.color}40`
+                  }}
                 >
-                  <div className="py-1">
+                  <div className="py-2">
                     {project.links.map((link) => (
                       <button
                         key={link.id}
                         onClick={() => handleLinkClick(project, link)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white flex items-center gap-3 transition-colors"
+                        className="w-full text-left px-5 py-3 text-sm text-gray-300 hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent hover:text-white flex items-center gap-3.5 transition-all duration-200 group"
                       >
-                        <span>{link.icon}</span>
-                        <span>{link.name}</span>
+                        <span className="text-lg group-hover:scale-110 transition-transform duration-200">{link.icon}</span>
+                        <span className="font-medium">{link.name}</span>
                       </button>
                     ))}
                   </div>
@@ -155,9 +161,9 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
             <button
               key={project.id}
               onClick={() => handleProjectClick(project)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-pink-400 hover:text-pink-300 hover:bg-pink-900/20 transition-colors border border-pink-500/20 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg text-sm font-semibold text-pink-400 hover:text-pink-300 hover:bg-gradient-to-r hover:from-pink-900/30 hover:to-pink-800/20 transition-all duration-300 border border-pink-500/30 hover:border-pink-500/50 flex items-center gap-2 hover:shadow-lg hover:shadow-pink-500/20"
             >
-              <span>{project.icon}</span>
+              <span className="text-base">{project.icon}</span>
               <span>{project.name}</span>
             </button>
           ))}
@@ -166,11 +172,14 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
 
       {/* Right: Status & User */}
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2 px-3 py-1 bg-gray-900 rounded-full border border-gray-800">
-          <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></span>
-          <span className="text-xs text-gray-400 font-mono">System: Online</span>
+        <div className="flex items-center space-x-2.5 px-4 py-2 bg-gradient-to-r from-green-900/20 to-emerald-900/20 rounded-full border border-green-500/30 backdrop-blur-sm">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+          </span>
+          <span className="text-xs text-green-400 font-semibold">System Online</span>
         </div>
-        <div className="w-8 h-8 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center text-xs font-bold text-gray-300">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/40 flex items-center justify-center text-sm font-bold text-purple-300 hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 cursor-pointer">
           A
         </div>
       </div>
