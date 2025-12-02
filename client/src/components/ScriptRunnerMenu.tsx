@@ -16,7 +16,10 @@ interface MenuItem {
 interface MenuSection {
     id: string;
     title: string;
+    icon?: string;
     items: MenuItem[];
+    special?: boolean;
+    action?: () => void;
 }
 
 interface ScriptRunnerMenuProps {
@@ -30,11 +33,18 @@ const PROJECT_THEMES: Record<string, { color: string; border: string; shadow: st
     default: { color: 'text-cyan-200', border: 'border-cyan-500/50', shadow: 'shadow-cyan-500/20', iconColor: 'bg-cyan-400' },
 };
 
+const renderIcon = (glyph?: string) => (
+    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-gray-200">
+        {glyph || '•'}
+    </span>
+);
+
 // Menu Data Configuration (Mirrors 01Config.js)
 const MENU_DATA: MenuSection[] = [
     {
         id: 'ORDER',
         title: 'Заказ',
+        icon: '📦',
         items: [
             { id: 'MAIN', label: 'Обработка Б/З поставщик', fn: 'processSsPriceSheet', icon: '📝' },
             { id: 'STOCKS', label: 'Загрузить остатки', fn: 'loadSsStockData', icon: '📥' },
@@ -44,6 +54,7 @@ const MENU_DATA: MenuSection[] = [
     {
         id: 'ORDER_STAGES',
         title: 'Стадии по заказ',
+        icon: '📊',
         items: [
             { id: 'SORT_MANUFACTURER', label: 'Сортировать по производителю', fn: 'sortSsOrderByManufacturer', icon: '🏭' },
             { id: 'SORT_PRICE', label: 'Сортировать по прайсу', fn: 'sortSsOrderByPrice', icon: '💰' },
@@ -58,6 +69,7 @@ const MENU_DATA: MenuSection[] = [
     {
         id: 'EXPORT',
         title: 'Выгрузка',
+        icon: '📤',
         items: [
             { label: 'Выгрузить Акции', fn: 'exportPromotions', icon: '📤' },
             { label: 'Выгрузить Наборы', fn: 'exportSets', icon: '📦' },
@@ -66,6 +78,7 @@ const MENU_DATA: MenuSection[] = [
     {
         id: 'SUPPLY',
         title: 'Поставка',
+        icon: '🚚',
         items: [
             { label: "Форматировать лист 'Ордер'", fn: 'formatOrderSheet', icon: '📋' },
             { separator: true },
@@ -76,6 +89,7 @@ const MENU_DATA: MenuSection[] = [
     {
         id: 'CERTIFICATION',
         title: 'Сертификация',
+        icon: '✅',
         items: [
             { label: 'Лист новинки', fn: 'createNewsSheetFromCertification', icon: '🆕' },
             { separator: true },
@@ -92,6 +106,7 @@ const MENU_DATA: MenuSection[] = [
     {
         id: 'SYNC',
         title: 'Синхронизация',
+        icon: '🔄',
         items: [
             { label: 'Настроить правила', fn: 'showSyncConfigDialog', icon: '🔧' },
             { label: 'Управление внешними документами', fn: 'showExternalDocManagerDialog', icon: '📂' },
@@ -119,6 +134,13 @@ const MENU_DATA: MenuSection[] = [
                 ]
             },
         ]
+    },
+    {
+        id: 'COSMETIC_ANALYSIS',
+        title: 'Анализ косметики',
+        icon: '💄',
+        special: true,
+        items: []
     }
 ];
 
@@ -170,7 +192,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                         >
                             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                         </svg>
-                        <span className="text-sm opacity-70 w-4 text-center">{item.icon || '•'}</span>
+                        {renderIcon(item.icon)}
                         <span className="truncate flex-1 text-left">{item.submenu}</span>
                     </button>
                     {isExpanded && (
@@ -189,7 +211,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                 style={{ paddingLeft: `${(depth + 1) * 12 + 24}px` }}
                 onClick={() => console.log(`Running: ${item.fn}`)}
             >
-                <span className="text-sm opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0 w-4 text-center">{item.icon || '🔹'}</span>
+                {renderIcon(item.icon)}
                 <span className="truncate">{item.label}</span>
             </button>
         );
@@ -202,46 +224,49 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                 <div className="flex items-center gap-2">
                     <div className={`h-2 w-2 rounded-full ${theme.iconColor} shadow-[0_0_15px_rgba(255,255,255,0.4)]`} />
                     <h2 className="text-[13px] font-semibold tracking-[0.18em] text-gray-100 uppercase">
-                        Функции: <span className={theme.color}>{projectId === 'default' ? 'Общие' : projectId.toUpperCase()}</span>
+                        Функции <span className={theme.color}>({projectId === 'default' ? 'Общие' : projectId.toUpperCase()})</span>
                     </h2>
                 </div>
-                <span className="text-[10px] bg-white/5 text-gray-400 px-2 py-0.5 rounded-md border border-white/10">
-                    v2.2
-                </span>
             </div>
 
             {/* Script Tree */}
             <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
                 {MENU_DATA.map((section) => {
                     const isExpanded = expandedSections.has(section.id);
+                    const isSpecial = section.special;
+
                     return (
                         <div key={section.id} className="mb-0.5">
                             <button
-                                onClick={() => toggleSection(section.id)}
-                                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent
-                                ${isExpanded ? `${theme.border} bg-white/[0.04] text-gray-100 ${theme.shadow}` : ''}`}
+                                onClick={() => isSpecial ? window.open('http://localhost:3001', '_blank') : toggleSection(section.id)}
+                                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-semibold transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent
+                                ${isSpecial
+                                        ? 'text-pink-200 bg-pink-500/10 border-l-pink-500/50 hover:bg-pink-500/20 hover:text-pink-100 shadow-[0_8px_25px_rgba(236,72,153,0.15)]'
+                                        : isExpanded
+                                            ? `${theme.border} bg-white/[0.04] text-gray-100 ${theme.shadow} text-gray-300 hover:bg-white/5 hover:text-white`
+                                            : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                                    }`}
                             >
-                                <svg
-                                    className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                                    style={{ width: '12px', height: '12px' }}
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                </svg>
-                                <svg
-                                    className="w-4 h-4 flex-shrink-0 text-gray-500"
-                                    style={{ width: '16px', height: '16px' }}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                </svg>
+                                {!isSpecial && (
+                                    <svg
+                                        className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                                        style={{ width: '12px', height: '12px' }}
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                )}
+                                <span className="text-base">{section.icon}</span>
                                 <span className="truncate">{section.title}</span>
+                                {isSpecial && (
+                                    <svg className="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                )}
                             </button>
 
-                            {isExpanded && (
+                            {isExpanded && !isSpecial && (
                                 <div className="mt-0.5">
                                     {section.items.map((item, index) => renderMenuItem(item, index))}
                                 </div>
@@ -258,6 +283,6 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                     <span>Система готова</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -71,11 +71,6 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         }, 1000);
     };
 
-    const tabsByMode: Record<Mode, { id: Tab; label: string }> = {
-        agent: { id: 'chat', label: 'чат' },
-        dev: { id: 'logs', label: 'логи' },
-    };
-
     const visibleTabs: { id: Tab; label: string }[] = mode === 'agent'
         ? [
             { id: 'chat', label: 'чат' },

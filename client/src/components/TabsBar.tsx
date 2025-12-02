@@ -18,24 +18,35 @@ export default function TabsBar({
   onTabClose,
   onNewTab,
 }: TabsBarProps) {
+  const orderedTabs = activeTabId
+    ? (() => {
+      const active = tabs.find((t) => t.id === activeTabId);
+      const rest = tabs.filter((t) => t.id !== activeTabId);
+      return active ? [active, ...rest] : tabs;
+    })()
+    : tabs;
+
   return (
-    <div className="flex items-center h-12 px-2 overflow-x-auto backdrop-blur-xl">
-      {tabs.map((tab) => (
+    <div className="flex items-center h-12 px-0 overflow-x-auto backdrop-blur-xl w-full">
+      {orderedTabs.map((tab, index) => {
+        const isActive = activeTabId === tab.id;
+        const scaleClass = isActive ? 'scale-[1.55]' : 'scale-100';
+        const paddingClass = isActive ? 'px-7 py-3' : 'px-4 py-2';
+        const fontClass = isActive ? 'text-[13px]' : 'text-[12px]';
+        return (
         <div
           key={tab.id}
           onClick={() => onTabClick(tab.id)}
           className={`
-            relative flex items-center gap-2.5 px-4 py-2.5 cursor-pointer shrink-0
-            transition-all duration-300 ease-out group rounded-xl border
-            ${
-              activeTabId === tab.id
-                ? 'text-white border-cyan-400/60 bg-white/5 shadow-[0_12px_35px_rgba(34,211,238,0.2)]'
-                : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
-            }
+            relative flex items-center gap-2.5 ${paddingClass} cursor-pointer shrink-0
+            transition-all duration-300 ease-out group rounded-xl border ${fontClass} ${scaleClass}
+            ${isActive
+            ? 'text-white border-cyan-400/60 bg-white/5 shadow-[0_12px_35px_rgba(34,211,238,0.2)]'
+            : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'}
           `}
         >
           {/* Active Tab Glow Effect */}
-          {activeTabId === tab.id && (
+          {isActive && (
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/12 to-cyan-500/15 rounded-xl blur-[1px]"></div>
           )}
 
@@ -64,15 +75,16 @@ export default function TabsBar({
             </svg>
           </button>
         </div>
-      ))}
+      );
+      })}
 
-      {tabs.length === 0 && (
+      {orderedTabs.length === 0 && (
         <div className="px-6 py-3 text-sm text-gray-500 font-medium">
           ✨ Выберите проект из меню выше
         </div>
       )}
 
-      {onNewTab && tabs.length > 0 && tabs.length < 10 && (
+      {onNewTab && orderedTabs.length > 0 && orderedTabs.length < 10 && (
         <button
           onClick={onNewTab}
           className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5 transition-all duration-300 shrink-0 ml-1 rounded-lg group"

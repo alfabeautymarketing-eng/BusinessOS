@@ -82,50 +82,6 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
 
   const projects = projectsConfig.projects as Project[];
   const workspaceProjects = projects.filter((p) => p.type !== 'internal-app');
-  const specialProjects = projects.filter((p) => p.type === 'internal-app');
-
-  const layoutOptions: { id: TopNavProps['layoutMode']; label: string; icon: React.ReactElement }[] = [
-    {
-      id: 'all',
-      label: 'Панели слева и справа',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="2" y="3" width="3" height="12" rx="1.2" />
-          <rect x="6" y="3" width="6" height="12" rx="1.2" />
-          <rect x="13" y="3" width="3" height="12" rx="1.2" />
-        </svg>
-      ),
-    },
-    {
-      id: 'center',
-      label: 'Только центральное окно',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="4" y="3" width="10" height="12" rx="1.4" />
-        </svg>
-      ),
-    },
-    {
-      id: 'left',
-      label: 'Только левая панель',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="2" y="3" width="6" height="12" rx="1.2" />
-          <rect x="9" y="6" width="7" height="6" rx="1.1" />
-        </svg>
-      ),
-    },
-    {
-      id: 'right',
-      label: 'Только правая панель',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="10" y="3" width="6" height="12" rx="1.2" />
-          <rect x="2" y="6" width="7" height="6" rx="1.1" />
-        </svg>
-      ),
-    },
-  ];
 
   return (
     <div className="flex items-center justify-between w-full h-full">
@@ -205,28 +161,54 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
               </div>
             );
           })}
-
-          {/* Separator */}
-          {specialProjects.length > 0 && <div className="w-px h-5 bg-white/10 mx-3"></div>}
-
-          {/* Special Projects (Internal Apps) - Added at the end */}
-          {specialProjects.map((project) => (
-            <button
-              key={project.id}
-              onClick={() => handleSpecialProjectClick(project)}
-              className="px-4 py-2 rounded-xl text-sm font-semibold text-pink-200 hover:text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-all duration-300 border border-pink-500/30 hover:border-pink-500/60 flex items-center gap-2 shadow-[0_10px_40px_rgba(236,72,153,0.2)]"
-            >
-              <span className="text-base">{project.icon}</span>
-              <span>{project.name}</span>
-            </button>
-          ))}
         </nav>
       </div>
 
       {/* Right: Layout Controls & Status */}
       <div className="flex items-center space-x-3">
         <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-2 py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-          {layoutOptions.map((option) => {
+          {[
+            {
+              id: 'all' as const,
+              label: 'Панели слева и справа',
+              icon: (
+                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="2" y="3" width="3" height="10" rx="0.8" />
+                  <rect x="6.5" y="3" width="7" height="10" rx="0.8" />
+                  <rect x="14.5" y="3" width="3" height="10" rx="0.8" />
+                </svg>
+              ),
+            },
+            {
+              id: 'center' as const,
+              label: 'Только центральное окно',
+              icon: (
+                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="4" y="3" width="12" height="10" rx="1.2" />
+                </svg>
+              ),
+            },
+            {
+              id: 'left' as const,
+              label: 'Только левая панель',
+              icon: (
+                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="2" y="3" width="8" height="10" rx="1" />
+                  <rect x="11" y="5.5" width="7" height="5" rx="0.8" />
+                </svg>
+              ),
+            },
+            {
+              id: 'right' as const,
+              label: 'Только правая панель',
+              icon: (
+                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="10" y="3" width="8" height="10" rx="1" />
+                  <rect x="2" y="5.5" width="7" height="5" rx="0.8" />
+                </svg>
+              ),
+            },
+          ].map((option) => {
             const active = layoutMode === option.id;
             return (
               <button
