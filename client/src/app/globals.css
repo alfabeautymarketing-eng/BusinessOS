@@ -1,6 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,7 +12,7 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: radial-gradient(circle at 20% 20%, rgba(76, 161, 255, 0.08), transparent 35%), radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.08), transparent 30%), #060910;
-  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Century Gothic', 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   overflow: hidden; /* Prevent scrolling on the body, handled by Shell */
 }
 

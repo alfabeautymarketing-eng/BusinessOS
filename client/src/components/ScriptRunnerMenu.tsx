@@ -98,6 +98,7 @@ const MENU_DATA: MenuSection[] = [
             { separator: true },
             {
                 submenu: 'Операции с артикулами',
+                icon: '🧾',
                 items: [
                     { label: 'Добавить артикул', fn: 'addArticleManually', icon: '➕' },
                     { label: 'Удалить выбранные строки', fn: 'deleteSelectedRowsWithSync', icon: '🗑️' },
@@ -111,6 +112,7 @@ const MENU_DATA: MenuSection[] = [
             { separator: true },
             {
                 submenu: 'Журнал',
+                icon: '📓',
                 items: [
                     { label: 'Очистить (оставить 100)', fn: 'quickCleanLogSheet', icon: '🧹' },
                     { label: 'Пересоздать журнал', fn: 'recreateLogSheet', icon: '♻️' },
@@ -168,6 +170,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                         >
                             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                         </svg>
+                        <span className="text-sm opacity-70 w-4 text-center">{item.icon || '•'}</span>
                         <span className="truncate flex-1 text-left">{item.submenu}</span>
                     </button>
                     {isExpanded && (

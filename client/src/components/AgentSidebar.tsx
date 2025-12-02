@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-type Tab = 'chat' | 'logs' | 'git';
+type Tab = 'chat' | 'logs' | 'git' | 'controls';
+type Mode = 'agent' | 'dev';
 
 interface Message {
     id: string;
@@ -24,6 +25,7 @@ const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string
 };
 
 export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProps) {
+    const [mode, setMode] = useState<Mode>('agent');
     const [activeTab, setActiveTab] = useState<Tab>('chat');
     const [input, setInput] = useState('');
 
@@ -69,26 +71,64 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         }, 1000);
     };
 
+    const tabsByMode: Record<Mode, { id: Tab; label: string }> = {
+        agent: { id: 'chat', label: 'чат' },
+        dev: { id: 'logs', label: 'логи' },
+    };
+
+    const visibleTabs: { id: Tab; label: string }[] = mode === 'agent'
+        ? [
+            { id: 'chat', label: 'чат' },
+            { id: 'controls', label: 'управление' },
+        ]
+        : [
+            { id: 'logs', label: 'логи' },
+            { id: 'git', label: 'git' },
+        ];
+
     const currentChat = chats[projectId] || [];
+
+    useEffect(() => {
+        if (!visibleTabs.find(t => t.id === activeTab)) {
+            setActiveTab(visibleTabs[0].id);
+        }
+    }, [mode, projectId]);
 
     return (
         <div className="flex flex-col h-full text-gray-200 text-sm">
+            {/* Mode Switcher */}
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5 backdrop-blur-xl">
+                {(['agent', 'dev'] as Mode[]).map((m) => {
+                    const active = m === mode;
+                    return (
+                        <button
+                            key={m}
+                            onClick={() => setMode(m)}
+                            className={`flex-1 py-2 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200
+                            ${active ? `${theme.bg} ${theme.color} border ${theme.border} shadow-[0_10px_25px_rgba(0,0,0,0.25)]` : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-cyan-300/30'}`}
+                        >
+                            {m === 'agent' ? 'Агент' : 'Разработчик'}
+                        </button>
+                    );
+                })}
+            </div>
+
             {/* Tabs */}
             <div className="flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
-                {['chat', 'logs', 'git'].map((tab) => (
+                {visibleTabs.map((tab) => (
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab as Tab)}
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
                         className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300
-              ${activeTab === tab
+              ${activeTab === tab.id
                                 ? `${theme.color} ${theme.bg} shadow-[0_10px_30px_rgba(0,0,0,0.1)]`
                                 : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}
             `}
                     >
-                        {activeTab === tab && (
+                        {activeTab === tab.id && (
                             <div className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-current opacity-50`}></div>
                         )}
-                        {tab === 'chat' ? 'чат' : tab === 'logs' ? 'логи' : 'git'}
+                        {tab.label}
                     </button>
                 ))}
             </div>
@@ -126,28 +166,58 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                         <div className="mb-1"><span className="text-blue-500">[14:05:23]</span> {projectId.toUpperCase()}: Получение заголовков...</div>
                     </div>
                 )}
+                {activeTab === 'controls' && (
+                    <div className="space-y-3 text-sm text-gray-300">
+                        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-gray-400">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]"></span>
+                            Доступ к Google
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+                            <p className="text-xs text-gray-400 mb-2">Быстрые действия:</p>
+                            <ul className="space-y-1.5 text-sm">
+                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Подключить Google Drive</li>
+                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Управление таблицами</li>
+                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Обучение агенту</li>
+                            </ul>
+                        </div>
+                    </div>
+                )}
+                {activeTab === 'git' && (
+                    <div className="text-xs text-gray-400 space-y-2 font-mono">
+                        <div className="flex items-center gap-2 text-gray-300">
+                            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
+                            История Git для {projectId.toUpperCase()}
+                        </div>
+                        <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                            <p>git status — готов к коммиту</p>
+                            <p>Последний коммит: обновление UI</p>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Input Area */}
-            <div className="p-5 border-t border-white/10 bg-white/5 backdrop-blur-xl">
-                <div className="relative">
-                    <textarea
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                        placeholder={`Задача для ${projectId.toUpperCase()}...`}
-                        className={`w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-opacity-50 focus:ring-1 focus:ring-opacity-30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300 ${theme.border}`}
-                    />
-                    <button
-                        onClick={handleSend}
-                        className={`absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 text-white shadow-lg hover:scale-105 ${theme.bg} ${theme.color} border ${theme.border}`}
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                        </svg>
-                    </button>
+            {activeTab === 'chat' && (
+                <div className="p-5 border-t border-white/10 bg-white/5 backdrop-blur-xl">
+                    <div className="relative">
+                        <textarea
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                            placeholder={`Задача для ${projectId.toUpperCase()}...`}
+                            className={`w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-opacity-50 focus:ring-1 focus:ring-opacity-30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300 ${theme.border}`}
+                        />
+                        <button
+                            onClick={handleSend}
+                            className={`absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 text-white shadow-lg hover:scale-105 ${theme.bg} ${theme.color} border ${theme.border}`}
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
