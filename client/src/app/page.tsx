@@ -15,8 +15,8 @@ export default function Home() {
   return (
     <Shell
       topNav={<TopNav onOpenTab={openTab} />}
-      sidebar={<ScriptRunnerMenu />}
-      rightSidebar={<AgentSidebar />}
+      sidebar={<ScriptRunnerMenu projectId={activeTab?.projectId} />}
+      rightSidebar={<AgentSidebar projectId={activeTab?.projectId} />}
     >
       <div className="flex flex-col w-full h-full gap-4 p-4">
         <div className="rounded-2xl border border-cyan-500/15 bg-gradient-to-r from-[#0c111d]/80 via-[#0a0f1a]/80 to-[#0c101c]/80 backdrop-blur-xl shadow-[0_10px_60px_rgba(0,255,255,0.08)] overflow-hidden">

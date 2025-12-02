@@ -7,25 +7,30 @@ type Tab = 'chat' | 'logs' | 'git';
 export default function AgentSidebar() {
     const [activeTab, setActiveTab] = useState<Tab>('chat');
     const [input, setInput] = useState('');
+    const tabs: { id: Tab; label: string }[] = [
+        { id: 'chat', label: 'чат' },
+        { id: 'logs', label: 'логи' },
+        { id: 'git', label: 'git' },
+    ];
 
     return (
         <div className="flex flex-col h-full text-gray-200 text-sm">
             {/* Tabs */}
             <div className="flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
-                {['чат', 'логи', 'git'].map((tab) => (
+                {tabs.map((tab) => (
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab as Tab)}
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
                         className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300
-              ${activeTab === tab
+              ${activeTab === tab.id
                                 ? 'text-cyan-200 bg-cyan-500/10 shadow-[0_10px_30px_rgba(34,211,238,0.16)]'
                                 : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}
             `}
                     >
-                        {activeTab === tab && (
+                        {activeTab === tab.id && (
                             <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 rounded-full"></div>
                         )}
-                        {tab}
+                        {tab.label}
                     </button>
                 ))}
             </div>
