@@ -6,7 +6,7 @@ services:
     plan: free
     buildCommand: cd client && npm install && npm run build
     startCommand: cd client && npm start
-    directory: client
+    rootDir: client
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,7 +18,7 @@ services:
     plan: free
     buildCommand: cd server && pip install -r requirements.txt
     startCommand: cd server && uvicorn main:app --host 0.0.0.0 --port $PORT
-    directory: server
+    rootDir: server
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
