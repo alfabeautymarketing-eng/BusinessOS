@@ -52,7 +52,7 @@ export default function Home() {
       showSidebar={showSidebar}
       showRightSidebar={showRightSidebar}
     >
-      <div className="flex flex-col w-full h-full gap-2 px-0 py-1">
+      <div className="flex flex-col w-full h-full gap-4 px-0 py-2">
         <TabsBar
           tabs={workspaceTabs}
           activeTabId={workspaceActiveTabId}
@@ -60,7 +60,7 @@ export default function Home() {
           onTabClose={closeTab}
         />
 
-        <div className="flex-1 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0c101d] via-[#0b0f19] to-[#0a0d16] shadow-[0_10px_60px_rgba(0,0,0,0.45)] overflow-hidden">
+        <div className="flex-1 card-glass animate-fade-in overflow-hidden">
           <ContentViewer tab={workspaceActiveTab} />
         </div>
       </div>
