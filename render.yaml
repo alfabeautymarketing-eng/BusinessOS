@@ -4,8 +4,8 @@ services:
     name: business-os-frontend
     env: node
     plan: free
-    buildCommand: cd client && npm install && npm run build
-    startCommand: cd client && npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     rootDir: client
     envVars:
       - key: NODE_ENV
@@ -16,8 +16,8 @@ services:
     name: business-os-backend
     env: python
     plan: free
-    buildCommand: cd server && pip install -r requirements.txt
-    startCommand: cd server && uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     rootDir: server
     envVars:
       - key: PYTHON_VERSION
