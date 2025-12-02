@@ -104,14 +104,14 @@ class GoogleService:
         Equivalent to 'clasp push'.
         """
         service = self.get_script_service()
-        
+
         # 1. Get current content to preserve manifest
         current_content = service.projects().getContent(scriptId=script_id).execute()
         files = current_content.get('files', [])
-        
+
         # 2. Find manifest (appsscript.json)
         manifest = next((f for f in files if f['name'] == 'appsscript'), None)
-        
+
         # 3. Prepare new file list
         new_files = []
         if manifest:
@@ -123,15 +123,19 @@ class GoogleService:
                 'type': 'JSON',
                 'source': '{"timeZone":"Etc/GMT","dependencies":{},"exceptionLogging":"STACKDRIVER","runtimeVersion":"V8"}'
             })
-            
+
         # 4. Add our new code file
         new_files.append({
             'name': 'Code',
             'type': 'SERVER_JS',
             'source': code
         })
-        
+
         # 5. Update project
         request = {'files': new_files}
         service.projects().updateContent(scriptId=script_id, body=request).execute()
         return True
+
+
+# Создание синглтона для импорта в других модулях
+google_service = GoogleService()

@@ -1,7 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
 google-api-python-client
+google-auth>=2.15.0,<2.42.0
 google-auth-httplib2
 google-auth-oauthlib
 python-dotenv
 pydantic
+requests

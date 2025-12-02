@@ -4,45 +4,30 @@ import React from 'react';
 import Shell from '@/components/Shell';
 import TopNav from '@/components/TopNav';
 import AgentSidebar from '@/components/AgentSidebar';
-import SheetOverlay from '@/components/SheetOverlay';
+import TabsBar from '@/components/TabsBar';
+import ContentViewer from '@/components/ContentViewer';
+import { useTabs } from '@/hooks/useTabs';
 
 export default function Home() {
-  // Mock Columns for the prototype
-  const columns = [
-    { id: 'col-a', name: 'Артикул', letter: 'A' },
-    { id: 'col-b', name: 'Объем', letter: 'B' },
-    { id: 'col-c', name: 'Дата', letter: 'C' },
-    { id: 'col-d', name: 'Цена', letter: 'D' },
-    { id: 'col-e', name: 'Статус', letter: 'E' },
-  ];
-
-  const handleColumnClick = (col: any) => {
-    console.log('Column clicked:', col);
-    // In a real app, this would inject the column context into the chat
-  };
+  const { tabs, activeTab, activeTabId, openTab, closeTab, switchTab } = useTabs();
 
   return (
     <Shell
-      topNav={<TopNav />}
+      topNav={<TopNav onOpenTab={openTab} />}
       sidebar={<AgentSidebar />}
     >
-      <div className="relative w-full h-full bg-gray-900 flex flex-col">
-        {/* The Smart Overlay */}
-        <SheetOverlay columns={columns} onColumnClick={handleColumnClick} />
+      <div className="flex flex-col w-full h-full bg-[#121212]">
+        {/* Tabs Bar */}
+        <TabsBar
+          tabs={tabs}
+          activeTabId={activeTabId}
+          onTabClick={switchTab}
+          onTabClose={closeTab}
+        />
 
-        {/* The Google Sheet Iframe (Placeholder) */}
-        <div className="flex-1 w-full h-full bg-white relative z-0">
-          <iframe
-            src="https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?gid=0#gid=0" // Example Sheet
-            className="w-full h-full border-none"
-            title="Google Sheet"
-          />
-          {/* 
-            NOTE: In a real implementation, we can't easily overlay UI *inside* the iframe due to cross-origin policies.
-            The Overlay sits *on top* of the iframe. 
-            We use pointer-events-none on the overlay container so clicks pass through to the sheet,
-            but pointer-events-auto on the specific buttons/borders we want to be interactive.
-          */}
+        {/* Content Area */}
+        <div className="flex-1 w-full h-full overflow-hidden">
+          <ContentViewer tab={activeTab} />
         </div>
       </div>
     </Shell>

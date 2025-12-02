@@ -21,7 +21,7 @@ services:
     rootDir: server
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.0
+        value: 3.11
       # You must upload credentials.json as a 'Secret File' in Render dashboard
       # and mount it to /etc/secrets/google-creds
       - key: GOOGLE_APPLICATION_CREDENTIALS
