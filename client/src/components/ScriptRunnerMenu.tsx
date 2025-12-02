@@ -19,6 +19,17 @@ interface MenuSection {
     items: MenuItem[];
 }
 
+interface ScriptRunnerMenuProps {
+    projectId?: string;
+}
+
+const PROJECT_THEMES: Record<string, { color: string; border: string; shadow: string; iconColor: string }> = {
+    sk: { color: 'text-purple-200', border: 'border-purple-500/50', shadow: 'shadow-purple-500/20', iconColor: 'bg-purple-400' },
+    mt: { color: 'text-blue-200', border: 'border-blue-500/50', shadow: 'shadow-blue-500/20', iconColor: 'bg-blue-400' },
+    ss: { color: 'text-green-200', border: 'border-green-500/50', shadow: 'shadow-green-500/20', iconColor: 'bg-green-400' },
+    default: { color: 'text-cyan-200', border: 'border-cyan-500/50', shadow: 'shadow-cyan-500/20', iconColor: 'bg-cyan-400' },
+};
+
 // Menu Data Configuration (Mirrors 01Config.js)
 const MENU_DATA: MenuSection[] = [
     {
@@ -109,9 +120,11 @@ const MENU_DATA: MenuSection[] = [
     }
 ];
 
-export default function ScriptRunnerMenu() {
+export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunnerMenuProps) {
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['ORDER', 'ORDER_STAGES']));
     const [expandedSubmenus, setExpandedSubmenus] = useState<Set<string>>(new Set());
+
+    const theme = PROJECT_THEMES[projectId] || PROJECT_THEMES.default;
 
     const toggleSection = (id: string) => {
         const newExpanded = new Set(expandedSections);
@@ -144,7 +157,7 @@ export default function ScriptRunnerMenu() {
                 <div key={`sub-${index}`}>
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-cyan-400/50 bg-white/[0.04] shadow-[0_8px_20px_rgba(34,211,238,0.12)]' : ''}`}
+                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent ${isExpanded ? `${theme.border} bg-white/[0.04] ${theme.shadow}` : ''}`}
                         style={{ paddingLeft: `${(depth + 1) * 12 + 12}px` }}
                     >
                         <svg
@@ -169,7 +182,7 @@ export default function ScriptRunnerMenu() {
         return (
             <button
                 key={`item-${index}`}
-                className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-gray-200 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent hover:border-l-purple-500/30 hover:shadow-[0_6px_18px_rgba(168,85,247,0.18)]`}
+                className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-gray-200 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent hover:${theme.border} hover:${theme.shadow}`}
                 style={{ paddingLeft: `${(depth + 1) * 12 + 24}px` }}
                 onClick={() => console.log(`Running: ${item.fn}`)}
             >
@@ -184,10 +197,12 @@ export default function ScriptRunnerMenu() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 backdrop-blur-xl">
                 <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.7)]" />
-                    <h2 className="text-[13px] font-semibold tracking-[0.18em] text-gray-100 uppercase">Функции</h2>
+                    <div className={`h-2 w-2 rounded-full ${theme.iconColor} shadow-[0_0_15px_rgba(255,255,255,0.4)]`} />
+                    <h2 className="text-[13px] font-semibold tracking-[0.18em] text-gray-100 uppercase">
+                        Функции: <span className={theme.color}>{projectId === 'default' ? 'Общие' : projectId.toUpperCase()}</span>
+                    </h2>
                 </div>
-                <span className="text-[10px] bg-purple-500/15 text-purple-200 px-2 py-0.5 rounded-md border border-purple-500/30 shadow-[0_8px_30px_rgba(168,85,247,0.2)]">
+                <span className="text-[10px] bg-white/5 text-gray-400 px-2 py-0.5 rounded-md border border-white/10">
                     v2.2
                 </span>
             </div>
@@ -201,7 +216,7 @@ export default function ScriptRunnerMenu() {
                             <button
                                 onClick={() => toggleSection(section.id)}
                                 className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent
-                                ${isExpanded ? 'border-l-cyan-400/70 bg-white/[0.04] text-gray-100 shadow-[0_10px_30px_rgba(34,211,238,0.15)]' : ''}`}
+                                ${isExpanded ? `${theme.border} bg-white/[0.04] text-gray-100 ${theme.shadow}` : ''}`}
                             >
                                 <svg
                                     className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}

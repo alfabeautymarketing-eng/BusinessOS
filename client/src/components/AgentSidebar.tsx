@@ -1,36 +1,94 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type Tab = 'chat' | 'logs' | 'git';
 
-export default function AgentSidebar() {
+interface Message {
+    id: string;
+    sender: 'user' | 'agent';
+    text: string;
+    code?: string;
+    timestamp: number;
+}
+
+interface AgentSidebarProps {
+    projectId?: string;
+}
+
+const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string; shadow: string }> = {
+    sk: { color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', shadow: 'shadow-purple-500/20' },
+    mt: { color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', shadow: 'shadow-blue-500/20' },
+    ss: { color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', shadow: 'shadow-green-500/20' },
+    default: { color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', shadow: 'shadow-cyan-500/20' },
+};
+
+export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProps) {
     const [activeTab, setActiveTab] = useState<Tab>('chat');
     const [input, setInput] = useState('');
-    const tabs: { id: Tab; label: string }[] = [
-        { id: 'chat', label: 'чат' },
-        { id: 'logs', label: 'логи' },
-        { id: 'git', label: 'git' },
-    ];
+
+    // Chat history per project
+    const [chats, setChats] = useState<Record<string, Message[]>>({
+        sk: [],
+        mt: [],
+        ss: [],
+        default: []
+    });
+
+    const theme = PROJECT_THEMES[projectId] || PROJECT_THEMES.default;
+
+    const handleSend = () => {
+        if (!input.trim()) return;
+
+        const newMessage: Message = {
+            id: Date.now().toString(),
+            sender: 'user',
+            text: input,
+            timestamp: Date.now()
+        };
+
+        setChats(prev => ({
+            ...prev,
+            [projectId]: [...(prev[projectId] || []), newMessage]
+        }));
+
+        setInput('');
+
+        // Mock Agent Response
+        setTimeout(() => {
+            const response: Message = {
+                id: (Date.now() + 1).toString(),
+                sender: 'agent',
+                text: `[${projectId.toUpperCase()}] Принято. Анализирую запрос...`,
+                timestamp: Date.now()
+            };
+            setChats(prev => ({
+                ...prev,
+                [projectId]: [...(prev[projectId] || []), response]
+            }));
+        }, 1000);
+    };
+
+    const currentChat = chats[projectId] || [];
 
     return (
         <div className="flex flex-col h-full text-gray-200 text-sm">
             {/* Tabs */}
             <div className="flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
-                {tabs.map((tab) => (
+                {['chat', 'logs', 'git'].map((tab) => (
                     <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
+                        key={tab}
+                        onClick={() => setActiveTab(tab as Tab)}
                         className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300
-              ${activeTab === tab.id
-                                ? 'text-cyan-200 bg-cyan-500/10 shadow-[0_10px_30px_rgba(34,211,238,0.16)]'
+              ${activeTab === tab
+                                ? `${theme.color} ${theme.bg} shadow-[0_10px_30px_rgba(0,0,0,0.1)]`
                                 : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}
             `}
                     >
-                        {activeTab === tab.id && (
-                            <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 rounded-full"></div>
+                        {activeTab === tab && (
+                            <div className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-current opacity-50`}></div>
                         )}
-                        {tab.label}
+                        {tab === 'chat' ? 'чат' : tab === 'logs' ? 'логи' : 'git'}
                     </button>
                 ))}
             </div>
@@ -39,40 +97,33 @@ export default function AgentSidebar() {
             <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
                 {activeTab === 'chat' && (
                     <>
-                        {/* Example Messages */}
-                        <div className="flex flex-col space-y-1.5 animate-in slide-in-from-right duration-300">
-                            <span className="text-xs text-gray-500 ml-auto font-semibold">Пользователь</span>
-                            <div className="bg-gradient-to-br from-[#111827] to-[#0b1220] p-4 rounded-2xl rounded-tr-md self-end max-w-[90%] border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
-                                <p className="text-gray-200">Если <span className="text-purple-400 bg-purple-900/40 px-2 py-0.5 rounded-md font-semibold">#Column:Date</span> пустая, ставь сегодняшнюю.</p>
+                        {currentChat.length === 0 && (
+                            <div className="text-center text-gray-500 mt-10 text-xs">
+                                Нет сообщений для проекта {projectId.toUpperCase()}
                             </div>
-                        </div>
+                        )}
 
-                        <div className="flex flex-col space-y-1.5 animate-in slide-in-from-left duration-300">
-                            <span className="text-xs text-purple-300 font-semibold">Агент</span>
-                            <div className="bg-gradient-to-br from-purple-900/25 via-blue-900/15 to-purple-900/20 p-4 rounded-2xl rounded-tl-md self-start max-w-[90%] border border-purple-500/30 shadow-[0_15px_45px_rgba(168,85,247,0.18)]">
-                                <p className="mb-3 text-gray-200">Готово. Скрипт <code className="text-purple-200 font-mono text-sm">autoDate.gs</code> задеплоен. Триггер <code className="text-blue-200 font-mono text-sm">onEdit</code> установлен.</p>
-                                {/* Code Snippet Card */}
-                                <div className="bg-[#0a0f1c] p-3 rounded-lg border border-purple-500/30 text-xs font-mono text-gray-300 shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
-                                    <div className="flex justify-between items-center mb-2 border-b border-purple-500/20 pb-2">
-                                        <span className="text-purple-200 font-semibold">autoDate.gs</span>
-                                        <span className="flex items-center gap-1.5 text-[10px] text-green-300 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/30">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                            Active
-                                        </span>
-                                    </div>
-                                    <pre className="overflow-x-auto text-gray-300">
-                                        <code>function onEdit(e) {'{'}...{'}'}</code>
-                                    </pre>
+                        {currentChat.map((msg) => (
+                            <div key={msg.id} className={`flex flex-col space-y-1.5 animate-in slide-in-from-${msg.sender === 'user' ? 'right' : 'left'} duration-300`}>
+                                <span className={`text-xs ${msg.sender === 'user' ? 'text-gray-500 ml-auto' : theme.color} font-semibold`}>
+                                    {msg.sender === 'user' ? 'Пользователь' : 'Агент'}
+                                </span>
+                                <div className={`
+                                    p-4 rounded-2xl max-w-[90%] border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]
+                                    ${msg.sender === 'user'
+                                        ? 'bg-gradient-to-br from-[#111827] to-[#0b1220] rounded-tr-md self-end'
+                                        : `bg-gradient-to-br from-[#1a1a1a] to-[#101010] rounded-tl-md self-start ${theme.border}`}
+                                `}>
+                                    <p className="text-gray-200">{msg.text}</p>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </>
                 )}
                 {activeTab === 'logs' && (
                     <div className="text-xs text-gray-500 font-mono">
-                        <div className="mb-1"><span className="text-green-500">[14:05:22]</span> Синхронизация начата...</div>
-                        <div className="mb-1"><span className="text-blue-500">[14:05:23]</span> Получение заголовков...</div>
-                        <div className="mb-1"><span className="text-yellow-500">[14:05:25]</span> Внимание: Ячейка A5 пуста</div>
+                        <div className="mb-1"><span className="text-green-500">[14:05:22]</span> {projectId.toUpperCase()}: Синхронизация начата...</div>
+                        <div className="mb-1"><span className="text-blue-500">[14:05:23]</span> {projectId.toUpperCase()}: Получение заголовков...</div>
                     </div>
                 )}
             </div>
@@ -83,20 +134,18 @@ export default function AgentSidebar() {
                     <textarea
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Опишите задачу для агента..."
-                        className="w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-500/30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300"
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                        placeholder={`Задача для ${projectId.toUpperCase()}...`}
+                        className={`w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-opacity-50 focus:ring-1 focus:ring-opacity-30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300 ${theme.border}`}
                     />
-                    <button className="absolute bottom-4 right-4 p-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl hover:from-cyan-400 hover:to-purple-400 transition-all duration-300 text-white shadow-[0_15px_35px_rgba(34,211,238,0.25)] hover:scale-105">
+                    <button
+                        onClick={handleSend}
+                        className={`absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 text-white shadow-lg hover:scale-105 ${theme.bg} ${theme.color} border ${theme.border}`}
+                    >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                         </svg>
                     </button>
-                </div>
-                <div className="mt-3 flex space-x-2 overflow-x-auto pb-1 items-center text-[11px]">
-                    {/* Quick Actions / Context Chips */}
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wider py-1 font-semibold">Контекст:</span>
-                    <button className="px-3 py-1 bg-white/5 rounded-lg text-xs text-gray-300 hover:text-white hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 transition-all duration-200">Выделение</button>
-                    <button className="px-3 py-1 bg-white/5 rounded-lg text-xs text-gray-300 hover:text-white hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 transition-all duration-200">Активный лист</button>
                 </div>
             </div>
         </div>
