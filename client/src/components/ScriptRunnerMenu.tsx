@@ -33,11 +33,6 @@ const PROJECT_THEMES: Record<string, { color: string; border: string; shadow: st
     default: { color: 'text-cyan-200', border: 'border-cyan-500/50', shadow: 'shadow-cyan-500/20', iconColor: 'bg-cyan-400' },
 };
 
-const renderIcon = (glyph?: string) => (
-    <span className="flex h-6 w-6 items-center justify-center rounded-lg text-xs font-semibold" style={{ backgroundColor: 'var(--surface-glass)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-        {glyph || '•'}
-    </span>
-);
 
 // Menu Data Configuration (Mirrors 01Config.js)
 const MENU_DATA: MenuSection[] = [
@@ -172,36 +167,38 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
 
     const renderMenuItem = (item: MenuItem, index: number, depth: number = 0) => {
         if (item.separator) {
-            return <div key={`sep-${index}`} className="divider my-2 mx-4" />;
+            return <div key={`sep-${index}`} className="h-px my-2 mx-3" style={{ background: 'var(--border)' }} />;
         }
 
         if (item.submenu && item.items) {
             const isExpanded = expandedSubmenus.has(item.submenu);
             return (
-                <div key={`sub-${index}`}>
+                <div key={`sub-${index}`} className="mb-1">
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] transition-all duration-200 rounded-r-2xl mr-2 border-l-2"
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-medium
+                                   transition-all duration-200 rounded-lg mx-2 border
+                                   ${isExpanded ? 'card-glass' : ''}`}
                         style={{
-                            paddingLeft: `${(depth + 1) * 12 + 12}px`,
+                            marginLeft: `${depth * 12 + 8}px`,
                             color: isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
                             backgroundColor: isExpanded ? 'var(--surface-glass)' : 'transparent',
-                            borderLeftColor: isExpanded ? 'var(--secondary)' : 'transparent'
+                            borderColor: isExpanded ? 'var(--primary)' : 'transparent',
+                            boxShadow: isExpanded ? 'var(--shadow-sm)' : 'none'
                         }}
                     >
                         <svg
                             className={`w-3 h-3 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                            style={{ width: '12px', height: '12px', color: 'var(--text-muted)' }}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
                             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                         </svg>
-                        {renderIcon(item.icon)}
+                        <span className="text-sm">{item.icon}</span>
                         <span className="truncate flex-1 text-left">{item.submenu}</span>
                     </button>
                     {isExpanded && (
-                        <div className="mt-0.5">
+                        <div className="mt-1">
                             {item.items.map((subItem, subIndex) => renderMenuItem(subItem, subIndex, depth + 1))}
                         </div>
                     )}
@@ -212,32 +209,36 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
         return (
             <button
                 key={`item-${index}`}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] transition-all duration-200 rounded-r-2xl mr-2 border-l-2"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-medium
+                          transition-all duration-200 rounded-lg mx-2 mb-1 border"
                 style={{
-                    paddingLeft: `${(depth + 1) * 12 + 24}px`,
+                    marginLeft: `${depth * 12 + 8}px`,
                     color: 'var(--text-secondary)',
-                    borderLeftColor: 'transparent'
+                    backgroundColor: 'transparent',
+                    borderColor: 'transparent'
                 }}
                 onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--surface-glass)';
                     e.currentTarget.style.color = 'var(--text-primary)';
-                    e.currentTarget.style.borderLeftColor = 'var(--primary)';
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                 }}
                 onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.color = 'var(--text-secondary)';
-                    e.currentTarget.style.borderLeftColor = 'transparent';
+                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.boxShadow = 'none';
                 }}
                 onClick={() => console.log(`Running: ${item.fn}`)}
             >
-                {renderIcon(item.icon)}
+                <span className="text-sm">{item.icon}</span>
                 <span className="truncate">{item.label}</span>
             </button>
         );
     };
 
     return (
-        <div className="flex flex-col h-full w-full select-none">
+        <div className="flex flex-col h-full w-full select-none text-sm">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                 <div className="flex items-center gap-2">
@@ -255,29 +256,29 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                     const isSpecial = section.special;
 
                     return (
-                        <div key={section.id} className="mb-0.5">
+                        <div key={section.id} className="mb-2 mx-2">
                             <button
                                 onClick={() => isSpecial ? window.open('http://localhost:3001', '_blank') : toggleSection(section.id)}
-                                className="w-full flex items-center gap-2 px-3 py-2.5 text-[13px] font-semibold transition-all duration-200 rounded-r-2xl mr-2 border-l-3"
+                                className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold
+                                           transition-all duration-200 rounded-lg border
+                                           ${isExpanded && !isSpecial ? 'card-glass' : ''}`}
                                 style={{
-                                    color: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
-                                    backgroundColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--surface-glass)' : 'transparent',
-                                    borderLeftColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--primary)' : 'transparent',
-                                    borderLeftWidth: '3px',
-                                    boxShadow: isExpanded ? 'var(--shadow-sm)' : 'none'
+                                    color: isSpecial ? 'var(--text-primary)' : isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
+                                    backgroundColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--surface-glass)' : 'var(--surface-glass)',
+                                    borderColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--primary)' : 'var(--border)',
+                                    boxShadow: isExpanded || isSpecial ? 'var(--shadow-md)' : 'var(--shadow-sm)'
                                 }}
                             >
                                 {!isSpecial && (
                                     <svg
                                         className={`w-3 h-3 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                                        style={{ width: '12px', height: '12px', color: 'var(--text-muted)' }}
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                     >
                                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                     </svg>
                                 )}
-                                <span className="text-base">{section.icon}</span>
+                                <span className="text-sm">{section.icon}</span>
                                 <span className="truncate">{section.title}</span>
                                 {isSpecial && (
                                     <svg className="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,7 +288,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                             </button>
 
                             {isExpanded && !isSpecial && (
-                                <div className="mt-0.5">
+                                <div className="mt-1">
                                     {section.items.map((item, index) => renderMenuItem(item, index))}
                                 </div>
                             )}

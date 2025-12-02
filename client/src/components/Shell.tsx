@@ -46,15 +46,15 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
 
     return (
         <div className="relative min-h-screen w-screen overflow-hidden font-sans" style={{
-            background: 'linear-gradient(135deg, #F5F7FA 0%, #E8EDF5 50%, #F0F3F9 100%)',
+            background: 'linear-gradient(135deg, var(--background) 0%, var(--primary-light) 100%)',
             color: 'var(--text-primary)'
         }}>
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full blur-3xl" style={{ background: 'var(--primary)', opacity: 0.08 }} />
+                <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full blur-3xl" style={{ background: 'var(--primary)', opacity: 0.15 }} />
                 <div className="absolute right-0 top-10 h-72 w-72 rounded-full blur-3xl" style={{ background: 'var(--secondary)', opacity: 0.1 }} />
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-40 w-[80%] blur-3xl" style={{
                     background: 'linear-gradient(90deg, var(--info), var(--primary), var(--info))',
-                    opacity: 0.06
+                    opacity: 0.1
                 }} />
             </div>
 

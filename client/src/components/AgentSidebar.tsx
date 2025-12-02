@@ -90,7 +90,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
     }, [mode, projectId]);
 
     return (
-        <div className="flex flex-col h-full text-sm">
+        <div className="flex flex-col h-full text-base">
             {/* Mode Switcher */}
             <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                 {(['agent', 'dev'] as Mode[]).map((m) => {
@@ -165,9 +165,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                         ? 'rounded-tr-md self-end'
                                         : 'rounded-tl-md self-start'}
                                 `}
-                                style={{
-                                    borderColor: msg.sender === 'user' ? 'var(--secondary)' : 'var(--primary)'
-                                }}>
+                                    style={{
+                                        borderColor: msg.sender === 'user' ? 'var(--secondary)' : 'var(--primary)'
+                                    }}>
                                     <p style={{ color: 'var(--text-primary)' }}>{msg.text}</p>
                                 </div>
                             </div>

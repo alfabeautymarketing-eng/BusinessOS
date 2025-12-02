@@ -1,26 +1,44 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   /* Пастельная цветовая палитра в стиле iOS */
-  --primary: #B8C5F2;        /* Мягкий лавандовый */
-  --primary-hover: #A4B4E8;  /* Лаванда при наведении */
-  --secondary: #E8D5F2;      /* Нежная сирень */
-  --accent: #F2D5E5;         /* Пастельный розовый */
-  --success: #C5E8D5;        /* Мятный */
-  --warning: #F9E5C8;        /* Персиковый */
-  --info: #D5E8F9;           /* Небесно-голубой */
+  /* Default values (SkinClinic purple) */
+  --primary-h: 250;
+  --primary-s: 84%;
+  --primary-l: 67%;
+
+  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  --primary-hover: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 10%));
+  --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
+
+  --secondary: #E8D5F2;
+  /* Нежная сирень */
+  --accent: #F2D5E5;
+  /* Пастельный розовый */
+  --success: #C5E8D5;
+  /* Мятный */
+  --warning: #F9E5C8;
+  /* Персиковый */
+  --info: #D5E8F9;
+  /* Небесно-голубой */
 
   /* Нейтральные цвета */
-  --background: #F5F7FA;     /* Светлый серо-голубой фон */
-  --surface: #FFFFFF;        /* Белая поверхность */
-  --surface-glass: rgba(255, 255, 255, 0.7); /* Матовое стекло */
-  --border: #E5E9F0;         /* Мягкая граница */
-  --text-primary: #2E3A4D;   /* Темно-синий для текста */
-  --text-secondary: #6B7A8F; /* Серо-синий для вторичного текста */
-  --text-muted: #9BA8B8;     /* Приглушенный текст */
+  --background: #F5F7FA;
+  /* Светлый серо-голубой фон */
+  --surface: #FFFFFF;
+  /* Белая поверхность */
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  /* Матовое стекло */
+  --border: #E5E9F0;
+  /* Мягкая граница */
+  --text-primary: #2E3A4D;
+  /* Темно-синий для текста */
+  --text-secondary: #6B7A8F;
+  /* Серо-синий для вторичного текста */
+  --text-muted: #9BA8B8;
+  /* Приглушенный текст */
 
   /* Тени в стиле iOS */
   --shadow-sm: 0 2px 8px rgba(46, 58, 77, 0.06);
@@ -174,6 +192,7 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -185,6 +204,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -197,9 +217,12 @@ body {
 
 /* Пульсирующий эффект для важных элементов */
 @keyframes pulse-soft {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(184, 197, 242, 0.4);
   }
+
   50% {
     box-shadow: 0 0 0 8px rgba(184, 197, 242, 0);
   }

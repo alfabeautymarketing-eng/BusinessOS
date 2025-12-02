@@ -61,16 +61,14 @@
 
 ### 2. Карточки с эффектом стекла
 
-```jsx
-<div className="card-glass p-6">
-  <h3 className="text-lg font-semibold mb-2">📊 Заголовок карточки</h3>
-  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-    Содержимое карточки с эффектом матового стекла
-  </p>
-</div>
-```
+**Важно**: Существует два типа карточек:
 
-#### Карточка с hover-эффектом:
+#### `card-glass` - Для интерактивных элементов с hover-эффектом
+Используйте для:
+- Кнопок
+- Маленьких элементов
+- Элементов, которые должны реагировать на наведение
+
 ```jsx
 <div className="card-glass p-6 cursor-pointer">
   <div className="flex items-center gap-3">
@@ -82,6 +80,21 @@
       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Активен</p>
     </div>
   </div>
+</div>
+```
+
+#### `card-static` - Для больших панелей без hover-эффекта
+Используйте для:
+- Больших панелей (Shell header, sidebar, main)
+- Контейнеров
+- Элементов без hover-эффектов
+
+```jsx
+<div className="card-static p-6">
+  <h3 className="text-lg font-semibold mb-2">📊 Заголовок панели</h3>
+  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+    Содержимое большой панели без эффекта подъема при наведении
+  </p>
 </div>
 ```
 
@@ -134,7 +147,104 @@
 
 ---
 
-### 5. Разделители
+### 5. Заголовки секций
+
+Используйте этот шаблон для создания заголовков секций с эмодзи и градиентной линией:
+
+```jsx
+<div className="flex items-center gap-4 px-3">
+  <div className="flex items-center gap-2">
+    <span className="text-xl">🗂️</span>
+    <h2 className="text-sm font-bold uppercase tracking-[0.15em]"
+        style={{ color: 'var(--text-primary)' }}>
+      Рабочие столы
+    </h2>
+  </div>
+  <div className="h-px flex-1"
+       style={{ background: 'linear-gradient(90deg, var(--border), transparent)' }} />
+</div>
+```
+
+#### Примеры с разными эмодзи:
+```jsx
+// Проекты
+🗂️ + "ПРОЕКТЫ"
+
+// Функции
+⚡ + "ФУНКЦИИ"
+
+// Настройки
+⚙️ + "НАСТРОЙКИ"
+
+// Аналитика
+📊 + "АНАЛИТИКА"
+```
+
+---
+
+### 6. Кнопки переключения рабочих столов
+
+#### Активная кнопка:
+```jsx
+<button
+  className="flex items-center gap-2.5 px-5 py-2.5 text-sm font-semibold
+             transition-all duration-200 border-2 button-rounded"
+  style={{
+    borderColor: 'var(--primary)',
+    backgroundColor: 'var(--surface-glass)',
+    color: 'var(--text-primary)',
+    boxShadow: 'var(--shadow-md)',
+    backdropFilter: 'blur(20px)'
+  }}
+>
+  <span
+    className="h-3 w-3 rounded-full shadow-sm"
+    style={{
+      background: '#B8C5F2', // Цвет проекта
+      boxShadow: '0 0 8px #B8C5F2'
+    }}
+  />
+  <span>Название проекта</span>
+</button>
+```
+
+#### Неактивная кнопка:
+```jsx
+<button
+  className="flex items-center gap-2.5 px-5 py-2.5 text-sm font-semibold
+             transition-all duration-200 border-2 rounded-xl"
+  style={{
+    borderColor: 'var(--border)',
+    backgroundColor: 'transparent',
+    color: 'var(--text-secondary)',
+    boxShadow: 'none',
+    backdropFilter: 'none'
+  }}
+>
+  <span
+    className="h-3 w-3 rounded-full shadow-sm"
+    style={{
+      background: 'var(--text-muted)',
+      boxShadow: 'none'
+    }}
+  />
+  <span>Название проекта</span>
+</button>
+```
+
+#### Ключевые различия:
+| Свойство | Активная | Неактивная |
+|----------|----------|------------|
+| Класс скругления | `button-rounded` | `rounded-xl` |
+| Border Color | `var(--primary)` | `var(--border)` |
+| Background | `var(--surface-glass)` | `transparent` |
+| Shadow | `var(--shadow-md)` | `none` |
+| Blur | `blur(20px)` | `none` |
+| Цветной индикатор | Светится | Серый |
+
+---
+
+### 7. Разделители
 
 ```jsx
 <div className="divider" />
@@ -195,10 +305,20 @@
 
 ### Shell.tsx - Обновление боковых панелей
 
+**Важно**: Используйте `card-static` для больших панелей, чтобы они не поднимались при наведении:
+
 ```jsx
-<aside className="card-glass h-full overflow-y-auto custom-scrollbar p-4">
+<header className="card-static px-5 h-16 flex items-center">
+  {topNav}
+</header>
+
+<aside className="card-static h-full overflow-y-auto custom-scrollbar p-4">
   {/* Содержимое sidebar */}
 </aside>
+
+<main className="card-static flex-1 relative flex flex-col overflow-hidden">
+  {children}
+</main>
 ```
 
 ---
@@ -303,10 +423,21 @@
 <h2 className="text-xl font-bold">📊 Аналитика проекта</h2>
 ```
 
-### 4. Используйте card-glass для контейнеров
+### 4. Выбор правильного класса карточки
+
+#### Используйте `card-glass`:
 ```jsx
-<div className="card-glass p-6 space-y-4">
-  {/* Группа элементов */}
+// Для кнопок, маленьких элементов, интерактивных компонентов
+<div className="card-glass p-6 space-y-4 cursor-pointer">
+  {/* Интерактивный элемент */}
+</div>
+```
+
+#### Используйте `card-static`:
+```jsx
+// Для больших панелей, контейнеров, элементов без hover
+<div className="card-static p-6 space-y-4">
+  {/* Большая панель или контейнер */}
 </div>
 ```
 
@@ -336,6 +467,61 @@
 ---
 
 ## Примеры готовых секций
+
+### Секция с рабочими столами
+
+Полный пример секции с заголовком и переключателем:
+
+```jsx
+<div className="flex flex-col gap-3">
+  {/* Заголовок секции */}
+  <div className="flex items-center gap-4 px-3">
+    <div className="flex items-center gap-2">
+      <span className="text-xl">🗂️</span>
+      <h2 className="text-sm font-bold uppercase tracking-[0.15em]"
+          style={{ color: 'var(--text-primary)' }}>
+        Рабочие столы
+      </h2>
+    </div>
+    <div className="h-px flex-1"
+         style={{ background: 'linear-gradient(90deg, var(--border), transparent)' }} />
+  </div>
+
+  {/* Переключатель рабочих столов */}
+  <div className="flex items-center gap-2 px-3">
+    {workspaces.map((workspace) => {
+      const isActive = workspace.id === activeWorkspace;
+      return (
+        <button
+          key={workspace.id}
+          onClick={() => setActiveWorkspace(workspace.id)}
+          className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-semibold
+                      transition-all duration-200 border-2
+                      ${isActive ? 'button-rounded' : 'rounded-xl'}`}
+          style={{
+            borderColor: isActive ? 'var(--primary)' : 'var(--border)',
+            backgroundColor: isActive ? 'var(--surface-glass)' : 'transparent',
+            color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+            boxShadow: isActive ? 'var(--shadow-md)' : 'none',
+            backdropFilter: isActive ? 'blur(20px)' : 'none'
+          }}
+        >
+          <span
+            className="h-3 w-3 rounded-full shadow-sm"
+            style={{
+              background: isActive ? workspace.color : 'var(--text-muted)',
+              boxShadow: isActive ? `0 0 8px ${workspace.color}` : 'none'
+            }}
+          />
+          <span>{workspace.name}</span>
+        </button>
+      );
+    })}
+  </div>
+</div>
+```
+
+---
 
 ### Карточка проекта
 ```jsx
@@ -426,6 +612,29 @@
   ✨ Кнопка
 </button>
 ```
+
+---
+
+## История обновлений
+
+### Версия 2.0 (2025-12-03)
+
+#### Добавлено:
+- ✅ Класс `card-static` для больших панелей без hover-эффекта
+- ✅ Шаблон заголовков секций с эмодзи и градиентной линией
+- ✅ Паттерн кнопок переключения рабочих столов (активная/неактивная)
+- ✅ Таблица различий между активными и неактивными состояниями
+- ✅ Полный пример секции с рабочими столами
+- ✅ Рекомендации по выбору между `card-glass` и `card-static`
+
+#### Изменено:
+- 🔄 Раздел "Карточки с эффектом стекла" разделен на два подраздела
+- 🔄 Обновлены примеры для Shell.tsx с использованием `card-static`
+- 🔄 Добавлены детальные различия в визуальных состояниях кнопок
+
+#### Правила обновления:
+- 📝 Эта документация должна обновляться при каждом изменении архитектуры
+- 📝 Всегда синхронизируйте с ARCHITECTURE.md
 
 ---
 

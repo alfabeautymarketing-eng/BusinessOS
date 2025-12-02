@@ -5,6 +5,11 @@
       "name": "SkinClinic",
       "shortName": "SС",
       "color": "#8B5CF6",
+      "theme": {
+        "h": 258,
+        "s": "90%",
+        "l": "66%"
+      },
       "icon": "🟣",
       "links": [
         {
@@ -46,6 +51,11 @@
       "name": "Montibello",
       "shortName": "MT",
       "color": "#3B82F6",
+      "theme": {
+        "h": 217,
+        "s": "91%",
+        "l": "60%"
+      },
       "icon": "🔵",
       "links": [
         {
@@ -87,6 +97,11 @@
       "name": "  Soskin",
       "shortName": "SS",
       "color": "#10B981",
+      "theme": {
+        "h": 160,
+        "s": "84%",
+        "l": "39%"
+      },
       "icon": "🟢",
       "links": [
         {
@@ -128,6 +143,11 @@
       "name": "Анализ косметики",
       "shortName": "Cosmetic",
       "color": "#EC4899",
+      "theme": {
+        "h": 330,
+        "s": "81%",
+        "l": "60%"
+      },
       "icon": "💄",
       "type": "internal-app",
       "url": "http://localhost:3001"
