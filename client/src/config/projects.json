@@ -11,40 +11,32 @@
           "id": "database",
           "name": "База SK",
           "type": "sheets",
-          "url": "https://docs.google.com/spreadsheets/d/[SK_SPREADSHEET_ID]/edit",
+          "url": "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit",
           "sheetId": "1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw",
-          "icon": "📊"
+          "icon": "🌟"
         },
         {
           "id": "source-docs",
-          "name": "Исходные документы",
+          "name": "Док-ты от производителя",
           "type": "sheets",
-          "url": "https://docs.google.com/spreadsheets/d/[SK_SPREADSHEET_ID]/edit",
+          "url": "https://docs.google.com/spreadsheets/d/1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs/edit",
           "sheetId": "1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs",
-          "icon": "📁"
-        },
-        {
-          "id": "compositions",
-          "name": "Составы",
-          "type": "sheets",
-          "url": "https://docs.google.com/spreadsheets/d/[SK_COMPOSITIONS_ID]/edit",
-          "sheetId": "[SK_COMPOSITIONS_ID]",
-          "icon": "🧪"
+          "icon": "🏭"
         },
         {
           "id": "inci",
           "name": "ИНСИ",
           "type": "drive-folder",
-          "url": "https://drive.google.com/drive/folders/[SK_INCI_FOLDER_ID]",
-          "folderId": "[SK_INCI_FOLDER_ID]",
-          "icon": "📋"
+          "url": "https://drive.google.com/drive/folders/1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1",
+          "folderId": "1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1",
+          "icon": "⚗️"
         },
         {
           "id": "declarations",
           "name": "Декларации",
           "type": "drive-folder",
-          "url": "https://drive.google.com/drive/folders/[SK_DECLARATIONS_FOLDER_ID]",
-          "folderId": "[SK_DECLARATIONS_FOLDER_ID]",
+          "url": "https://drive.google.com/drive/folders/1es2TNgGoAJgOLhe1pwgyYe-4oDjiFoOI",
+          "folderId": "1es2TNgGoAJgOLhe1pwgyYe-4oDjiFoOI",
           "icon": "📜"
         }
       ]

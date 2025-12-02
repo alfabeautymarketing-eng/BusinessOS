@@ -83,14 +83,17 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
   const specialProjects = projects.filter((p) => p.type === 'internal-app');
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full h-full">
       {/* Left: Logo & Projects */}
-      <div className="flex items-center space-x-8">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 via-blue-600 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-shadow duration-300">
+      <div className="flex items-center space-x-6">
+        <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-lg shadow-[0_0_25px_rgba(34,211,238,0.55)]">
             B
           </div>
-          <span className="font-bold tracking-wide text-base bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">BUSINESS OS</span>
+          <div className="leading-tight">
+            <div className="text-[10px] uppercase tracking-[0.28em] text-gray-400">Business</div>
+            <div className="text-sm font-semibold text-white tracking-wide">OS</div>
+          </div>
         </div>
 
         <nav className="flex items-center space-x-1">
@@ -105,15 +108,19 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
             >
               <button
                 onClick={() => handleProjectClick(project)}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5 transition-all duration-300 flex items-center gap-2 border border-transparent hover:border-white/10 hover:shadow-lg"
+                className={`group px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 border
+                  ${openDropdown === project.id
+                    ? 'text-white border-cyan-400/60 bg-cyan-500/10 shadow-[0_10px_40px_rgba(34,211,238,0.25)]'
+                    : 'text-gray-300 border-white/5 bg-white/5 hover:border-cyan-400/30 hover:text-white hover:bg-white/10'}
+                `}
                 style={{
                   color: openDropdown === project.id ? project.color : undefined,
-                  borderColor: openDropdown === project.id ? `${project.color}40` : undefined,
-                  backgroundColor: openDropdown === project.id ? `${project.color}15` : undefined,
+                  borderColor: openDropdown === project.id ? `${project.color}70` : undefined,
+                  boxShadow: openDropdown === project.id ? `0 10px 35px -10px ${project.color}80` : undefined
                 }}
               >
-                <span className="text-base">{project.icon}</span>
-                <span>{project.shortName}</span>
+                <span className="text-base drop-shadow">{project.icon}</span>
+                <span>{project.name}</span>
                 <svg
                   className={`w-3.5 h-3.5 transition-transform duration-300 ${openDropdown === project.id ? 'rotate-180' : ''
                     }`}
@@ -128,11 +135,11 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
               {/* Dropdown Menu */}
               {openDropdown === project.id && project.links && (
                 <div
-                  className="absolute top-full left-0 mt-2 w-64 bg-gradient-to-b from-[#252525] to-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-50 backdrop-blur-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+                  className="absolute top-full left-0 mt-2 w-64 bg-gradient-to-b from-[#151a26]/95 to-[#0f1420]/95 border border-white/10 rounded-2xl shadow-2xl z-50 backdrop-blur-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
                   style={{
                     borderTopWidth: '2px',
                     borderTopColor: project.color,
-                    boxShadow: `0 10px 40px -10px ${project.color}40`
+                    boxShadow: `0 20px 60px -10px ${project.color}50`
                   }}
                 >
                   <div className="py-2">
@@ -153,14 +160,14 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
           ))}
 
           {/* Separator */}
-          {specialProjects.length > 0 && <div className="w-px h-4 bg-gray-700 mx-2"></div>}
+          {specialProjects.length > 0 && <div className="w-px h-5 bg-white/10 mx-3"></div>}
 
           {/* Special Projects (Internal Apps) */}
           {specialProjects.map((project) => (
             <button
               key={project.id}
               onClick={() => handleProjectClick(project)}
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-pink-400 hover:text-pink-300 hover:bg-gradient-to-r hover:from-pink-900/30 hover:to-pink-800/20 transition-all duration-300 border border-pink-500/30 hover:border-pink-500/50 flex items-center gap-2 hover:shadow-lg hover:shadow-pink-500/20"
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-pink-200 hover:text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-all duration-300 border border-pink-500/30 hover:border-pink-500/60 flex items-center gap-2 shadow-[0_10px_40px_rgba(236,72,153,0.2)]"
             >
               <span className="text-base">{project.icon}</span>
               <span>{project.name}</span>
@@ -170,15 +177,22 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
       </div>
 
       {/* Right: Status & User */}
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2.5 px-4 py-2 bg-gradient-to-r from-green-900/20 to-emerald-900/20 rounded-full border border-green-500/30 backdrop-blur-sm">
+      <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-[11px] font-semibold text-emerald-200 shadow-[0_10px_30px_rgba(52,211,153,0.18)]">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+          </span>
+          Health: Idle
+        </div>
+        <div className="flex items-center space-x-2.5 px-4 py-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-full border border-green-500/30 backdrop-blur-sm shadow-[0_10px_30px_rgba(16,185,129,0.15)]">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
           </span>
-          <span className="text-xs text-green-400 font-semibold">Система в сети</span>
+          <span className="text-xs text-green-200 font-semibold">Система в сети</span>
         </div>
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/40 flex items-center justify-center text-sm font-bold text-purple-300 hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 cursor-pointer">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500/25 via-blue-500/25 to-cyan-500/25 border border-purple-500/40 flex items-center justify-center text-sm font-bold text-purple-200 hover:border-purple-500/60 hover:shadow-[0_10px_40px_rgba(168,85,247,0.25)] transition-all duration-300 cursor-pointer">
           A
         </div>
       </div>
