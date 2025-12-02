@@ -45,54 +45,67 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
     }, [resizing]);
 
     return (
-        <div className="relative min-h-screen w-screen overflow-hidden bg-[#060910] text-white font-sans selection:bg-purple-500/40">
+        <div className="relative min-h-screen w-screen overflow-hidden font-sans" style={{
+            background: 'linear-gradient(135deg, #F5F7FA 0%, #E8EDF5 50%, #F0F3F9 100%)',
+            color: 'var(--text-primary)'
+        }}>
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
-                <div className="absolute right-0 top-10 h-72 w-72 rounded-full bg-purple-500/15 blur-3xl" />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-40 w-[80%] bg-gradient-to-r from-cyan-500/10 via-purple-500/8 to-cyan-500/10 blur-3xl" />
+                <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full blur-3xl" style={{ background: 'var(--primary)', opacity: 0.08 }} />
+                <div className="absolute right-0 top-10 h-72 w-72 rounded-full blur-3xl" style={{ background: 'var(--secondary)', opacity: 0.1 }} />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-40 w-[80%] blur-3xl" style={{
+                    background: 'linear-gradient(90deg, var(--info), var(--primary), var(--info))',
+                    opacity: 0.06
+                }} />
             </div>
 
             <div className="relative flex h-screen flex-col gap-4 px-6 pt-5 pb-6">
-                <header className="rounded-2xl border border-white/5 bg-gradient-to-r from-[#0f1523]/90 via-[#0d1220]/85 to-[#0b0f1b]/90 shadow-[0_10px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl px-5 h-16 flex items-center">
+                <header className="card-static px-5 h-16 flex items-center" style={{ borderRadius: 'var(--radius-lg)' }}>
                     {topNav}
                 </header>
 
                 <div className="flex flex-1 gap-4 overflow-hidden items-stretch">
                     {showSidebar && sidebar && (
                         <div className="relative flex h-full" style={{ width: `${leftWidth}px` }}>
-                            <aside className="w-full rounded-2xl border border-cyan-500/15 bg-gradient-to-b from-[#0f1524]/85 via-[#0c1220]/85 to-[#0a101b]/90 backdrop-blur-2xl flex flex-col shadow-[0_20px_70px_rgba(0,0,0,0.45)] overflow-hidden">
+                            <aside className="w-full card-static flex flex-col overflow-hidden" style={{ borderRadius: 'var(--radius-lg)' }}>
                                 {sidebar}
                             </aside>
                             <div
-                                className="absolute top-0 right-[-8px] h-full w-3 cursor-col-resize rounded-full bg-transparent hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center"
+                                className="absolute top-0 right-[-8px] h-full w-3 cursor-col-resize rounded-full bg-transparent transition-colors flex items-center justify-center"
+                                style={{
+                                    hover: { backgroundColor: 'var(--primary)' }
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 onMouseDown={(e) => {
                                     setResizing('left');
                                     resizeRef.current = { startX: e.clientX, startWidth: leftWidth };
                                 }}
                                 title="Изменить ширину панели"
                             >
-                                <span className="h-10 w-[2px] rounded-full bg-white/40" />
+                                <span className="h-10 w-[2px] rounded-full" style={{ backgroundColor: 'var(--primary)' }} />
                             </div>
                         </div>
                     )}
 
-                    <main className="flex-1 relative flex flex-col rounded-3xl bg-[#05070e]/60 border border-white/5 shadow-[0_20px_70px_rgba(0,0,0,0.45)] overflow-hidden backdrop-blur-xl">
+                    <main className="flex-1 relative flex flex-col overflow-hidden card-static" style={{ borderRadius: 'var(--radius-xl)' }}>
                         {children}
                     </main>
 
                     {showRightSidebar && rightSidebar && (
                         <div className="relative flex h-full" style={{ width: `${rightWidth}px` }}>
                             <div
-                                className="absolute top-0 left-[-8px] h-full w-3 cursor-col-resize rounded-full bg-transparent hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center"
+                                className="absolute top-0 left-[-8px] h-full w-3 cursor-col-resize rounded-full bg-transparent transition-colors flex items-center justify-center"
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--secondary)'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 onMouseDown={(e) => {
                                     setResizing('right');
                                     resizeRef.current = { startX: e.clientX, startWidth: rightWidth };
                                 }}
                                 title="Изменить ширину панели"
                             >
-                                <span className="h-10 w-[2px] rounded-full bg-white/40" />
+                                <span className="h-10 w-[2px] rounded-full" style={{ backgroundColor: 'var(--secondary)' }} />
                             </div>
-                            <aside className="w-full rounded-2xl border border-purple-500/20 bg-gradient-to-b from-[#0f1324]/85 via-[#0d1020]/85 to-[#0b0d18]/90 backdrop-blur-2xl flex flex-col shadow-[0_20px_70px_rgba(0,0,0,0.45)] overflow-hidden">
+                            <aside className="w-full card-static flex flex-col overflow-hidden" style={{ borderRadius: 'var(--radius-lg)' }}>
                                 {rightSidebar}
                             </aside>
                         </div>

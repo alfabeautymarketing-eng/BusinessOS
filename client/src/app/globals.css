@@ -118,6 +118,15 @@ body {
   transform: translateY(-4px);
 }
 
+/* Карточки без hover-эффекта для панелей */
+.card-static {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
 /* Инпуты в стиле iOS */
 .input-ios {
   background: var(--surface);

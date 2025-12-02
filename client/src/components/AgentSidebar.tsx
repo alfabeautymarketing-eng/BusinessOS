@@ -90,102 +90,127 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
     }, [mode, projectId]);
 
     return (
-        <div className="flex flex-col h-full text-gray-200 text-sm">
+        <div className="flex flex-col h-full text-sm">
             {/* Mode Switcher */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                 {(['agent', 'dev'] as Mode[]).map((m) => {
                     const active = m === mode;
                     return (
                         <button
                             key={m}
                             onClick={() => setMode(m)}
-                            className={`flex-1 py-2 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200
-                            ${active ? `${theme.bg} ${theme.color} border ${theme.border} shadow-[0_10px_25px_rgba(0,0,0,0.25)]` : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-cyan-300/30'}`}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2
+                            ${active ? 'button-rounded' : ''}`}
+                            style={{
+                                backgroundColor: active ? 'var(--primary)' : 'transparent',
+                                borderColor: active ? 'var(--primary)' : 'var(--border)',
+                                color: active ? 'var(--text-primary)' : 'var(--text-muted)',
+                                boxShadow: active ? 'var(--shadow-md)' : 'none'
+                            }}
                         >
-                            {m === 'agent' ? 'Агент' : 'Разработчик'}
+                            {m === 'agent' ? '🤖 Агент' : '👨‍💻 Разработчик'}
                         </button>
                     );
                 })}
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
+            <div className="flex border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                 {visibleTabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300
-              ${activeTab === tab.id
-                                ? `${theme.color} ${theme.bg} shadow-[0_10px_30px_rgba(0,0,0,0.1)]`
-                                : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}
-            `}
+                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300`}
+                        style={{
+                            color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
+                            backgroundColor: activeTab === tab.id ? 'var(--primary)' : 'transparent'
+                        }}
                     >
                         {activeTab === tab.id && (
-                            <div className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-current opacity-50`}></div>
+                            <div className="absolute bottom-0 left-4 right-4 h-1 rounded-full opacity-80" style={{ backgroundColor: 'var(--text-primary)' }}></div>
                         )}
+                        {tab.id === 'chat' && '💬 '}
+                        {tab.id === 'logs' && '📋 '}
+                        {tab.id === 'git' && '📊 '}
+                        {tab.id === 'controls' && '⚙️ '}
                         {tab.label}
                     </button>
                 ))}
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar" style={{ backgroundColor: 'var(--background)' }}>
                 {activeTab === 'chat' && (
                     <>
                         {currentChat.length === 0 && (
-                            <div className="text-center text-gray-500 mt-10 text-xs">
-                                Нет сообщений для проекта {projectId.toUpperCase()}
+                            <div className="text-center mt-10 text-xs card-glass p-6">
+                                <div className="text-4xl mb-3">💬</div>
+                                <p style={{ color: 'var(--text-secondary)' }}>
+                                    Нет сообщений для проекта {projectId.toUpperCase()}
+                                </p>
                             </div>
                         )}
 
                         {currentChat.map((msg) => (
-                            <div key={msg.id} className={`flex flex-col space-y-1.5 animate-in slide-in-from-${msg.sender === 'user' ? 'right' : 'left'} duration-300`}>
-                                <span className={`text-xs ${msg.sender === 'user' ? 'text-gray-500 ml-auto' : theme.color} font-semibold`}>
-                                    {msg.sender === 'user' ? 'Пользователь' : 'Агент'}
+                            <div key={msg.id} className={`flex flex-col space-y-1.5 animate-fade-in`}>
+                                <span className="text-xs font-semibold" style={{
+                                    color: 'var(--text-secondary)',
+                                    textAlign: msg.sender === 'user' ? 'right' : 'left'
+                                }}>
+                                    {msg.sender === 'user' ? '👤 Пользователь' : '🤖 Агент'}
                                 </span>
                                 <div className={`
-                                    p-4 rounded-2xl max-w-[90%] border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]
+                                    card-glass p-4 max-w-[90%] border-2
                                     ${msg.sender === 'user'
-                                        ? 'bg-gradient-to-br from-[#111827] to-[#0b1220] rounded-tr-md self-end'
-                                        : `bg-gradient-to-br from-[#1a1a1a] to-[#101010] rounded-tl-md self-start ${theme.border}`}
-                                `}>
-                                    <p className="text-gray-200">{msg.text}</p>
+                                        ? 'rounded-tr-md self-end'
+                                        : 'rounded-tl-md self-start'}
+                                `}
+                                style={{
+                                    borderColor: msg.sender === 'user' ? 'var(--secondary)' : 'var(--primary)'
+                                }}>
+                                    <p style={{ color: 'var(--text-primary)' }}>{msg.text}</p>
                                 </div>
                             </div>
                         ))}
                     </>
                 )}
                 {activeTab === 'logs' && (
-                    <div className="text-xs text-gray-500 font-mono">
-                        <div className="mb-1"><span className="text-green-500">[14:05:22]</span> {projectId.toUpperCase()}: Синхронизация начата...</div>
-                        <div className="mb-1"><span className="text-blue-500">[14:05:23]</span> {projectId.toUpperCase()}: Получение заголовков...</div>
+                    <div className="text-xs font-mono card-glass p-4">
+                        <div className="mb-2 flex items-center gap-2">
+                            <span style={{ color: 'var(--success)' }}>✅ [14:05:22]</span>
+                            <span style={{ color: 'var(--text-primary)' }}>{projectId.toUpperCase()}: Синхронизация начата...</span>
+                        </div>
+                        <div className="mb-2 flex items-center gap-2">
+                            <span style={{ color: 'var(--info)' }}>ℹ️ [14:05:23]</span>
+                            <span style={{ color: 'var(--text-primary)' }}>{projectId.toUpperCase()}: Получение заголовков...</span>
+                        </div>
                     </div>
                 )}
                 {activeTab === 'controls' && (
-                    <div className="space-y-3 text-sm text-gray-300">
-                        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-gray-400">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]"></span>
-                            Доступ к Google
+                    <div className="space-y-3 text-sm">
+                        <div className="badge" style={{ background: 'var(--success)' }}>
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--success)' }}></span>
+                            <span style={{ color: 'var(--text-primary)' }}>Доступ к Google</span>
                         </div>
-                        <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
-                            <p className="text-xs text-gray-400 mb-2">Быстрые действия:</p>
-                            <ul className="space-y-1.5 text-sm">
-                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Подключить Google Drive</li>
-                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Управление таблицами</li>
-                                <li className="flex items-center gap-2"><span className="text-emerald-300">✓</span> Обучение агенту</li>
+                        <div className="card-glass p-4">
+                            <p className="text-xs font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>⚡ Быстрые действия:</p>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex items-center gap-2"><span>📁</span><span style={{ color: 'var(--text-primary)' }}>Подключить Google Drive</span></li>
+                                <li className="flex items-center gap-2"><span>📊</span><span style={{ color: 'var(--text-primary)' }}>Управление таблицами</span></li>
+                                <li className="flex items-center gap-2"><span>🎓</span><span style={{ color: 'var(--text-primary)' }}>Обучение агенту</span></li>
                             </ul>
                         </div>
                     </div>
                 )}
                 {activeTab === 'git' && (
-                    <div className="text-xs text-gray-400 space-y-2 font-mono">
-                        <div className="flex items-center gap-2 text-gray-300">
-                            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
-                            История Git для {projectId.toUpperCase()}
+                    <div className="text-xs space-y-3 font-mono">
+                        <div className="badge" style={{ background: 'var(--info)' }}>
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--info)' }}></span>
+                            <span style={{ color: 'var(--text-primary)' }}>История Git для {projectId.toUpperCase()}</span>
                         </div>
-                        <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-                            <p>git status — готов к коммиту</p>
-                            <p>Последний коммит: обновление UI</p>
+                        <div className="card-glass p-4">
+                            <p style={{ color: 'var(--text-primary)' }}>📌 git status — готов к коммиту</p>
+                            <p style={{ color: 'var(--text-secondary)' }}>Последний коммит: обновление UI</p>
                         </div>
                     </div>
                 )}
@@ -193,18 +218,18 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
 
             {/* Input Area */}
             {activeTab === 'chat' && (
-                <div className="p-5 border-t border-white/10 bg-white/5 backdrop-blur-xl">
+                <div className="p-5 border-t" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                     <div className="relative">
                         <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                            placeholder={`Задача для ${projectId.toUpperCase()}...`}
-                            className={`w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-opacity-50 focus:ring-1 focus:ring-opacity-30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300 ${theme.border}`}
+                            placeholder={`✍️ Задача для ${projectId.toUpperCase()}...`}
+                            className="input-ios w-full min-h-[90px] resize-none pr-16"
                         />
                         <button
                             onClick={handleSend}
-                            className={`absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 text-white shadow-lg hover:scale-105 ${theme.bg} ${theme.color} border ${theme.border}`}
+                            className="absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 hover:scale-105 button-rounded btn-primary"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />

@@ -27,31 +27,42 @@ export default function TabsBar({
     : tabs;
 
   return (
-    <div className="flex items-center h-12 px-0 overflow-x-auto backdrop-blur-xl w-full">
+    <div className="flex items-center h-12 px-0 overflow-x-auto w-full no-scrollbar">
       {orderedTabs.map((tab, index) => {
         const isActive = activeTabId === tab.id;
-        const scaleClass = isActive ? 'scale-[1.55]' : 'scale-100';
-        const paddingClass = isActive ? 'px-7 py-3' : 'px-4 py-2';
-        const fontClass = isActive ? 'text-[13px]' : 'text-[12px]';
+        const scaleClass = isActive ? 'scale-105' : 'scale-100';
+        const paddingClass = isActive ? 'px-6 py-2.5' : 'px-4 py-2';
+        const fontClass = isActive ? 'text-sm' : 'text-[13px]';
         return (
         <div
           key={tab.id}
           onClick={() => onTabClick(tab.id)}
           className={`
             relative flex items-center gap-2.5 ${paddingClass} cursor-pointer shrink-0
-            transition-all duration-300 ease-out group rounded-xl border ${fontClass} ${scaleClass}
-            ${isActive
-            ? 'text-white border-cyan-400/60 bg-white/5 shadow-[0_12px_35px_rgba(34,211,238,0.2)]'
-            : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'}
+            transition-all duration-300 ease-out group rounded-xl border-2 ${fontClass} ${scaleClass} mr-2
+            ${isActive ? 'card-glass' : ''}
           `}
+          style={{
+            color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+            borderColor: isActive ? 'var(--primary)' : 'transparent',
+            backgroundColor: isActive ? 'var(--surface-glass)' : 'transparent',
+            boxShadow: isActive ? 'var(--shadow-md)' : 'none'
+          }}
+          onMouseEnter={(e) => {
+            if (!isActive) {
+              e.currentTarget.style.backgroundColor = 'var(--surface-glass)';
+              e.currentTarget.style.borderColor = 'var(--border)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isActive) {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.borderColor = 'transparent';
+            }
+          }}
         >
-          {/* Active Tab Glow Effect */}
-          {isActive && (
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/12 to-cyan-500/15 rounded-xl blur-[1px]"></div>
-          )}
-
           <span className="text-base relative z-10">{tab.icon}</span>
-          <span className="text-sm whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis font-medium relative z-10">
+          <span className="whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis font-medium relative z-10">
             {tab.title}
           </span>
           <button
@@ -59,7 +70,18 @@ export default function TabsBar({
               e.stopPropagation();
               onTabClose(tab.id);
             }}
-            className="ml-1 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500/30 rounded-md p-1 relative z-10 hover:scale-110"
+            className="ml-1 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-md p-1 relative z-10 hover:scale-110"
+            style={{
+              color: 'var(--text-secondary)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--accent)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
             aria-label="Close tab"
           >
             <svg
@@ -79,15 +101,30 @@ export default function TabsBar({
       })}
 
       {orderedTabs.length === 0 && (
-        <div className="px-6 py-3 text-sm text-gray-500 font-medium">
-          ✨ Выберите проект из меню выше
+        <div className="px-6 py-3 text-sm font-medium card-glass inline-flex items-center gap-2">
+          <span className="text-base">✨</span>
+          <span style={{ color: 'var(--text-secondary)' }}>Выберите проект из меню выше</span>
         </div>
       )}
 
       {onNewTab && orderedTabs.length > 0 && orderedTabs.length < 10 && (
         <button
           onClick={onNewTab}
-          className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5 transition-all duration-300 shrink-0 ml-1 rounded-lg group"
+          className="px-4 py-2 transition-all duration-300 shrink-0 ml-1 rounded-lg group card-glass border-2"
+          style={{
+            color: 'var(--text-secondary)',
+            borderColor: 'var(--border)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--primary)';
+            e.currentTarget.style.borderColor = 'var(--primary)';
+            e.currentTarget.style.color = 'var(--text-primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--surface-glass)';
+            e.currentTarget.style.borderColor = 'var(--border)';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
           aria-label="New tab"
         >
           <svg

@@ -10,17 +10,34 @@ interface ContentViewerProps {
 export default function ContentViewer({ tab }: ContentViewerProps) {
   if (!tab) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#0a0f1c] via-[#070c16] to-[#060a12] text-gray-300">
-        <div className="text-center space-y-2">
-          <p className="text-sm tracking-[0.2em] uppercase text-gray-500">Нет активных окон</p>
-          <p className="text-lg font-semibold">Откройте вкладку в верхнем меню</p>
+      <div className="flex items-center justify-center h-full" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="text-center space-y-6 card-glass p-12 max-w-md animate-fade-in">
+          <div className="text-7xl mb-4">📋</div>
+          <div className="space-y-3">
+            <p className="text-sm tracking-[0.15em] uppercase font-semibold" style={{ color: 'var(--text-muted)' }}>
+              Нет активных вкладок
+            </p>
+            <p className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Откройте проект из меню выше
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="badge" style={{ background: 'var(--info)' }}>
+              <span>📊</span>
+              <span style={{ color: 'var(--text-primary)' }}>Google Таблицы</span>
+            </div>
+            <div className="badge" style={{ background: 'var(--secondary)' }}>
+              <span>🤖</span>
+              <span style={{ color: 'var(--text-primary)' }}>Чат-боты</span>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-[#090f1a] via-[#070c16] to-[#060a12]">
+    <div className="relative w-full h-full" style={{ backgroundColor: 'var(--surface)' }}>
       <iframe
         key={tab.id}
         src={tab.url}
