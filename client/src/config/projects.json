@@ -52,8 +52,8 @@
           "id": "database",
           "name": "База",
           "type": "sheets",
-          "url": "https://docs.google.com/spreadsheets/d/[MT_SPREADSHEET_ID]/edit",
-          "sheetId": "[MT_SPREADSHEET_ID]",
+          "url": "https://docs.google.com/spreadsheets/d/MT_SPREADS1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw/edit",
+          "sheetId": "1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw",
           "icon": "🌟"
         },
         {

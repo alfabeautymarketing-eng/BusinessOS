@@ -8,6 +8,7 @@ import TabsBar from '@/components/TabsBar';
 import ContentViewer from '@/components/ContentViewer';
 import ScriptRunnerMenu from '@/components/ScriptRunnerMenu';
 import { useTabs } from '@/hooks/useTabs';
+import type { Tab } from '@/hooks/useTabs';
 
 export default function Home() {
   const { tabs, activeTab, activeTabId, openTab, closeTab, switchTab } = useTabs();
@@ -30,7 +31,7 @@ export default function Home() {
   const workspaceActiveTabId = workspaceActiveTab?.id || null;
 
   // When opening a tab, also set the workspace
-  const handleOpenTab = (tab: typeof activeTab) => {
+  const handleOpenTab = (tab: Tab) => {
     if (tab && tab.projectId && tab.projectId !== activeWorkspace) {
       setActiveWorkspace(tab.projectId);
     }
