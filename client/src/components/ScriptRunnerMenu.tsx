@@ -144,7 +144,7 @@ export default function ScriptRunnerMenu() {
                 <div key={`sub-${index}`}>
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-purple-500/50 bg-white/[0.02]' : ''}`}
+                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-cyan-400/50 bg-white/[0.04] shadow-[0_8px_20px_rgba(34,211,238,0.12)]' : ''}`}
                         style={{ paddingLeft: `${(depth + 1) * 12 + 12}px` }}
                     >
                         <svg
@@ -169,7 +169,7 @@ export default function ScriptRunnerMenu() {
         return (
             <button
                 key={`item-${index}`}
-                className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent hover:border-l-purple-500/30`}
+                className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-gray-200 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent hover:border-l-purple-500/30 hover:shadow-[0_6px_18px_rgba(168,85,247,0.18)]`}
                 style={{ paddingLeft: `${(depth + 1) * 12 + 24}px` }}
                 onClick={() => console.log(`Running: ${item.fn}`)}
             >
@@ -180,11 +180,14 @@ export default function ScriptRunnerMenu() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#121212]/50 text-gray-300 border-r border-white/5 w-full backdrop-blur-xl select-none">
+        <div className="flex flex-col h-full text-gray-200 w-full select-none">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#121212]">
-                <h2 className="text-[13px] font-medium text-gray-400 pl-1">ФУНКЦИИ</h2>
-                <span className="text-[10px] bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 backdrop-blur-xl">
+                <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.7)]" />
+                    <h2 className="text-[13px] font-semibold tracking-[0.18em] text-gray-100 uppercase">Функции</h2>
+                </div>
+                <span className="text-[10px] bg-purple-500/15 text-purple-200 px-2 py-0.5 rounded-md border border-purple-500/30 shadow-[0_8px_30px_rgba(168,85,247,0.2)]">
                     v2.2
                 </span>
             </div>
@@ -197,7 +200,8 @@ export default function ScriptRunnerMenu() {
                         <div key={section.id} className="mb-0.5">
                             <button
                                 onClick={() => toggleSection(section.id)}
-                                className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-purple-500 bg-white/[0.02] text-gray-200' : ''}`}
+                                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-2xl mr-2 border-l-2 border-transparent
+                                ${isExpanded ? 'border-l-cyan-400/70 bg-white/[0.04] text-gray-100 shadow-[0_10px_30px_rgba(34,211,238,0.15)]' : ''}`}
                             >
                                 <svg
                                     className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
@@ -230,9 +234,9 @@ export default function ScriptRunnerMenu() {
             </div>
 
             {/* Status / Footer */}
-            <div className="px-4 py-3 border-t border-white/5 bg-[#151515]">
-                <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <div className="px-4 py-4 border-t border-white/10 bg-white/5 backdrop-blur-xl">
+                <div className="flex items-center gap-2 text-[11px] text-emerald-200 font-semibold">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] animate-pulse"></div>
                     <span>Система готова</span>
                 </div>
             </div>

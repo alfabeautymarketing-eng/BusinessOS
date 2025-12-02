@@ -9,21 +9,21 @@ export default function AgentSidebar() {
     const [input, setInput] = useState('');
 
     return (
-        <div className="flex flex-col h-full bg-[#121212]/50 text-gray-300 text-sm backdrop-blur-xl">
+        <div className="flex flex-col h-full text-gray-200 text-sm">
             {/* Tabs */}
-            <div className="flex border-b border-white/5 bg-[#121212]">
+            <div className="flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
                 {['чат', 'логи', 'git'].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab as Tab)}
-                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-wider transition-all duration-300
+                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300
               ${activeTab === tab
-                                ? 'text-purple-400 bg-purple-500/5'
+                                ? 'text-cyan-200 bg-cyan-500/10 shadow-[0_10px_30px_rgba(34,211,238,0.16)]'
                                 : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}
             `}
                     >
                         {activeTab === tab && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"></div>
+                            <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 rounded-full"></div>
                         )}
                         {tab}
                     </button>
@@ -31,26 +31,26 @@ export default function AgentSidebar() {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
                 {activeTab === 'chat' && (
                     <>
                         {/* Example Messages */}
                         <div className="flex flex-col space-y-1.5 animate-in slide-in-from-right duration-300">
                             <span className="text-xs text-gray-500 ml-auto font-semibold">Пользователь</span>
-                            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-2xl rounded-tr-md self-end max-w-[90%] border border-gray-700/50 shadow-lg">
+                            <div className="bg-gradient-to-br from-[#111827] to-[#0b1220] p-4 rounded-2xl rounded-tr-md self-end max-w-[90%] border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
                                 <p className="text-gray-200">Если <span className="text-purple-400 bg-purple-900/40 px-2 py-0.5 rounded-md font-semibold">#Column:Date</span> пустая, ставь сегодняшнюю.</p>
                             </div>
                         </div>
 
                         <div className="flex flex-col space-y-1.5 animate-in slide-in-from-left duration-300">
-                            <span className="text-xs text-purple-400 font-semibold">Агент</span>
-                            <div className="bg-gradient-to-br from-purple-900/30 to-purple-900/10 p-4 rounded-2xl rounded-tl-md self-start max-w-[90%] border border-purple-500/30 shadow-lg shadow-purple-500/10">
-                                <p className="mb-3 text-gray-200">Готово. Скрипт <code className="text-purple-300 font-mono text-sm">autoDate.gs</code> задеплоен. Триггер <code className="text-blue-300 font-mono text-sm">onEdit</code> установлен.</p>
+                            <span className="text-xs text-purple-300 font-semibold">Агент</span>
+                            <div className="bg-gradient-to-br from-purple-900/25 via-blue-900/15 to-purple-900/20 p-4 rounded-2xl rounded-tl-md self-start max-w-[90%] border border-purple-500/30 shadow-[0_15px_45px_rgba(168,85,247,0.18)]">
+                                <p className="mb-3 text-gray-200">Готово. Скрипт <code className="text-purple-200 font-mono text-sm">autoDate.gs</code> задеплоен. Триггер <code className="text-blue-200 font-mono text-sm">onEdit</code> установлен.</p>
                                 {/* Code Snippet Card */}
-                                <div className="bg-[#0d0d0d] p-3 rounded-lg border border-purple-500/20 text-xs font-mono text-gray-400 shadow-inner">
+                                <div className="bg-[#0a0f1c] p-3 rounded-lg border border-purple-500/30 text-xs font-mono text-gray-300 shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
                                     <div className="flex justify-between items-center mb-2 border-b border-purple-500/20 pb-2">
-                                        <span className="text-purple-300 font-semibold">autoDate.gs</span>
-                                        <span className="flex items-center gap-1.5 text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/30">
+                                        <span className="text-purple-200 font-semibold">autoDate.gs</span>
+                                        <span className="flex items-center gap-1.5 text-[10px] text-green-300 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/30">
                                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                             Active
                                         </span>
@@ -73,25 +73,25 @@ export default function AgentSidebar() {
             </div>
 
             {/* Input Area */}
-            <div className="p-5 border-t border-white/5 bg-[#151515]">
+            <div className="p-5 border-t border-white/10 bg-white/5 backdrop-blur-xl">
                 <div className="relative">
                     <textarea
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Опишите задачу для агента..."
-                        className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-inner transition-all duration-300"
+                        className="w-full bg-[#0c1322] border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-500/30 min-h-[90px] resize-none text-gray-200 placeholder-gray-600 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-all duration-300"
                     />
-                    <button className="absolute bottom-4 right-4 p-2 bg-purple-600 rounded-lg hover:bg-purple-500 transition-all duration-300 text-white shadow-lg shadow-purple-500/20 hover:scale-105">
+                    <button className="absolute bottom-4 right-4 p-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl hover:from-cyan-400 hover:to-purple-400 transition-all duration-300 text-white shadow-[0_15px_35px_rgba(34,211,238,0.25)] hover:scale-105">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
-                <div className="mt-3 flex space-x-2 overflow-x-auto pb-1">
+                <div className="mt-3 flex space-x-2 overflow-x-auto pb-1 items-center text-[11px]">
                     {/* Quick Actions / Context Chips */}
                     <span className="text-[10px] text-gray-500 uppercase tracking-wider py-1 font-semibold">Контекст:</span>
-                    <button className="px-3 py-1 bg-[#252525] rounded-lg text-xs text-gray-400 hover:text-gray-200 hover:bg-[#303030] border border-white/5 hover:border-white/10 transition-all duration-200">Выделение</button>
-                    <button className="px-3 py-1 bg-[#252525] rounded-lg text-xs text-gray-400 hover:text-gray-200 hover:bg-[#303030] border border-white/5 hover:border-white/10 transition-all duration-200">Активный лист</button>
+                    <button className="px-3 py-1 bg-white/5 rounded-lg text-xs text-gray-300 hover:text-white hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 transition-all duration-200">Выделение</button>
+                    <button className="px-3 py-1 bg-white/5 rounded-lg text-xs text-gray-300 hover:text-white hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 transition-all duration-200">Активный лист</button>
                 </div>
             </div>
         </div>

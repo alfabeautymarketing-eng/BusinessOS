@@ -19,24 +19,24 @@ export default function TabsBar({
   onNewTab,
 }: TabsBarProps) {
   return (
-    <div className="flex items-center h-11 bg-gradient-to-b from-[#1c1c1c] to-[#171717] border-b border-white/5 overflow-x-auto backdrop-blur-xl shadow-lg">
+    <div className="flex items-center h-12 px-2 overflow-x-auto backdrop-blur-xl">
       {tabs.map((tab) => (
         <div
           key={tab.id}
           onClick={() => onTabClick(tab.id)}
           className={`
-            relative flex items-center gap-2.5 px-5 py-2.5 cursor-pointer shrink-0
-            transition-all duration-300 ease-out group
+            relative flex items-center gap-2.5 px-4 py-2.5 cursor-pointer shrink-0
+            transition-all duration-300 ease-out group rounded-xl border
             ${
               activeTabId === tab.id
-                ? 'bg-gradient-to-b from-[#252525] to-[#1a1a1a] text-white shadow-xl border-t-2 border-t-blue-500/80'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                ? 'text-white border-cyan-400/60 bg-white/5 shadow-[0_12px_35px_rgba(34,211,238,0.2)]'
+                : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
             }
           `}
         >
           {/* Active Tab Glow Effect */}
           {activeTabId === tab.id && (
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 rounded-t-lg"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/12 to-cyan-500/15 rounded-xl blur-[1px]"></div>
           )}
 
           <span className="text-base relative z-10">{tab.icon}</span>
