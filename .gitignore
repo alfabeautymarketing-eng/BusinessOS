@@ -1,0 +1,21 @@
+# System
+.DS_Store
+*.log
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Secrets
+.env
+credentials.json
+*.pem
+*.key

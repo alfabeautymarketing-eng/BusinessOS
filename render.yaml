@@ -1,0 +1,28 @@
+services:
+  # Frontend Service
+  - type: web
+    name: business-os-frontend
+    env: node
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    startCommand: cd client && npm start
+    directory: client
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # Backend Service
+  - type: web
+    name: business-os-backend
+    env: python
+    plan: free
+    buildCommand: cd server && pip install -r requirements.txt
+    startCommand: cd server && uvicorn main:app --host 0.0.0.0 --port $PORT
+    directory: server
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      # You must upload credentials.json as a 'Secret File' in Render dashboard
+      # and mount it to /etc/secrets/google-creds
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/google-creds
