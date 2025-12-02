@@ -2,25 +2,25 @@
   "projects": [
     {
       "id": "sk",
-      "name": "Скин-Косметика",
-      "shortName": "SK",
+      "name": "SkinClinic",
+      "shortName": "SС",
       "color": "#8B5CF6",
-      "icon": "💜",
+      "icon": "🟣",
       "links": [
         {
           "id": "database",
-          "name": "База",
+          "name": "База SK",
           "type": "sheets",
           "url": "https://docs.google.com/spreadsheets/d/[SK_SPREADSHEET_ID]/edit",
-          "sheetId": "[SK_SPREADSHEET_ID]",
+          "sheetId": "1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw",
           "icon": "📊"
         },
         {
           "id": "source-docs",
           "name": "Исходные документы",
-          "type": "drive-folder",
-          "url": "https://drive.google.com/drive/folders/[SK_FOLDER_ID]",
-          "folderId": "[SK_FOLDER_ID]",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/[SK_SPREADSHEET_ID]/edit",
+          "sheetId": "1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs",
           "icon": "📁"
         },
         {

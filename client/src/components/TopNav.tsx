@@ -115,9 +115,8 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
                 <span className="text-base">{project.icon}</span>
                 <span>{project.shortName}</span>
                 <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-300 ${
-                    openDropdown === project.id ? 'rotate-180' : ''
-                  }`}
+                  className={`w-3.5 h-3.5 transition-transform duration-300 ${openDropdown === project.id ? 'rotate-180' : ''
+                    }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -177,7 +176,7 @@ export default function TopNav({ onOpenTab }: TopNavProps) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
           </span>
-          <span className="text-xs text-green-400 font-semibold">System Online</span>
+          <span className="text-xs text-green-400 font-semibold">Система в сети</span>
         </div>
         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/40 flex items-center justify-center text-sm font-bold text-purple-300 hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 cursor-pointer">
           A

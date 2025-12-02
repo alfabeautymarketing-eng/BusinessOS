@@ -1,65 +1,239 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
-// Mock data for scripts - in a real app this would come from an API or config
-const SCRIPTS = [
-    { id: 'deploy-render', label: 'Deploy to Render', icon: '🚀', description: 'Trigger deployment to Render.com' },
-    { id: 'git-push', label: 'Git Push', icon: '🐙', description: 'Push changes to GitHub' },
-    { id: 'sync-sheets', label: 'Sync Google Sheets', icon: '📊', description: 'Pull latest data from Sheets' },
-    { id: 'build-client', label: 'Build Client', icon: '⚡', description: 'Run next build' },
-    { id: 'lint', label: 'Lint Code', icon: '🧹', description: 'Check code style and formatting' },
+// Types for the menu structure
+interface MenuItem {
+    id?: string;
+    label?: string;
+    fn?: string;
+    separator?: boolean;
+    submenu?: string;
+    items?: MenuItem[];
+    icon?: string;
+}
+
+interface MenuSection {
+    id: string;
+    title: string;
+    items: MenuItem[];
+}
+
+// Menu Data Configuration (Mirrors 01Config.js)
+const MENU_DATA: MenuSection[] = [
+    {
+        id: 'ORDER',
+        title: 'Заказ',
+        items: [
+            { id: 'MAIN', label: 'Обработка Б/З поставщик', fn: 'processSsPriceSheet', icon: '📝' },
+            { id: 'STOCKS', label: 'Загрузить остатки', fn: 'loadSsStockData', icon: '📥' },
+            { id: 'NEW_PRICE_YEAR', label: 'New год для динамика', fn: 'addNewYearColumnsToPriceDynamics', icon: '📅' },
+        ]
+    },
+    {
+        id: 'ORDER_STAGES',
+        title: 'Стадии по заказ',
+        items: [
+            { id: 'SORT_MANUFACTURER', label: 'Сортировать по производителю', fn: 'sortSsOrderByManufacturer', icon: '🏭' },
+            { id: 'SORT_PRICE', label: 'Сортировать по прайсу', fn: 'sortSsOrderByPrice', icon: '💰' },
+            { separator: true },
+            { id: 'STAGE_ALL', label: '1. Все данные', fn: 'showAllOrderData', icon: '1️⃣' },
+            { id: 'STAGE_ORDER', label: '2. Заказ', fn: 'showOrderStage', icon: '2️⃣' },
+            { id: 'STAGE_PROMOTIONS', label: '3. Акции', fn: 'showPromotionsStage', icon: '3️⃣' },
+            { id: 'STAGE_SET', label: '4. Набор', fn: 'showSetStage', icon: '4️⃣' },
+            { id: 'STAGE_PRICE', label: '5. Прайс', fn: 'showPriceStage', icon: '5️⃣' },
+        ]
+    },
+    {
+        id: 'EXPORT',
+        title: 'Выгрузка',
+        items: [
+            { label: 'Выгрузить Акции', fn: 'exportPromotions', icon: '📤' },
+            { label: 'Выгрузить Наборы', fn: 'exportSets', icon: '📦' },
+        ]
+    },
+    {
+        id: 'SUPPLY',
+        title: 'Поставка',
+        items: [
+            { label: "Форматировать лист 'Ордер'", fn: 'formatOrderSheet', icon: '📋' },
+            { separator: true },
+            { label: "1. Создать лист 'Для инвойса'", fn: 'createFullInvoice', icon: '1️⃣' },
+            { label: "2. Собрать документы", fn: 'collectAndCopyDocuments', icon: '2️⃣' },
+        ]
+    },
+    {
+        id: 'CERTIFICATION',
+        title: 'Сертификация',
+        items: [
+            { label: 'Лист новинки', fn: 'createNewsSheetFromCertification', icon: '🆕' },
+            { separator: true },
+            { label: 'Создать заявку протоколы (353пп)', fn: 'generateProtocols_353pp', icon: '📄' },
+            { label: 'Создать заявку ДС (353пп)', fn: 'generateDsLayouts_353pp', icon: '📑' },
+            { label: 'Собрать документы для заявки (353пп)', fn: 'structureDocuments_353pp', icon: '🗂️' },
+            { separator: true },
+            { label: 'Посчитать спирты', fn: 'calculateAndAssignSpiritNumbers', icon: '🧪' },
+            { label: 'Создать Макеты спирты', fn: 'generateSpiritProtocols', icon: '🖼️' },
+            { separator: true },
+            { label: 'Пересчитать каскады (Сертификация)', fn: 'runManualCascadeOnCertification', icon: '🔄' },
+        ]
+    },
+    {
+        id: 'SYNC',
+        title: 'Синхронизация',
+        items: [
+            { label: 'Настроить правила', fn: 'showSyncConfigDialog', icon: '🔧' },
+            { label: 'Управление внешними документами', fn: 'showExternalDocManagerDialog', icon: '📂' },
+            { separator: true },
+            {
+                submenu: 'Операции с артикулами',
+                items: [
+                    { label: 'Добавить артикул', fn: 'addArticleManually', icon: '➕' },
+                    { label: 'Удалить выбранные строки', fn: 'deleteSelectedRowsWithSync', icon: '🗑️' },
+                    { separator: true },
+                    { label: 'Синхронизировать строку', fn: 'syncSelectedRow', icon: '🔄' },
+                    { label: 'Синхронизировать ВСЁ', fn: 'runFullSync', icon: '🔁' },
+                ]
+            },
+            { separator: true },
+            { label: 'Установить триггеры', fn: 'setupTriggers', icon: '⏰' },
+            { separator: true },
+            {
+                submenu: 'Журнал',
+                items: [
+                    { label: 'Очистить (оставить 100)', fn: 'quickCleanLogSheet', icon: '🧹' },
+                    { label: 'Пересоздать журнал', fn: 'recreateLogSheet', icon: '♻️' },
+                ]
+            },
+        ]
+    }
 ];
 
 export default function ScriptRunnerMenu() {
+    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['ORDER', 'ORDER_STAGES']));
+    const [expandedSubmenus, setExpandedSubmenus] = useState<Set<string>>(new Set());
+
+    const toggleSection = (id: string) => {
+        const newExpanded = new Set(expandedSections);
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id);
+        } else {
+            newExpanded.add(id);
+        }
+        setExpandedSections(newExpanded);
+    };
+
+    const toggleSubmenu = (id: string) => {
+        const newExpanded = new Set(expandedSubmenus);
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id);
+        } else {
+            newExpanded.add(id);
+        }
+        setExpandedSubmenus(newExpanded);
+    };
+
+    const renderMenuItem = (item: MenuItem, index: number, depth: number = 0) => {
+        if (item.separator) {
+            return <div key={`sep-${index}`} className="h-px bg-white/5 my-1 mx-4" />;
+        }
+
+        if (item.submenu && item.items) {
+            const isExpanded = expandedSubmenus.has(item.submenu);
+            return (
+                <div key={`sub-${index}`}>
+                    <button
+                        onClick={() => toggleSubmenu(item.submenu!)}
+                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-purple-500/50 bg-white/[0.02]' : ''}`}
+                        style={{ paddingLeft: `${(depth + 1) * 12 + 12}px` }}
+                    >
+                        <svg
+                            className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                            style={{ width: '12px', height: '12px' }}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                        <span className="truncate flex-1 text-left">{item.submenu}</span>
+                    </button>
+                    {isExpanded && (
+                        <div className="mt-0.5">
+                            {item.items.map((subItem, subIndex) => renderMenuItem(subItem, subIndex, depth + 1))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        return (
+            <button
+                key={`item-${index}`}
+                className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-gray-300 hover:bg-white/5 hover:text-white transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent hover:border-l-purple-500/30`}
+                style={{ paddingLeft: `${(depth + 1) * 12 + 24}px` }}
+                onClick={() => console.log(`Running: ${item.fn}`)}
+            >
+                <span className="text-sm opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0 w-4 text-center">{item.icon || '🔹'}</span>
+                <span className="truncate">{item.label}</span>
+            </button>
+        );
+    };
+
     return (
-        <div className="flex flex-col h-full bg-gradient-to-b from-[#1a1a1a] to-[#141414] text-gray-300 border-l border-white/5 w-full">
+        <div className="flex flex-col h-full bg-[#121212]/50 text-gray-300 border-r border-white/5 w-full backdrop-blur-xl select-none">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-gradient-to-r from-[#1c1c1c] to-[#181818]">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-gray-400">Scripts</h2>
-                <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20">
-                    {SCRIPTS.length} Available
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#121212]">
+                <h2 className="text-[13px] font-medium text-gray-400 pl-1">ФУНКЦИИ</h2>
+                <span className="text-[10px] bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20">
+                    v2.2
                 </span>
             </div>
 
-            {/* Script List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                {SCRIPTS.map((script) => (
-                    <button
-                        key={script.id}
-                        className="group w-full flex items-start gap-3 p-3 rounded-xl bg-gradient-to-br from-[#222] to-[#1a1a1a] border border-white/5 hover:border-purple-500/30 hover:from-[#2a2a2a] hover:to-[#202020] transition-all duration-300 text-left shadow-lg hover:shadow-purple-500/10 hover:-translate-y-0.5"
-                        onClick={() => console.log(`Running script: ${script.id}`)}
-                    >
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#151515] border border-white/5 group-hover:border-purple-500/30 group-hover:bg-purple-500/10 transition-colors duration-300 text-lg">
-                            {script.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-0.5">
-                                <span className="text-sm font-medium text-gray-200 group-hover:text-purple-300 transition-colors">
-                                    {script.label}
-                                </span>
+            {/* Script Tree */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
+                {MENU_DATA.map((section) => {
+                    const isExpanded = expandedSections.has(section.id);
+                    return (
+                        <div key={section.id} className="mb-0.5">
+                            <button
+                                onClick={() => toggleSection(section.id)}
+                                className={`w-full flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-colors duration-150 rounded-r-full mr-2 border-l-2 border-transparent ${isExpanded ? 'border-l-purple-500 bg-white/[0.02] text-gray-200' : ''}`}
+                            >
                                 <svg
-                                    className="w-3 h-3 text-gray-600 group-hover:text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0.5"
+                                    className={`w-3 h-3 flex-shrink-0 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                                    style={{ width: '12px', height: '12px' }}
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                                <svg
+                                    className="w-4 h-4 flex-shrink-0 text-gray-500"
+                                    style={{ width: '16px', height: '16px' }}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                 </svg>
-                            </div>
-                            <p className="text-[11px] text-gray-500 group-hover:text-gray-400 truncate transition-colors">
-                                {script.description}
-                            </p>
+                                <span className="truncate">{section.title}</span>
+                            </button>
+
+                            {isExpanded && (
+                                <div className="mt-0.5">
+                                    {section.items.map((item, index) => renderMenuItem(item, index))}
+                                </div>
+                            )}
                         </div>
-                    </button>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Status / Footer */}
-            <div className="p-4 border-t border-white/5 bg-[#151515]">
-                <div className="flex items-center gap-2 text-[10px] text-gray-500">
+            <div className="px-4 py-3 border-t border-white/5 bg-[#151515]">
+                <div className="flex items-center gap-2 text-[11px] text-gray-500">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                    <span>System Ready</span>
+                    <span>Система готова</span>
                 </div>
             </div>
         </div>
