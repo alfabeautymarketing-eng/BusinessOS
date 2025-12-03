@@ -82,9 +82,9 @@ export default function TopNav({
       {/* Brand */}
       <div className="flex items-center gap-2">
         <img
-          src="/careagent-logo.png"
+          src="/logo-agent.png"
           alt="CareAgent"
-          className="w-9 h-9 rounded-lg shadow-sm object-contain border border-gray-200 bg-white"
+          className="w-8 h-8 rounded-lg shadow-sm object-cover border border-gray-200 bg-white"
         />
         <div className="flex flex-col leading-tight">
           <span className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">CareAgent</span>
