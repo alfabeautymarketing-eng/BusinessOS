@@ -39,10 +39,18 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
 
     const theme = PROJECT_THEMES[projectId] || PROJECT_THEMES.default;
 
-    const handleSend = () => {
+    // Project Configuration Mapping
+    const PROJECT_CONFIG: Record<string, { sheetId: string; sheetName: string }> = {
+        sk: { sheetId: '1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw', sheetName: 'Sheet1' }, // Defaulting to Sheet1
+        mt: { sheetId: '1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw', sheetName: 'Sheet1' },
+        ss: { sheetId: 'placeholder_ss_id', sheetName: 'Sheet1' },
+        default: { sheetId: 'placeholder_default_id', sheetName: 'Sheet1' }
+    };
+
+    const handleSend = async () => {
         if (!input.trim()) return;
 
-        const newMessage: Message = {
+        const userMessage: Message = {
             id: Date.now().toString(),
             sender: 'user',
             text: input,
@@ -51,24 +59,65 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
 
         setChats(prev => ({
             ...prev,
-            [projectId]: [...(prev[projectId] || []), newMessage]
+            [projectId]: [...(prev[projectId] || []), userMessage]
         }));
 
         setInput('');
 
-        // Mock Agent Response
-        setTimeout(() => {
-            const response: Message = {
+        // Real Agent API Call
+        try {
+            const config = PROJECT_CONFIG[projectId] || PROJECT_CONFIG.default;
+
+            const response = await fetch('http://localhost:8000/api/agents/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: userMessage.text,
+                    spreadsheet_id: config.sheetId,
+                    sheet_name: config.sheetName,
+                    context: {}
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                const agentMessage: Message = {
+                    id: (Date.now() + 1).toString(),
+                    sender: 'agent',
+                    text: data.message, // Display the natural language response
+                    timestamp: Date.now()
+                };
+                setChats(prev => ({
+                    ...prev,
+                    [projectId]: [...(prev[projectId] || []), agentMessage]
+                }));
+            } else {
+                const errorMessage: Message = {
+                    id: (Date.now() + 1).toString(),
+                    sender: 'agent',
+                    text: `❌ Ошибка: ${data.message}`,
+                    timestamp: Date.now()
+                };
+                setChats(prev => ({
+                    ...prev,
+                    [projectId]: [...(prev[projectId] || []), errorMessage]
+                }));
+            }
+
+        } catch (error) {
+            console.error('Agent API Error:', error);
+            const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 sender: 'agent',
-                text: `[${projectId.toUpperCase()}] Принято. Анализирую запрос...`,
+                text: '❌ Ошибка соединения с сервером.',
                 timestamp: Date.now()
             };
             setChats(prev => ({
                 ...prev,
-                [projectId]: [...(prev[projectId] || []), response]
+                [projectId]: [...(prev[projectId] || []), errorMessage]
             }));
-        }, 1000);
+        }
     };
 
     const visibleTabs: { id: Tab; label: string }[] = mode === 'agent'

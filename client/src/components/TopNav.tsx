@@ -42,7 +42,9 @@ interface Project {
 
 export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWorkspace, onWorkspaceChange }: TopNavProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openDocs, setOpenDocs] = useState<string | null>(null);
   const dropdownRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const docsRef = useRef<HTMLDivElement | null>(null);
 
   const projects = projectsConfig.projects as Project[];
   const workspaceProjects = projects.filter((p) => p.type !== 'internal-app');
@@ -75,11 +77,17 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
           setOpenDropdown(null);
         }
       }
+      if (openDocs) {
+        const docsEl = docsRef.current;
+        if (docsEl && !docsEl.contains(event.target as Node)) {
+          setOpenDocs(null);
+        }
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openDropdown]);
+  }, [openDropdown, openDocs]);
 
   return (
     <div className="relative flex items-center justify-between w-full h-full px-8 border-b border-gray-200/50 shadow-sm backdrop-blur-md bg-white/30 overflow-visible">
@@ -102,11 +110,12 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
           }
           const isActive = project.id === activeWorkspace;
           const isOpen = openDropdown === project.id;
+          const hasLinks = (project.links?.length || 0) > 0;
 
           return (
-            <div key={project.id} className="relative" ref={(el) => { if (el) dropdownRefs.current.set(project.id, el); }}>
+            <div key={project.id} className="relative flex items-center gap-2" ref={(el) => { if (el) dropdownRefs.current.set(project.id, el); }}>
               <button
-                onClick={() => handleWorkspaceClick(project.id)}
+                onClick={() => onWorkspaceChange(project.id)}
                 className={`flex items-center w-60 px-4 py-3 rounded-full transition-all duration-300
                   ${isActive ? 'shadow-lg scale-105' : 'hover:bg-gray-100/50 border border-gray-200/30'}`}
                 style={{
@@ -114,9 +123,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
                   color: isActive ? '#fff' : 'var(--text-primary)',
                 }}
               >
-                {/* Content Container with Left Padding (3 spaces approx) */}
-                <div className="flex items-center gap-3 pl-4 flex-1">
-                  {/* Circle Icon (Visible only when inactive) */}
+                <div className="flex items-center gap-6 pl-4 flex-1">
                   {!isActive && (
                     <span
                       className="w-4 h-4 rounded-full shrink-0"
@@ -126,34 +133,45 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
                       }}
                     />
                   )}
-
-                  {/* Icon (Visible only when active) */}
                   {isActive && <span className="text-2xl shrink-0">{project.icon}</span>}
-
                   <span className={`text-xl truncate ${isActive ? 'font-bold' : 'font-medium'}`}>
                     {project.name}
                   </span>
                 </div>
+              </button>
 
-                {/* Dropdown Arrow Trigger */}
-                <div
-                  className={`p-1 rounded-full transition-colors ${isActive ? 'hover:bg-white/20' : 'hover:bg-gray-200/50'}`}
+              <button
+                className="w-10 h-10 rounded-full border border-gray-300/60 bg-white/70 hover:bg-white transition-colors flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenDropdown(isOpen ? null : project.id);
+                  setOpenDocs(null);
+                }}
+                aria-label="Открыть список ссылок"
+              >
+                <svg
+                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{ opacity: isActive ? 0.9 : 0.5 }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isActive && hasLinks && (
+                <button
+                  className="px-3 py-2 rounded-full bg-white/70 border border-white/80 text-sm font-semibold text-gray-800 hover:bg-white transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setOpenDropdown(isOpen ? null : project.id);
+                    setOpenDocs(openDocs === project.id ? null : project.id);
+                    setOpenDropdown(null);
                   }}
                 >
-                  <svg
-                    className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ opacity: isActive ? 0.9 : 0.5 }}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </button>
+                  📂 Документы
+                </button>
+              )}
 
               {/* Dropdown Menu */}
               {isOpen && (
@@ -194,6 +212,39 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
         {/* Spacer equal to one button between first and second */}
         <div className="w-60 h-[52px]" aria-hidden="true" />
       </div>
+
+      {openDocs && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none">
+          <div
+            ref={docsRef}
+            className="pointer-events-auto w-72 rounded-2xl border shadow-xl p-3"
+            style={{
+              background: 'var(--surface-glass)',
+              backdropFilter: 'blur(18px)',
+              borderColor: 'var(--border)',
+              boxShadow: 'var(--shadow-xl)'
+            }}
+          >
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] mb-2 text-gray-600">Документы</div>
+            {projects.find((p) => p.id === openDocs)?.links?.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/40 transition-colors text-sm font-medium text-gray-800"
+                onClick={() => setOpenDocs(null)}
+              >
+                <span className="text-lg">{link.icon}</span>
+                <span>{link.name}</span>
+              </a>
+            ))}
+            {(!projects.find((p) => p.id === openDocs)?.links || (projects.find((p) => p.id === openDocs)?.links?.length || 0) === 0) && (
+              <div className="px-3 py-2 text-sm text-gray-500">Нет ссылок</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Right: Layout Controls & Status */}
       <div className="flex items-center space-x-8 z-10">
