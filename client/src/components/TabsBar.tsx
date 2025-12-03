@@ -56,8 +56,8 @@ export default function TabsBar({
               borderColor: isActive ? palette.border : 'var(--border)'
             }}
           >
-            <span className="w-7 h-7 flex items-center justify-center text-[15px] translate-y-[1px] flex-shrink-0">{tab.icon || '📄'}</span>
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[13px] leading-tight flex-1">
+            <span className="w-6 h-6 flex items-center justify-center text-[14px] flex-shrink-0 overflow-hidden">{tab.icon || '📄'}</span>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[13px] leading-tight flex-1 text-center">
               {tab.title}
             </span>
             <button
