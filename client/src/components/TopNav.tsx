@@ -80,11 +80,14 @@ export default function TopNav({
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50 relative overflow-visible">
       {/* Brand */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         <img
           src="/logo-agent.png"
           alt="CareAgent"
-          className="w-8 h-8 rounded-lg shadow-sm object-cover border border-gray-200 bg-white"
+          width={38}
+          height={38}
+          className="w-[38px] h-[38px] rounded-full shadow-sm object-cover border border-gray-200 bg-white overflow-hidden flex-shrink-0"
+          style={{ objectPosition: 'center' }}
         />
         <div className="flex flex-col leading-tight">
           <span className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">CareAgent</span>

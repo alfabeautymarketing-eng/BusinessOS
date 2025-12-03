@@ -45,8 +45,20 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
             window.removeEventListener('mouseup', handleMouseUp);
             document.body.style.userSelect = '';
             document.body.style.cursor = '';
+            document.body.style.webkitUserSelect = '';
         };
     }, [resizing]);
+
+    const startResize = (target: ResizeTarget, clientX: number, currentWidth: number) => {
+        setResizing(target);
+        resizeRef.current = { startX: clientX, startWidth: currentWidth };
+    };
+
+    const handleResizeStart = (target: ResizeTarget, e: React.MouseEvent | React.TouchEvent, currentWidth: number) => {
+        e.preventDefault();
+        const point = 'touches' in e ? e.touches[0] : e;
+        startResize(target, point.clientX, currentWidth);
+    };
 
     return (
         <div className="relative min-h-screen w-screen overflow-hidden font-sans" style={{
@@ -74,15 +86,12 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                                 {sidebar}
                             </aside>
                             <div
-                                className="absolute top-0 right-[-10px] h-full w-5 cursor-col-resize flex items-center justify-center group select-none"
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    setResizing('left');
-                                    resizeRef.current = { startX: e.clientX, startWidth: leftWidth };
-                                }}
+                                className="absolute top-0 right-[-6px] h-full w-3 md:w-4 cursor-col-resize flex items-center justify-center group select-none z-20"
+                                onMouseDown={(e) => handleResizeStart('left', e, leftWidth)}
+                                onTouchStart={(e) => handleResizeStart('left', e, leftWidth)}
                                 title="Изменить ширину панели"
                             >
-                                <span className="h-12 w-[2px] rounded-full bg-white/20 group-hover:bg-white/70 transition-colors" />
+                                <span className="h-16 w-[6px] rounded-full bg-gray-300/40 group-hover:bg-gray-400/70 group-active:bg-gray-500 transition-all shadow-sm" />
                             </div>
                         </div>
                     )}
@@ -94,15 +103,12 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                     {showRightSidebar && rightSidebar && (
                         <div className="relative flex h-full" style={{ width: `${rightWidth}px` }}>
                             <div
-                                className="absolute top-0 left-[-10px] h-full w-5 cursor-col-resize flex items-center justify-center group select-none"
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    setResizing('right');
-                                    resizeRef.current = { startX: e.clientX, startWidth: rightWidth };
-                                }}
+                                className="absolute top-0 left-[-6px] h-full w-3 md:w-4 cursor-col-resize flex items-center justify-center group select-none z-20"
+                                onMouseDown={(e) => handleResizeStart('right', e, rightWidth)}
+                                onTouchStart={(e) => handleResizeStart('right', e, rightWidth)}
                                 title="Изменить ширину панели"
                             >
-                                <span className="h-12 w-[2px] rounded-full bg-white/20 group-hover:bg-white/70 transition-colors" />
+                                <span className="h-16 w-[6px] rounded-full bg-gray-300/40 group-hover:bg-gray-400/70 group-active:bg-gray-500 transition-all shadow-sm" />
                             </div>
                             <aside className="w-full card-static flex flex-col overflow-hidden" style={{ borderRadius: 'var(--radius-lg)' }}>
                                 {rightSidebar}

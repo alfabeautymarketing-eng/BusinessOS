@@ -3,6 +3,7 @@
 import React from 'react';
 import type { Tab } from '../hooks/useTabs';
 import { X } from 'lucide-react';
+import projectsConfig from '../config/projects.json';
 
 interface TabsBarProps {
   tabs: Tab[];
@@ -12,6 +13,16 @@ interface TabsBarProps {
   onNewTab?: () => void;
 }
 
+const projectColorMap = Object.fromEntries(
+  (projectsConfig.projects || []).map((p: any) => [p.id, p.color])
+);
+
+const pastelForProject = (projectId?: string) => {
+  const base = projectId ? projectColorMap[projectId] : undefined;
+  if (!base) return { bg: 'rgba(255,255,255,0.9)', border: 'var(--border)' };
+  return { bg: `${base}20`, border: `${base}80` }; // light pastel with alpha
+};
+
 export default function TabsBar({
   tabs,
   activeTabId,
@@ -20,28 +31,30 @@ export default function TabsBar({
   onNewTab,
 }: TabsBarProps) {
   return (
-    <div className="flex items-end h-10 px-4 w-full border-b border-[var(--border)] gap-1 bg-[var(--background)]">
+    <div className="flex items-end h-12 px-4 w-full border-b border-[var(--border)] gap-2 bg-[var(--background)]">
       {tabs.map((tab) => {
         const isActive = activeTabId === tab.id;
+        const palette = pastelForProject(tab.projectId);
         return (
           <div
             key={tab.id}
             onClick={() => onTabClick(tab.id)}
             className={`
-              relative flex items-center emoji-gap px-4 py-2 min-w-[160px] max-w-[240px] cursor-pointer
-              rounded-t-xl transition-all duration-200 border-t border-x group
+              relative flex items-center emoji-gap px-5 py-2 min-w-[150px] max-w-[240px] cursor-pointer
+              rounded-full transition-all duration-200 border group
               ${isActive
-                ? 'bg-white border-[var(--border)] shadow-sm z-10'
-                : 'bg-gray-50 border-transparent hover:bg-gray-100 text-[var(--text-secondary)]'}
+                ? 'shadow-sm z-10 text-[var(--text-primary)]'
+                : 'bg-white/70 border-transparent hover:bg-white text-[var(--text-secondary)] shadow-sm'}
             `}
             style={{
-              marginBottom: '-1px', // Merge with bottom border
-              borderBottom: isActive ? '1px solid white' : '1px solid var(--border)',
-              height: '100%'
+              marginBottom: '-1px',
+              height: '40px',
+              background: isActive ? palette.bg : undefined,
+              borderColor: isActive ? palette.border : undefined
             }}
           >
             <span className="text-base">{tab.icon || '📄'}</span>
-            <span className={`whitespace-nowrap overflow-hidden text-ellipsis font-medium text-xs flex-1 ${isActive ? 'text-[var(--text-primary)]' : ''}`}>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[15px] leading-tight flex-1">
               {tab.title}
             </span>
             <button
@@ -50,8 +63,8 @@ export default function TabsBar({
                 onTabClose(tab.id);
               }}
               className={`
-                p-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-all
-                ${isActive ? 'hover:bg-gray-100' : 'hover:bg-gray-200'}
+                w-6 h-6 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all border border-gray-200
+                ${isActive ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}
               `}
             >
               <X size={12} className="text-gray-500" />
