@@ -43,7 +43,7 @@ export default function TabsBar({
             key={tab.id}
             onClick={() => onTabClick(tab.id)}
             className={`
-              relative flex items-center emoji-gap px-6 py-2 min-w-[150px] max-w-[240px] cursor-pointer
+              relative flex items-center gap-3 px-8 py-2.5 min-w-[170px] max-w-[260px] cursor-pointer
               rounded-full transition-all duration-200 border group
               ${isActive
                 ? 'shadow-sm z-10 text-[var(--text-primary)]'
@@ -51,13 +51,13 @@ export default function TabsBar({
             `}
             style={{
               marginBottom: '-1px',
-              height: '38px',
+              height: '40px',
               background: isActive ? palette.bg : undefined,
               borderColor: isActive ? palette.border : 'var(--border)'
             }}
           >
-            <span className="text-base">{tab.icon || '📄'}</span>
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[13px] leading-tight flex-1">
+            <span className="w-6 h-6 flex items-center justify-center text-base translate-y-[1px]">{tab.icon || '📄'}</span>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[12px] leading-tight flex-1">
               {tab.title}
             </span>
             <button
