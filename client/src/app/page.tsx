@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Force rebuild 1
 
 import React from 'react';
 import Shell from '@/components/Shell';

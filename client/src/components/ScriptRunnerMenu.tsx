@@ -167,38 +167,38 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
 
     const renderMenuItem = (item: MenuItem, index: number, depth: number = 0) => {
         if (item.separator) {
-            return <div key={`sep-${index}`} className="h-px my-2 mx-3" style={{ background: 'var(--border)' }} />;
+            return <div key={`sep-${index}`} className="h-px my-1 mx-2" style={{ background: 'var(--border)', opacity: 0.3 }} />;
         }
 
         if (item.submenu && item.items) {
             const isExpanded = expandedSubmenus.has(item.submenu);
             return (
-                <div key={`sub-${index}`} className="mb-1">
+                <div key={`sub-${index}`} className="mb-0.5">
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-medium
-                                   transition-all duration-200 rounded-lg mx-2 border
-                                   ${isExpanded ? 'card-glass' : ''}`}
+                        className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium
+                                   transition-all duration-200 rounded-md border"
                         style={{
-                            marginLeft: `${depth * 12 + 8}px`,
+                            marginLeft: `${depth * 8 + 4}px`,
                             color: isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
                             backgroundColor: isExpanded ? 'var(--surface-glass)' : 'transparent',
-                            borderColor: isExpanded ? 'var(--primary)' : 'transparent',
-                            boxShadow: isExpanded ? 'var(--shadow-sm)' : 'none'
+                            borderColor: isExpanded ? 'var(--border)' : 'transparent',
+                            boxShadow: isExpanded ? 'var(--shadow-sm)' : 'none',
+                            backdropFilter: isExpanded ? 'blur(10px)' : 'none'
                         }}
                     >
                         <svg
-                            className={`w-3 h-3 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                            className={`w-2 h-2 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
                             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                         </svg>
-                        <span className="text-sm">{item.icon}</span>
-                        <span className="truncate flex-1 text-left">{item.submenu}</span>
+                        <span className="text-xs">{item.icon}</span>
+                        <span className="truncate flex-1 text-left text-[10px] font-semibold">{item.submenu}</span>
                     </button>
                     {isExpanded && (
-                        <div className="mt-1">
+                        <div className="mt-0.5 space-y-0.5">
                             {item.items.map((subItem, subIndex) => renderMenuItem(subItem, subIndex, depth + 1))}
                         </div>
                     )}
@@ -209,10 +209,10 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
         return (
             <button
                 key={`item-${index}`}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-medium
-                          transition-all duration-200 rounded-lg mx-2 mb-1 border"
+                className="w-full flex items-center gap-1.5 px-2 py-1 text-left text-[10px] font-medium
+                          transition-all duration-150 rounded-md border"
                 style={{
-                    marginLeft: `${depth * 12 + 8}px`,
+                    marginLeft: `${depth * 8 + 4}px`,
                     color: 'var(--text-secondary)',
                     backgroundColor: 'transparent',
                     borderColor: 'transparent'
@@ -222,17 +222,19 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                     e.currentTarget.style.color = 'var(--text-primary)';
                     e.currentTarget.style.borderColor = 'var(--border)';
                     e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                    e.currentTarget.style.backdropFilter = 'blur(10px)';
                 }}
                 onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.color = 'var(--text-secondary)';
                     e.currentTarget.style.borderColor = 'transparent';
                     e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.backdropFilter = 'none';
                 }}
                 onClick={() => console.log(`Running: ${item.fn}`)}
             >
-                <span className="text-sm">{item.icon}</span>
-                <span className="truncate">{item.label}</span>
+                <span className="text-xs">{item.icon}</span>
+                <span className="truncate text-[10px] font-semibold">{item.label}</span>
             </button>
         );
     };
@@ -240,55 +242,55 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
     return (
         <div className="flex flex-col h-full w-full select-none text-sm">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
+            <div className="flex items-center justify-between px-3 py-2.5 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
                 <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }} />
-                    <h2 className="text-[13px] font-semibold tracking-[0.18em] uppercase" style={{ color: 'var(--text-primary)' }}>
+                    <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--primary)', boxShadow: '0 0 8px var(--primary)' }} />
+                    <h2 className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--text-primary)' }}>
                         ⚡ Функции <span style={{ color: 'var(--primary)' }}>({projectId === 'default' ? 'Общие' : projectId.toUpperCase()})</span>
                     </h2>
                 </div>
             </div>
 
             {/* Script Tree */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar py-2" style={{ backgroundColor: 'var(--background)' }}>
+            <div className="flex-1 overflow-y-auto custom-scrollbar py-1.5" style={{ backgroundColor: 'var(--background)' }}>
                 {MENU_DATA.map((section) => {
                     const isExpanded = expandedSections.has(section.id);
                     const isSpecial = section.special;
 
                     return (
-                        <div key={section.id} className="mb-2 mx-2">
+                        <div key={section.id} className="mb-1.5 mx-1.5">
                             <button
                                 onClick={() => isSpecial ? window.open('http://localhost:3001', '_blank') : toggleSection(section.id)}
-                                className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold
-                                           transition-all duration-200 rounded-lg border
-                                           ${isExpanded && !isSpecial ? 'card-glass' : ''}`}
+                                className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-[11px] font-semibold
+                                           transition-all duration-200 rounded-lg border`}
                                 style={{
                                     color: isSpecial ? 'var(--text-primary)' : isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
-                                    backgroundColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--surface-glass)' : 'var(--surface-glass)',
+                                    backgroundColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--surface-glass)' : 'transparent',
                                     borderColor: isSpecial ? 'var(--accent)' : isExpanded ? 'var(--primary)' : 'var(--border)',
-                                    boxShadow: isExpanded || isSpecial ? 'var(--shadow-md)' : 'var(--shadow-sm)'
+                                    boxShadow: isExpanded || isSpecial ? 'var(--shadow-sm)' : 'none',
+                                    backdropFilter: isExpanded || isSpecial ? 'blur(20px)' : 'none'
                                 }}
                             >
                                 {!isSpecial && (
                                     <svg
-                                        className={`w-3 h-3 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                                        className={`w-2.5 h-2.5 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                     >
                                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                     </svg>
                                 )}
-                                <span className="text-sm">{section.icon}</span>
-                                <span className="truncate">{section.title}</span>
+                                <span className="text-xs">{section.icon}</span>
+                                <span className="truncate text-[11px] font-bold">{section.title}</span>
                                 {isSpecial && (
-                                    <svg className="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    <svg className="w-2.5 h-2.5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
                                 )}
                             </button>
 
                             {isExpanded && !isSpecial && (
-                                <div className="mt-1">
+                                <div className="mt-0.5 space-y-0.5">
                                     {section.items.map((item, index) => renderMenuItem(item, index))}
                                 </div>
                             )}
@@ -298,10 +300,10 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
             </div>
 
             {/* Status / Footer */}
-            <div className="px-4 py-4 border-t" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
-                <div className="badge" style={{ background: 'var(--success)' }}>
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 8px var(--success)' }}></div>
-                    <span style={{ color: 'var(--text-primary)' }}>✅ Система готова</span>
+            <div className="px-2.5 py-2 border-t" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
+                <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--surface-glass)' }}>
+                    <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 6px var(--success)' }}></div>
+                    <span className="text-[10px] font-semibold" style={{ color: 'var(--text-secondary)' }}>✅ Система готова</span>
                 </div>
             </div>
         </div >
