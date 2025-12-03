@@ -74,7 +74,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
   }, [openDropdown]);
 
   return (
-    <div className="relative flex items-center justify-between w-full h-full px-6">
+    <div className="relative flex items-center justify-between w-full h-full px-8 border-b border-gray-200/50 shadow-sm backdrop-blur-md bg-white/30">
       {/* Left: Logo */}
       <div className="flex items-center gap-4 z-10">
         <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
       </div>
 
       {/* Center: Workspace Switcher */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-0">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-16 z-0">
         {workspaceProjects.map((project) => {
           const isActive = project.id === activeWorkspace;
           return (
@@ -137,14 +137,14 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
       </div>
 
       {/* Right: Layout Controls & Status */}
-      <div className="flex items-center space-x-6 z-10">
-        <div className="flex items-center bg-white/50 p-1.5 rounded-xl border border-gray-200/50 backdrop-blur-sm">
+      <div className="flex items-center space-x-8 z-10">
+        <div className="flex items-center bg-white/50 p-2 rounded-2xl border border-gray-200/50 backdrop-blur-sm shadow-sm">
           {[
             {
               id: 'all' as const,
               label: 'Панели слева и справа',
               icon: (
-                <svg width="16" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="20" height="20" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <rect x="2" y="3" width="3" height="10" rx="0.8" />
                   <rect x="6.5" y="3" width="7" height="10" rx="0.8" />
                   <rect x="14.5" y="3" width="3" height="10" rx="0.8" />
@@ -155,7 +155,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
               id: 'center' as const,
               label: 'Только центральное окно',
               icon: (
-                <svg width="16" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="20" height="20" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <rect x="4" y="3" width="12" height="10" rx="1.2" />
                 </svg>
               ),
@@ -166,8 +166,8 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
               <button
                 key={option.id}
                 onClick={() => onLayoutChange(option.id)}
-                className={`tooltip flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200
-                  ${active ? 'bg-white shadow-sm text-primary' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`tooltip flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200
+                  ${active ? 'bg-white shadow-md text-primary scale-105' : 'text-gray-400 hover:text-gray-600 hover:bg-white/30'}`}
                 data-tooltip={option.label}
                 style={{
                   color: active ? 'var(--primary)' : undefined
@@ -179,15 +179,15 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
           })}
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">
-          <span className="relative flex h-2 w-2">
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100 shadow-sm">
+          <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
           </span>
           <span>Online</span>
         </div>
 
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border border-white shadow-sm flex items-center justify-center text-sm cursor-pointer hover:scale-105 transition-transform">
+        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white shadow-md flex items-center justify-center text-lg cursor-pointer hover:scale-105 transition-transform">
           👤
         </div>
       </div>

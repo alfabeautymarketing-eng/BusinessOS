@@ -9,11 +9,24 @@ import ContentViewer from '@/components/ContentViewer';
 import ScriptRunnerMenu from '@/components/ScriptRunnerMenu';
 import { useTabs } from '@/hooks/useTabs';
 import type { Tab } from '@/hooks/useTabs';
+import projectsConfig from '../config/projects.json';
+
+type WorkspaceProject = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  type?: string;
+};
 
 export default function Home() {
   const { tabs, activeTab, activeTabId, openTab, closeTab, switchTab } = useTabs();
   const [layoutMode, setLayoutMode] = React.useState<'all' | 'center' | 'left' | 'right'>('all');
   const [activeWorkspace, setActiveWorkspace] = React.useState<string>('sk');
+  const workspaceProjects = (projectsConfig.projects as WorkspaceProject[]).filter((p) => p.type !== 'internal-app');
+  const workspaceSlots: (WorkspaceProject | null)[] = workspaceProjects.flatMap((p, idx) =>
+    idx === workspaceProjects.length - 1 ? [p] : [p, null]
+  );
 
   const showSidebar = layoutMode === 'all' || layoutMode === 'left';
   const showRightSidebar = layoutMode === 'all' || layoutMode === 'right';
