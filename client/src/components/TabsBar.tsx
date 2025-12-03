@@ -20,7 +20,10 @@ const projectColorMap = Object.fromEntries(
 const pastelForProject = (projectId?: string) => {
   const base = projectId ? projectColorMap[projectId] : undefined;
   if (!base) return { bg: 'rgba(255,255,255,0.9)', border: 'var(--border)' };
-  return { bg: `${base}20`, border: `${base}80` }; // light pastel with alpha
+  return {
+    bg: `linear-gradient(135deg, ${base}22 0%, ${base}33 100%)`,
+    border: `${base}66`
+  }; // light pastel gradient
 };
 
 export default function TabsBar({
@@ -40,7 +43,7 @@ export default function TabsBar({
             key={tab.id}
             onClick={() => onTabClick(tab.id)}
             className={`
-              relative flex items-center emoji-gap px-5 py-2 min-w-[150px] max-w-[240px] cursor-pointer
+              relative flex items-center emoji-gap px-6 py-2 min-w-[150px] max-w-[240px] cursor-pointer
               rounded-full transition-all duration-200 border group
               ${isActive
                 ? 'shadow-sm z-10 text-[var(--text-primary)]'
@@ -48,13 +51,13 @@ export default function TabsBar({
             `}
             style={{
               marginBottom: '-1px',
-              height: '40px',
+              height: '38px',
               background: isActive ? palette.bg : undefined,
-              borderColor: isActive ? palette.border : undefined
+              borderColor: isActive ? palette.border : 'var(--border)'
             }}
           >
             <span className="text-base">{tab.icon || '📄'}</span>
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[15px] leading-tight flex-1">
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[13px] leading-tight flex-1">
               {tab.title}
             </span>
             <button
