@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Layout, LayoutPanelLeft, Square, ChevronDown } from 'lucide-react';
+import projectsConfig from '@/config/projects.json';
 
 interface TopNavProps {
   onOpenTab: (tab: any) => void;
@@ -11,48 +12,28 @@ interface TopNavProps {
   onWorkspaceChange: (workspaceId: string) => void;
 }
 
-// Project data structure matching the reference style
-const PROJECTS = [
-  {
-    id: "sk",
-    name: "SkinClinic",
-    shortName: "SC",
-    color: "#8B5CF6",
-    icon: "🟣",
-    links: [
-      { id: "sk-crm", name: "CRM System", url: "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit", icon: "📊", type: "sheets" },
-      { id: "sk-drive", name: "Drive Folder", url: "https://drive.google.com/drive/u/0/folders/1T4X-i_tOqfO_rG-4Zg_wFk_qD", icon: "bm", type: "drive-folder" }
-    ]
-  },
-  {
-    id: "mt",
-    name: "Montibello",
-    shortName: "MT",
-    color: "#3B82F6",
-    icon: "🔵",
-    links: [
-      { id: "mt-orders", name: "Orders Sheet", url: "https://docs.google.com/spreadsheets/d/1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw/edit", icon: "📝", type: "sheets" }
-    ]
-  },
-  {
-    id: "ss",
-    name: "Soskin",
-    shortName: "SS",
-    color: "#10B981",
-    icon: "🟢",
-    links: []
-  },
-  {
-    id: "cosmetic",
-    name: "Анализ косметики",
-    shortName: "CA",
-    color: "#EC4899",
-    icon: "💄",
-    links: [
-      { id: "cosmetic-dash", name: "Dashboard", url: "/cosmetic-analysis", icon: "📈", type: "cosmetic-dashboard" }
-    ]
-  }
-];
+type ProjectLink = {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  sheetId?: string;
+  folderId?: string;
+  icon: string;
+};
+
+type Project = {
+  id: string;
+  name: string;
+  shortName: string;
+  color: string;
+  icon: string;
+  type?: 'internal-app';
+  url?: string;
+  links?: ProjectLink[];
+};
+
+const PROJECTS = projectsConfig.projects as Project[];
 
 export default function TopNav({
   onOpenTab,
@@ -74,9 +55,14 @@ export default function TopNav({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleWorkspaceClick = (projectId: string) => {
-    onWorkspaceChange(projectId);
-    setOpenDropdown(openDropdown === projectId ? null : projectId);
+  const handleWorkspaceClick = (project: Project) => {
+    if (project.type === 'internal-app' && project.url) {
+      window.open(project.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    onWorkspaceChange(project.id);
+    setOpenDropdown(openDropdown === project.id ? null : project.id);
   };
 
   const handleLinkClick = (project: any, link: any) => {
@@ -112,7 +98,7 @@ export default function TopNav({
           return (
             <div key={project.id} className="relative">
               <button
-                onClick={() => handleWorkspaceClick(project.id)}
+                onClick={() => handleWorkspaceClick(project)}
                 className={`
                   flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border
                   ${isActive
@@ -128,13 +114,13 @@ export default function TopNav({
                   <span className="text-lg">{project.icon}</span>
                   <span className="font-medium text-sm">{project.name}</span>
                 </span>
-                {project.links && project.links.length > 0 && (
+                {project.type !== 'internal-app' && project.links && project.links.length > 0 && (
                   <ChevronDown size={14} className={`ml-1 transition-transform ${openDropdown === project.id ? 'rotate-180' : ''}`} />
                 )}
               </button>
 
               {/* Dropdown */}
-              {openDropdown === project.id && project.links && project.links.length > 0 && (
+              {project.type !== 'internal-app' && openDropdown === project.id && project.links && project.links.length > 0 && (
                 <div className="absolute top-full left-0 mt-2 w-64 card-glass rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in origin-top-left">
                   <div className="py-1">
                     {project.links.map((link) => (
