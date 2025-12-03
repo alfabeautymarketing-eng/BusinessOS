@@ -82,7 +82,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
   }, [openDropdown]);
 
   return (
-    <div className="relative flex items-center justify-between w-full h-full px-8 border-b border-gray-200/50 shadow-sm backdrop-blur-md bg-white/30">
+    <div className="relative flex items-center justify-between w-full h-full px-8 border-b border-gray-200/50 shadow-sm backdrop-blur-md bg-white/30 overflow-visible">
       {/* Left: Logo */}
       <div className="flex items-center gap-4 z-10 min-w-[220px]">
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg transition-transform hover:scale-105"
@@ -158,13 +158,16 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
               {/* Dropdown Menu */}
               {isOpen && (
                 <div
-                  className="absolute top-full mt-3 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/70 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 p-2"
+                  className="absolute top-full mt-3 w-64 rounded-2xl shadow-xl border overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 p-2"
                   style={{
                     left: '50%',
                     transform: 'translateX(-50%)',
+                    background: 'var(--surface-glass)',
+                    backdropFilter: 'blur(18px)',
+                    borderColor: 'var(--border)',
                     boxShadow: 'var(--shadow-xl)'
                   }}
-                >
+              >
                   {project.links?.map((link) => (
                     <a
                       key={link.id}

@@ -159,5 +159,33 @@ class GoogleService:
         return True
 
 
+    def append_row(self, spreadsheet_id: str, range_name: str, values: list):
+        """
+        Appends a row of values to the specified sheet.
+        """
+        service = self.get_sheets_service()
+        body = {
+            'values': [values]
+        }
+        result = service.spreadsheets().values().append(
+            spreadsheetId=spreadsheet_id, range=range_name,
+            valueInputOption='USER_ENTERED', body=body
+        ).execute()
+        return result
+
+    def update_cell(self, spreadsheet_id: str, range_name: str, value):
+        """
+        Updates a specific cell or range with a value.
+        """
+        service = self.get_sheets_service()
+        body = {
+            'values': [[value]]
+        }
+        result = service.spreadsheets().values().update(
+            spreadsheetId=spreadsheet_id, range=range_name,
+            valueInputOption='USER_ENTERED', body=body
+        ).execute()
+        return result
+
 # Создание синглтона для импорта в других модулях
 google_service = GoogleService()

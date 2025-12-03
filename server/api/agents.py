@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 import os
 import requests
+import json
 from services.google_service import google_service
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
@@ -15,68 +16,82 @@ class AgentTask(BaseModel):
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={GEMINI_API_KEY}"
 
-@router.post("/execute")
-async def execute_agent_task(task: AgentTask):
+@router.post("/chat")
+async def chat_agent(task: AgentTask):
     """
-    1. Receives a natural language task.
-    2. Uses Gemini to generate Google Apps Script code.
-    3. Pushes the code to the Google Sheet's bound script project.
+    Direct Action Agent:
+    1. Analyzes the user's prompt to determine intent (ADD_ROW, UPDATE_CELL, QUESTION, etc.).
+    2. Executes the action directly via Google Sheets API.
+    3. Returns a natural language response.
     """
     try:
-        # 1. Generate Code with Gemini
+        # 1. Intent Recognition with Gemini
         system_prompt = f"""
-        You are an expert Google Apps Script developer.
-        Your task is to write a script for a Google Sheet.
+        You are an AI Action Agent for Google Sheets.
+        Your goal is to understand the user's request and output a JSON object representing the action to take.
         
         Context:
         - Spreadsheet ID: {task.spreadsheet_id}
         - Active Sheet: {task.sheet_name}
-        - Column Context: {task.context}
+        
+        Supported Actions:
+        1. ADD_ROW: Append data to the sheet.
+           Params: "values" (list of strings/numbers)
+        2. UPDATE_CELL: Change a specific cell.
+           Params: "cell" (e.g., "A1"), "value" (string/number)
+        3. ANSWER: Just answer a question or acknowledge.
+           Params: "text" (your response)
         
         User Request: "{task.prompt}"
         
-        Requirements:
-        - Write ONLY the JavaScript/Google Apps Script code.
-        - Do not include markdown formatting (```javascript).
-        - The code must be a complete function or set of functions.
-        - If the user asks for a trigger (e.g., "when I edit"), include the trigger installation logic in a 'setupTriggers' function.
+        Output Format (JSON ONLY):
+        {{
+            "action": "ADD_ROW" | "UPDATE_CELL" | "ANSWER",
+            "params": {{ ... }},
+            "response_text": "A short, friendly confirmation message for the user."
+        }}
         """
         
         payload = {
-            "contents": [{"parts": [{"text": system_prompt}]}]
+            "contents": [{"parts": [{"text": system_prompt}]}],
+            "generationConfig": {"response_mime_type": "application/json"}
         }
         
         response = requests.post(GEMINI_URL, json=payload)
         response.raise_for_status()
         
         generated_text = response.json()['candidates'][0]['content']['parts'][0]['text']
+        action_plan = json.loads(generated_text)
         
-        # Clean up code (remove markdown if Gemini ignores instructions)
-        clean_code = generated_text.replace("```javascript", "").replace("```", "").strip()
+        action = action_plan.get("action")
+        params = action_plan.get("params", {})
+        response_text = action_plan.get("response_text", "Done.")
         
-        # 2. Deploy Code (Simulated for now, real implementation needs Script API 'updateContent')
-        # In a real scenario, we would:
-        # a) Find the Script Project bound to the Sheet (or create one)
-        # b) Use script.projects().updateContent() to push the code
-        
-        # For prototype, we'll just return the code to the UI
+        # 2. Execute Action
+        if action == "ADD_ROW":
+            values = params.get("values", [])
+            if values:
+                google_service.append_row(task.spreadsheet_id, task.sheet_name, values)
+                
+        elif action == "UPDATE_CELL":
+            cell = params.get("cell")
+            value = params.get("value")
+            if cell and value is not None:
+                # Construct range (e.g., "Sheet1!A1")
+                range_name = f"{task.sheet_name}!{cell}"
+                google_service.update_cell(task.spreadsheet_id, range_name, value)
+                
+        # 3. Return Response
         return {
             "status": "success",
-            "generated_code": clean_code,
-            "message": "Code generated successfully. Ready to deploy."
+            "message": response_text,
+            "action_taken": action
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-class DeployRequest(BaseModel):
-    script_id: str
-    code: str
-
-@router.post("/deploy")
-async def deploy_script(request: DeployRequest):
-    try:
-        google_service.update_script_content(request.script_id, request.code)
-        return {"status": "success", "message": "Script deployed successfully to Google Sheets."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Agent Error: {e}")
+        return {
+            "status": "error", 
+            "message": f"I encountered an error: {str(e)}",
+            "action_taken": "ERROR"
+        }
