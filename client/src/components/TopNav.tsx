@@ -48,6 +48,11 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
   const workspaceProjects = projects.filter((p) => p.type !== 'internal-app');
   const activeProject = projects.find(p => p.id === activeWorkspace) || projects[0];
 
+  const handleWorkspaceClick = (projectId: string) => {
+    onWorkspaceChange(projectId);
+    setOpenDropdown((prev) => (prev === projectId ? null : projectId));
+  };
+
   // Update CSS variables for dynamic theming
   useEffect(() => {
     if (activeProject && activeProject.theme) {
@@ -76,15 +81,13 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
   return (
     <div className="relative flex items-center justify-between w-full h-full px-8 border-b border-gray-200/50 shadow-sm backdrop-blur-md bg-white/30">
       {/* Left: Logo */}
-      <div className="flex items-center gap-4 z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg transition-transform hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
-            CA
-          </div>
-          <div className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-            CareAlfa
-          </div>
+      <div className="flex items-center gap-4 z-10 min-w-[220px]">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg transition-transform hover:scale-105"
+          style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
+          CA
+        </div>
+        <div className="text-3xl font-bold tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
+          CareAlfa
         </div>
       </div>
 
@@ -97,7 +100,7 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
           return (
             <div key={project.id} className="relative" ref={(el) => { if (el) dropdownRefs.current.set(project.id, el); }}>
               <button
-                onClick={() => onWorkspaceChange(project.id)}
+                onClick={() => handleWorkspaceClick(project.id)}
                 className={`flex items-center w-60 px-4 py-3 rounded-full transition-all duration-300
                   ${isActive ? 'shadow-lg scale-105' : 'hover:bg-gray-100/50 border border-gray-200/30'}`}
                 style={{
