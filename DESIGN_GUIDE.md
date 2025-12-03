@@ -129,6 +129,15 @@
 
 ---
 
+## Правила для iOS-стиля (заголовок и выпадающее меню рабочей области)
+- **Pill-кнопки проектов**: `rounded-full`, padding ≥ 10px 18px, `gap: 1rem` между эмодзи и текстом. Активное состояние — градиент из цвета проекта (`linear-gradient(135deg, project.color, project.color cc, project.color)`), белые текст и chevron, лёгкий подъем `transform: translateY(-1px)`, тень `shadow-md`. Неактивное — белый фон, `border: var(--border)`, тень `shadow-sm`, на hover — `shadow-md`.
+- **Дропдауны**: контейнер `rounded-2xl`, фон `bg-white/95` + `backdrop-blur`, бордер `border-white/70`, тень `0 20px 60px rgba(0,0,0,0.14)`, отступ сверху 12px от кнопки.
+- **Пункты меню**: отступы `px-4 py-3`, `gap: 1rem`, иконка размер ~20px с лёгкой тенью, заголовок `font-semibold 14px`, подпись uppercase 10px `text-[var(--text-secondary)]`.
+- **Слои**: контейнер топ-бара и dropdown — `relative overflow-visible z-50`, чтобы выпадающее меню не обрезалось соседними панелями.
+- **Консистентность**: все новые кнопки с эмодзи используют класс `emoji-gap` для визуального “таб”-пробела между иконкой и текстом.
+
+---
+
 ### 4. Бейджи и теги
 
 ```jsx

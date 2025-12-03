@@ -63,7 +63,7 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
             </div>
 
             <div className="relative flex h-screen flex-col gap-4 px-6 pt-5 pb-6">
-                <header className="card-static px-5 h-16 flex items-center" style={{ borderRadius: 'var(--radius-lg)' }}>
+                <header className="card-static px-5 h-16 flex items-center relative z-50 overflow-visible" style={{ borderRadius: 'var(--radius-lg)' }}>
                     {topNav}
                 </header>
 

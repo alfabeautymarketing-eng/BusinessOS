@@ -78,7 +78,7 @@ export default function TopNav({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50">
+    <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50 relative overflow-visible">
       {/* Brand */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200 text-xl">
@@ -100,41 +100,45 @@ export default function TopNav({
               <button
                 onClick={() => handleWorkspaceClick(project)}
                 className={`
-                  flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border
+                  flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-200 border shadow-sm
                   ${isActive
                     ? 'text-white shadow-md transform -translate-y-[1px]'
-                    : 'bg-transparent text-[var(--text-primary)] border-transparent hover:bg-gray-50'}
+                    : 'bg-white text-[var(--text-primary)] border-[var(--border)] hover:shadow-md'}
                 `}
                 style={{
-                  backgroundColor: isActive ? project.color : undefined,
-                  borderColor: isActive ? project.color : 'transparent',
+                  background: isActive
+                    ? `linear-gradient(135deg, ${project.color} 0%, ${project.color}cc 60%, ${project.color} 100%)`
+                    : undefined,
+                  borderColor: isActive ? project.color : undefined,
                 }}
               >
                 <span className="emoji-gap items-center">
                   <span className="text-lg">{project.icon}</span>
-                  <span className="font-medium text-sm">{project.name}</span>
+                  <span className="font-semibold text-sm">{project.name}</span>
                 </span>
                 {project.type !== 'internal-app' && project.links && project.links.length > 0 && (
-                  <ChevronDown size={14} className={`ml-1 transition-transform ${openDropdown === project.id ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    size={14}
+                    className={`ml-1 transition-transform ${openDropdown === project.id ? 'rotate-180' : ''}`}
+                    color={isActive ? 'white' : 'currentColor'}
+                  />
                 )}
               </button>
 
               {/* Dropdown */}
               {project.type !== 'internal-app' && openDropdown === project.id && project.links && project.links.length > 0 && (
-                <div className="absolute top-full left-0 mt-2 w-64 card-glass rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in origin-top-left">
-                  <div className="py-1">
+                <div className="absolute top-full left-0 mt-3 w-64 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.14)] z-[999] overflow-hidden animate-fade-in origin-top-left border border-gray-200/90 bg-white/95 backdrop-blur">
+                  <div className="py-2">
                     {project.links.map((link) => (
                       <button
                         key={link.id}
                         onClick={() => handleLinkClick(project, link)}
-                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-white/50 transition-colors text-left group"
+                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
                       >
-                        <span className="text-xl group-hover:scale-110 transition-transform">{link.icon}</span>
-                        <div>
-                          <div className="text-sm font-medium text-[var(--text-primary)]">
-                            {link.name}
-                          </div>
-                          <div className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wide">
+                        <span className="text-xl group-hover:scale-110 transition-transform drop-shadow-sm">{link.icon}</span>
+                        <div className="flex flex-col leading-tight">
+                          <div className="text-sm font-semibold text-[var(--text-primary)]">{link.name}</div>
+                          <div className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wide font-semibold">
                             {link.type.replace('-', ' ')}
                           </div>
                         </div>
