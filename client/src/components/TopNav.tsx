@@ -78,20 +78,21 @@ export default function TopNav({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50 relative overflow-visible">
+    <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--surface)] border-b border-[var(--border)] shrink-0 z-50 relative overflow-visible"
+      style={{ backdropFilter: 'blur(20px)' }}>
       {/* Brand */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2.5 shrink-0">
         <img
           src="/logo-agent.png"
           alt="CareAgent"
-          width={38}
-          height={38}
-          className="w-[38px] h-[38px] rounded-full shadow-sm object-cover border border-gray-200 bg-white overflow-hidden flex-shrink-0"
-          style={{ objectPosition: 'center' }}
+          width={32}
+          height={32}
+          className="w-8 h-8 rounded-full shadow-sm object-cover border bg-white overflow-hidden flex-shrink-0"
+          style={{ objectPosition: 'center', borderColor: 'var(--border)' }}
         />
         <div className="flex flex-col leading-tight">
-          <span className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">CareAgent</span>
-          <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.18em]">Workspace</span>
+          <span className="font-bold text-base tracking-tight" style={{ color: 'var(--text-primary)' }}>CareAgent</span>
+          <span className="text-[9px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-secondary)' }}>Workspace</span>
         </div>
       </div>
 
@@ -99,6 +100,7 @@ export default function TopNav({
       <div className="flex items-center gap-3" ref={dropdownRef}>
         {PROJECTS.map((project) => {
           const isActive = activeWorkspace === project.id;
+          const isOpen = openDropdown === project.id;
 
           return (
             <div key={project.id} className="relative">
@@ -124,7 +126,7 @@ export default function TopNav({
                 {project.type !== 'internal-app' && project.links && project.links.length > 0 && (
                   <ChevronDown
                     size={14}
-                    className={`ml-1 transition-transform ${openDropdown === project.id ? 'rotate-180' : ''}`}
+                    className={`ml-1 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     color={isActive ? 'white' : 'currentColor'}
                   />
                 )}
@@ -133,8 +135,12 @@ export default function TopNav({
               {/* Dropdown */}
               {project.type !== 'internal-app' && openDropdown === project.id && project.links && project.links.length > 0 && (
                 <div
-                  className="absolute top-full left-0 mt-3 w-64 rounded-2xl shadow-[0_18px_50px_rgba(17,24,39,0.14)] z-[999] overflow-hidden animate-fade-in origin-top-left border border-[#dfe1e5] bg-white/97 backdrop-blur-sm p-2"
-                  style={{ boxShadow: '0 18px 50px rgba(17, 24, 39, 0.14)' }}
+                  className="absolute top-full left-0 mt-3 w-64 rounded-2xl z-[999] overflow-hidden animate-fade-in origin-top-left border p-2"
+                  style={{
+                    backgroundColor: 'white',
+                    borderColor: '#dfe1e5',
+                    boxShadow: '0 18px 50px rgba(17, 24, 39, 0.14)'
+                  }}
                   role="menu"
                 >
                   <div className="flex flex-col gap-2">
@@ -143,14 +149,14 @@ export default function TopNav({
                         key={link.id}
                         onClick={() => handleLinkClick(project, link)}
                         type="button"
-                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-gray-50 transition-colors text-left group rounded-xl bg-white border border-transparent shadow-sm hover:shadow-md appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                        className="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left group rounded-xl bg-white border border-transparent shadow-sm hover:shadow-md hover:bg-gray-50 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-100"
                         role="menuitem"
                       >
                         <span className="text-xl group-hover:scale-110 transition-transform drop-shadow-sm">{link.icon}</span>
                         <div className="flex flex-col leading-tight">
                           <div className="text-sm font-semibold text-[var(--text-primary)]">{link.name}</div>
                           <div className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wide font-semibold">
-                            {link.type.replace('-', ' ')}
+                            {link.type}
                           </div>
                         </div>
                       </button>
@@ -164,27 +170,59 @@ export default function TopNav({
       </div>
 
       {/* Layout Controls */}
-      <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+      <div className="flex items-center gap-1 p-1 rounded-lg border"
+        style={{
+          backgroundColor: 'var(--surface-glass)',
+          borderColor: 'var(--border)',
+          backdropFilter: 'blur(10px)'
+        }}>
         <button
           onClick={() => onLayoutChange('all')}
-          className={`p-1.5 rounded-md transition-all ${layoutMode === 'all' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`p-1.5 rounded-md transition-all duration-200 ${
+            layoutMode === 'all'
+              ? 'shadow-sm scale-105'
+              : 'hover:scale-105'
+          }`}
+          style={{
+            backgroundColor: layoutMode === 'all' ? 'var(--surface)' : 'transparent',
+            color: layoutMode === 'all' ? 'var(--primary)' : 'var(--text-secondary)',
+            boxShadow: layoutMode === 'all' ? 'var(--shadow-sm)' : 'none'
+          }}
           title="Full View"
         >
-          <Layout size={16} />
+          <Layout size={14} strokeWidth={2.5} />
         </button>
         <button
           onClick={() => onLayoutChange('left')}
-          className={`p-1.5 rounded-md transition-all ${layoutMode === 'left' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`p-1.5 rounded-md transition-all duration-200 ${
+            layoutMode === 'left'
+              ? 'shadow-sm scale-105'
+              : 'hover:scale-105'
+          }`}
+          style={{
+            backgroundColor: layoutMode === 'left' ? 'var(--surface)' : 'transparent',
+            color: layoutMode === 'left' ? 'var(--primary)' : 'var(--text-secondary)',
+            boxShadow: layoutMode === 'left' ? 'var(--shadow-sm)' : 'none'
+          }}
           title="Hide Left"
         >
-          <LayoutPanelLeft size={16} />
+          <LayoutPanelLeft size={14} strokeWidth={2.5} />
         </button>
         <button
           onClick={() => onLayoutChange('right')}
-          className={`p-1.5 rounded-md transition-all ${layoutMode === 'right' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`p-1.5 rounded-md transition-all duration-200 ${
+            layoutMode === 'right'
+              ? 'shadow-sm scale-105'
+              : 'hover:scale-105'
+          }`}
+          style={{
+            backgroundColor: layoutMode === 'right' ? 'var(--surface)' : 'transparent',
+            color: layoutMode === 'right' ? 'var(--primary)' : 'var(--text-secondary)',
+            boxShadow: layoutMode === 'right' ? 'var(--shadow-sm)' : 'none'
+          }}
           title="Hide Right"
         >
-          <Square size={16} />
+          <Square size={14} strokeWidth={2.5} />
         </button>
       </div>
     </div>

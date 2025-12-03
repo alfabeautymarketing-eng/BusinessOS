@@ -34,7 +34,12 @@ export default function TabsBar({
   onNewTab,
 }: TabsBarProps) {
   return (
-    <div className="flex items-end h-12 px-4 w-full border-b border-[var(--border)] gap-2 bg-[var(--background)]">
+    <div className="flex items-center h-10 px-3 w-full border-b gap-1.5"
+      style={{
+        borderColor: 'var(--border)',
+        backgroundColor: 'var(--surface)',
+        backdropFilter: 'blur(10px)'
+      }}>
       {tabs.map((tab) => {
         const isActive = activeTabId === tab.id;
         const palette = pastelForProject(tab.projectId);
@@ -43,21 +48,21 @@ export default function TabsBar({
             key={tab.id}
             onClick={() => onTabClick(tab.id)}
             className={`
-              relative flex items-center justify-center gap-2.5 px-6 py-2.5 min-w-[170px] max-w-[260px] cursor-pointer
-              rounded-full transition-all duration-200 border group
+              relative flex items-center gap-2 px-3 py-1.5 min-w-[140px] max-w-[220px] cursor-pointer
+              rounded-lg transition-all duration-200 border group
               ${isActive
-                ? 'shadow-sm z-10 text-[var(--text-primary)]'
-                : 'bg-white/70 border-transparent hover:bg-white text-[var(--text-secondary)] shadow-sm'}
+                ? 'shadow-sm z-10'
+                : 'hover:bg-white/50 hover:shadow-sm'}
             `}
             style={{
-              marginBottom: '-1px',
-              height: '40px',
-              background: isActive ? palette.bg : undefined,
-              borderColor: isActive ? palette.border : 'var(--border)'
+              height: '32px',
+              background: isActive ? palette.bg : 'transparent',
+              borderColor: isActive ? palette.border : 'transparent',
+              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)'
             }}
           >
-            <span className="w-6 h-6 ml-2 flex items-center justify-center text-[14px] flex-shrink-0 overflow-hidden">{tab.icon || '📄'}</span>
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-[13px] leading-tight flex-1 text-center">
+            <span className="flex items-center justify-center text-sm flex-shrink-0">{tab.icon || '📄'}</span>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-semibold text-xs leading-tight flex-1">
               {tab.title}
             </span>
             <button
@@ -65,19 +70,16 @@ export default function TabsBar({
                 e.stopPropagation();
                 onTabClose(tab.id);
               }}
-              className={`
-                w-6 h-6 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all border border-gray-200
-                ${isActive ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}
-              `}
+              className="w-4 h-4 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-black/10"
             >
-              <X size={12} className="text-gray-500" />
+              <X size={10} strokeWidth={2.5} style={{ color: 'var(--text-secondary)' }} />
             </button>
           </div>
         );
       })}
 
       {tabs.length === 0 && (
-        <div className="text-xs text-gray-400 px-2 pb-2 italic">
+        <div className="text-xs italic" style={{ color: 'var(--text-secondary)' }}>
           Нет открытых вкладок
         </div>
       )}

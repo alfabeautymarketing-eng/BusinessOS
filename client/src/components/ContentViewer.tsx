@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import type { Tab } from '../hooks/useTabs';
 
 interface ContentViewerProps {
