@@ -80,15 +80,15 @@ export default function TopNav({
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50 relative overflow-visible">
       {/* Brand */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <img
           src="/careagent-logo.png"
           alt="CareAgent"
-          className="w-10 h-10 rounded-2xl shadow-md object-cover border border-white/60"
+          className="w-9 h-9 rounded-lg shadow-sm object-contain border border-gray-200 bg-white"
         />
-        <div className="flex flex-col">
-          <span className="font-bold text-lg leading-none text-[var(--text-primary)]">CareAgent</span>
-          <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-wider">Workspace</span>
+        <div className="flex flex-col leading-tight">
+          <span className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">CareAgent</span>
+          <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.18em]">Workspace</span>
         </div>
       </div>
 
