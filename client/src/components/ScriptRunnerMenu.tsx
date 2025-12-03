@@ -177,7 +177,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                 <div key={`sub-${index}`} className="mb-0.5">
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium
+                        className="w-full flex items-center gap-4 px-2 py-1 text-[10px] font-medium
                                    transition-all duration-200 rounded-md border"
                         style={{
                             marginLeft: `${depth * 6 + 2}px`,
@@ -207,7 +207,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
         return (
             <button
                 key={`item-${index}`}
-                className="w-full flex items-center gap-1.5 px-2 py-1 text-left text-[10px] font-medium
+                className="w-full flex items-center gap-4 px-2 py-1 text-left text-[10px] font-medium
                           transition-all duration-150 rounded-md border"
                 style={{
                     marginLeft: `${depth * 6 + 2}px`,
@@ -241,12 +241,12 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
         <div className="flex flex-col h-full w-full select-none text-sm">
             {/* Header */}
             <div className="flex items-center justify-between px-2 py-1.5 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
-                <div className="flex items-center gap-1.5">
-                    <div className="h-1 w-1 rounded-full" style={{ backgroundColor: 'var(--primary)', boxShadow: '0 0 6px var(--primary)' }} />
-                    <span className="text-xs">⚡</span>
-                    <h2 className="text-[10px] font-bold tracking-[0.1em] uppercase" style={{ color: 'var(--text-primary)' }}>
-                        Функции <span style={{ color: 'var(--primary)' }}>({projectId === 'default' ? 'SK' : projectId.toUpperCase()})</span>
-                    </h2>
+            <div className="flex items-center gap-4">
+                <div className="h-1 w-1 rounded-full" style={{ backgroundColor: 'var(--primary)', boxShadow: '0 0 6px var(--primary)' }} />
+                <span className="text-xs">⚡</span>
+                <h2 className="text-[10px] font-bold tracking-[0.1em] uppercase" style={{ color: 'var(--text-primary)' }}>
+                    Функции <span style={{ color: 'var(--primary)' }}>({projectId === 'default' ? 'SK' : projectId.toUpperCase()})</span>
+                </h2>
                 </div>
             </div>
 
@@ -260,7 +260,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                         <div key={section.id} className="mb-1 mx-1.5">
                             <button
                                 onClick={() => isSpecial ? window.open('http://localhost:3001', '_blank') : toggleSection(section.id)}
-                                className={`w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold
+                                className={`w-full flex items-center gap-4 px-2 py-1.5 text-xs font-semibold
                                            transition-all duration-200 rounded-lg border`}
                                 style={{
                                     color: isSpecial ? 'var(--text-primary)' : isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -297,7 +297,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
 
             {/* Status / Footer */}
             <div className="px-2 py-1.5 border-t" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ backgroundColor: 'var(--surface-glass)' }}>
+                <div className="flex items-center gap-4 px-2 py-1 rounded-lg" style={{ backgroundColor: 'var(--surface-glass)' }}>
                     <div className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 4px var(--success)' }}></div>
                     <span className="text-[10px]">✅</span>
                     <span className="text-[9px] font-semibold" style={{ color: 'var(--text-secondary)' }}>Система готова</span>

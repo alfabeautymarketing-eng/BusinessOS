@@ -232,6 +232,12 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.emoji-gap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
 /* Тултипы */
 .tooltip {
   position: relative;

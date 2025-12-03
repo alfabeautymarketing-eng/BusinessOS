@@ -148,7 +148,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                         <button
                             key={m}
                             onClick={() => setMode(m)}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2 flex items-center justify-center gap-4
                             ${active ? 'button-rounded' : ''}`}
                             style={{
                                 backgroundColor: active ? 'var(--primary)' : 'transparent',
@@ -157,7 +157,17 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                 boxShadow: active ? 'var(--shadow-md)' : 'none'
                             }}
                         >
-                            {m === 'agent' ? '🤖 Агент' : '👨‍💻 Разработчик'}
+                            {m === 'agent' ? (
+                                <>
+                                    <span className="text-lg">🤖</span>
+                                    <span>Агент</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="text-lg">👨‍💻</span>
+                                    <span>Разработчик</span>
+                                </>
+                            )}
                         </button>
                     );
                 })}
@@ -169,7 +179,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300`}
+                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-4`}
                         style={{
                             color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
                             backgroundColor: activeTab === tab.id ? 'var(--primary)' : 'transparent'
@@ -178,11 +188,13 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                         {activeTab === tab.id && (
                             <div className="absolute bottom-0 left-4 right-4 h-1 rounded-full opacity-80" style={{ backgroundColor: 'var(--text-primary)' }}></div>
                         )}
-                        {tab.id === 'chat' && '💬 '}
-                        {tab.id === 'logs' && '📋 '}
-                        {tab.id === 'git' && '📊 '}
-                        {tab.id === 'controls' && '⚙️ '}
-                        {tab.label}
+                        <span className="text-base leading-none">
+                            {tab.id === 'chat' && '💬'}
+                            {tab.id === 'logs' && '📋'}
+                            {tab.id === 'git' && '📊'}
+                            {tab.id === 'controls' && '⚙️'}
+                        </span>
+                        <span>{tab.label}</span>
                     </button>
                 ))}
             </div>

@@ -124,8 +124,10 @@ export default function TopNav({
                   borderColor: isActive ? project.color : 'transparent',
                 }}
               >
-                <span className="text-lg">{project.icon}</span>
-                <span className="font-medium text-sm">{project.name}</span>
+                <span className="emoji-gap items-center">
+                  <span className="text-lg">{project.icon}</span>
+                  <span className="font-medium text-sm">{project.name}</span>
+                </span>
                 {project.links && project.links.length > 0 && (
                   <ChevronDown size={14} className={`ml-1 transition-transform ${openDropdown === project.id ? 'rotate-180' : ''}`} />
                 )}
@@ -139,7 +141,7 @@ export default function TopNav({
                       <button
                         key={link.id}
                         onClick={() => handleLinkClick(project, link)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/50 transition-colors text-left group"
+                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-white/50 transition-colors text-left group"
                       >
                         <span className="text-xl group-hover:scale-110 transition-transform">{link.icon}</span>
                         <div>
