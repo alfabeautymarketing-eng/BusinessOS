@@ -177,7 +177,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                 <div key={`sub-${index}`} className="mb-0.5">
                     <button
                         onClick={() => toggleSubmenu(item.submenu!)}
-                        className="w-full flex items-center gap-4 px-2 py-1 text-[10px] font-medium
+                        className="w-full flex items-center emoji-gap px-2 py-1 text-[10px] font-medium
                                    transition-all duration-200 rounded-md border"
                         style={{
                             marginLeft: `${depth * 6 + 2}px`,
@@ -207,7 +207,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
         return (
             <button
                 key={`item-${index}`}
-                className="w-full flex items-center gap-4 px-2 py-1 text-left text-[10px] font-medium
+                className="w-full flex items-center emoji-gap px-2 py-1 text-left text-[10px] font-medium
                           transition-all duration-150 rounded-md border"
                 style={{
                     marginLeft: `${depth * 6 + 2}px`,
@@ -260,7 +260,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
                         <div key={section.id} className="mb-1 mx-1.5">
                             <button
                                 onClick={() => isSpecial ? window.open('http://localhost:3001', '_blank') : toggleSection(section.id)}
-                                className={`w-full flex items-center gap-4 px-2 py-1.5 text-xs font-semibold
+                                className={`w-full flex items-center emoji-gap px-2 py-1.5 text-xs font-semibold
                                            transition-all duration-200 rounded-lg border`}
                                 style={{
                                     color: isSpecial ? 'var(--text-primary)' : isExpanded ? 'var(--text-primary)' : 'var(--text-secondary)',

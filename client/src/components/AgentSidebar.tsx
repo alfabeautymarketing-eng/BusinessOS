@@ -148,7 +148,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                         <button
                             key={m}
                             onClick={() => setMode(m)}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2 flex items-center justify-center gap-4
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2 flex items-center justify-center emoji-gap
                             ${active ? 'button-rounded' : ''}`}
                             style={{
                                 backgroundColor: active ? 'var(--primary)' : 'transparent',
@@ -179,7 +179,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-4`}
+                        className={`relative flex-1 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center emoji-gap`}
                         style={{
                             color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
                             backgroundColor: activeTab === tab.id ? 'var(--primary)' : 'transparent'

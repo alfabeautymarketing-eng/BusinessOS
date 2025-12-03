@@ -28,7 +28,7 @@ export default function TabsBar({
             key={tab.id}
             onClick={() => onTabClick(tab.id)}
             className={`
-              relative flex items-center gap-2 px-4 py-2 min-w-[160px] max-w-[240px] cursor-pointer
+              relative flex items-center emoji-gap px-4 py-2 min-w-[160px] max-w-[240px] cursor-pointer
               rounded-t-xl transition-all duration-200 border-t border-x group
               ${isActive
                 ? 'bg-white border-[var(--border)] shadow-sm z-10'
