@@ -15,7 +15,7 @@
         {
           "id": "database",
           "name": "База SK",
-          "type": "sheets",
+          "type": "ТАблица",
           "url": "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit",
           "sheetId": "1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw",
           "icon": "🌟"
@@ -23,15 +23,15 @@
         {
           "id": "source-docs",
           "name": "Док-ты от производителя",
-          "type": "sheets",
+          "type": "Таблица",
           "url": "https://docs.google.com/spreadsheets/d/1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs/edit",
           "sheetId": "1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs",
-          "icon": "🏭"
+          "icon": "📄"
         },
         {
           "id": "inci",
           "name": "ИНСИ",
-          "type": "drive-folder",
+          "type": "Папка",
           "url": "https://drive.google.com/drive/folders/1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1",
           "folderId": "1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1",
           "icon": "⚗️"
@@ -137,20 +137,6 @@
           "icon": "📜"
         }
       ]
-    },
-    {
-      "id": "cosmetic-analysis",
-      "name": "Анализ косметики",
-      "shortName": "Cosmetic",
-      "color": "#EC4899",
-      "theme": {
-        "h": 330,
-        "s": "81%",
-        "l": "60%"
-      },
-      "icon": "💄",
-      "type": "internal-app",
-      "url": "http://localhost:3001"
     }
   ]
 }

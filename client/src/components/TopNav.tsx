@@ -81,11 +81,13 @@ export default function TopNav({
     <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] h-16 shrink-0 z-50 relative overflow-visible">
       {/* Brand */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200 text-xl">
-          B
-        </div>
+        <img
+          src="/careagent-logo.png"
+          alt="CareAgent"
+          className="w-10 h-10 rounded-2xl shadow-md object-cover border border-white/60"
+        />
         <div className="flex flex-col">
-          <span className="font-bold text-lg leading-none text-[var(--text-primary)]">Business OS</span>
+          <span className="font-bold text-lg leading-none text-[var(--text-primary)]">CareAgent</span>
           <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-wider">Workspace</span>
         </div>
       </div>
@@ -127,13 +129,19 @@ export default function TopNav({
 
               {/* Dropdown */}
               {project.type !== 'internal-app' && openDropdown === project.id && project.links && project.links.length > 0 && (
-                <div className="absolute top-full left-0 mt-3 w-64 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.14)] z-[999] overflow-hidden animate-fade-in origin-top-left border border-gray-200/90 bg-white/95 backdrop-blur">
-                  <div className="py-2">
+                <div
+                  className="absolute top-full left-0 mt-3 w-64 rounded-2xl shadow-[0_18px_50px_rgba(17,24,39,0.14)] z-[999] overflow-hidden animate-fade-in origin-top-left border border-[#dfe1e5] bg-white/97 backdrop-blur-sm p-2"
+                  style={{ boxShadow: '0 18px 50px rgba(17, 24, 39, 0.14)' }}
+                  role="menu"
+                >
+                  <div className="flex flex-col gap-2">
                     {project.links.map((link) => (
                       <button
                         key={link.id}
                         onClick={() => handleLinkClick(project, link)}
-                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
+                        type="button"
+                        className="w-full flex items-center emoji-gap px-4 py-3 hover:bg-gray-50 transition-colors text-left group rounded-xl bg-white border border-transparent shadow-sm hover:shadow-md appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                        role="menuitem"
                       >
                         <span className="text-xl group-hover:scale-110 transition-transform drop-shadow-sm">{link.icon}</span>
                         <div className="flex flex-col leading-tight">
