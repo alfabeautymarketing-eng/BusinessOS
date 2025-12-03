@@ -14,24 +14,46 @@ SCOPES = [
 class GoogleService:
     def __init__(self):
         self.creds = None
-        self._authenticate()
-        
+        self._initialized = False
+
     def _authenticate(self):
+        if self._initialized:
+            return
+
         creds_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-        if not creds_path or not os.path.exists(creds_path):
-            raise Exception("Credentials file not found. Please check GOOGLE_APPLICATION_CREDENTIALS in .env")
-            
-        self.creds = service_account.Credentials.from_service_account_file(
-            creds_path, scopes=SCOPES
-        )
+        if not creds_path:
+            print("WARNING: GOOGLE_APPLICATION_CREDENTIALS not set. Google Services will be unavailable.")
+            return
+
+        if not os.path.exists(creds_path):
+            print(f"WARNING: Credentials file not found at {creds_path}. Google Services will be unavailable.")
+            return
+
+        try:
+            self.creds = service_account.Credentials.from_service_account_file(
+                creds_path, scopes=SCOPES
+            )
+            self._initialized = True
+            print("✅ Google Services initialized successfully")
+        except Exception as e:
+            print(f"WARNING: Failed to initialize Google Services: {e}")
+
+    def _ensure_authenticated(self):
+        if not self._initialized:
+            self._authenticate()
+        if not self._initialized:
+            raise Exception("Google Services are not available. Please configure GOOGLE_APPLICATION_CREDENTIALS.")
 
     def get_sheets_service(self):
+        self._ensure_authenticated()
         return build('sheets', 'v4', credentials=self.creds)
 
     def get_drive_service(self):
+        self._ensure_authenticated()
         return build('drive', 'v3', credentials=self.creds)
 
     def get_script_service(self):
+        self._ensure_authenticated()
         return build('script', 'v1', credentials=self.creds)
 
     def get_spreadsheet_metadata(self, spreadsheet_id: str):

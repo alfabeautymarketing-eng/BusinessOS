@@ -71,9 +71,6 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                             </aside>
                             <div
                                 className="absolute top-0 right-[-8px] h-full w-3 cursor-col-resize rounded-full bg-transparent transition-colors flex items-center justify-center"
-                                style={{
-                                    hover: { backgroundColor: 'var(--primary)' }
-                                }}
                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 onMouseDown={(e) => {
