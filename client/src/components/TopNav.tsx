@@ -47,6 +47,9 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
   const projects = projectsConfig.projects as Project[];
   const workspaceProjects = projects.filter((p) => p.type !== 'internal-app');
   const activeProject = projects.find(p => p.id === activeWorkspace) || projects[0];
+  const workspaceSlots: (Project | null)[] = workspaceProjects.flatMap((p, idx) =>
+    idx === workspaceProjects.length - 1 ? [p] : [p, null]
+  );
 
   const handleWorkspaceClick = (projectId: string) => {
     onWorkspaceChange(projectId);
@@ -92,8 +95,11 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
       </div>
 
       {/* Center: Workspace Switcher */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-6 z-0">
-        {workspaceProjects.map((project, idx) => {
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 z-20 overflow-visible">
+        {workspaceSlots.map((project, idx) => {
+          if (!project) {
+            return <div key={`spacer-${idx}`} className="w-60 h-[52px]" aria-hidden="true" />;
+          }
           const isActive = project.id === activeWorkspace;
           const isOpen = openDropdown === project.id;
 
