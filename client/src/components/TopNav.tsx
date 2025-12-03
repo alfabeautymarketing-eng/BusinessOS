@@ -92,8 +92,8 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
       </div>
 
       {/* Center: Workspace Switcher */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-24 z-0">
-        {workspaceProjects.map((project) => {
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-6 z-0">
+        {workspaceProjects.map((project, idx) => {
           const isActive = project.id === activeWorkspace;
           const isOpen = openDropdown === project.id;
 
@@ -151,7 +151,14 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
 
               {/* Dropdown Menu */}
               {isOpen && (
-                <div className="absolute top-full left-0 mt-3 w-60 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 p-2">
+                <div
+                  className="absolute top-full mt-3 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/70 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 p-2"
+                  style={{
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    boxShadow: 'var(--shadow-xl)'
+                  }}
+                >
                   {project.links?.map((link) => (
                     <a
                       key={link.id}
@@ -175,6 +182,8 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
             </div>
           );
         })}
+        {/* Spacer equal to one button between first and second */}
+        <div className="w-60 h-[52px]" aria-hidden="true" />
       </div>
 
       {/* Right: Layout Controls & Status */}
