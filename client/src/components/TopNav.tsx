@@ -89,49 +89,87 @@ export default function TopNav({ onOpenTab, layoutMode, onLayoutChange, activeWo
       </div>
 
       {/* Center: Workspace Switcher */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-16 z-0">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-24 z-0">
         {workspaceProjects.map((project) => {
           const isActive = project.id === activeWorkspace;
+          const isOpen = openDropdown === project.id;
+
           return (
-            <button
-              key={project.id}
-              onClick={() => onWorkspaceChange(project.id)}
-              className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300
-                ${isActive ? 'shadow-lg scale-110' : 'hover:bg-gray-100/50'}`}
-              style={{
-                backgroundColor: isActive ? project.color : 'transparent',
-                color: isActive ? '#fff' : 'var(--text-primary)',
-              }}
-            >
-              {/* Circle Icon (Visible only when inactive) */}
-              {!isActive && (
-                <span
-                  className="w-4 h-4 rounded-full"
-                  style={{
-                    backgroundColor: project.color,
-                    boxShadow: `0 0 8px ${project.color}`
-                  }}
-                />
-              )}
-
-              {/* Icon (Visible only when active) */}
-              {isActive && <span className="text-2xl">{project.icon}</span>}
-
-              <span className={`text-xl ${isActive ? 'font-bold' : 'font-medium'}`}>
-                {project.name}
-              </span>
-
-              {/* Dropdown Arrow */}
-              <svg
-                className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'rotate-180' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ opacity: isActive ? 0.9 : 0.5 }}
+            <div key={project.id} className="relative" ref={(el) => { if (el) dropdownRefs.current.set(project.id, el); }}>
+              <button
+                onClick={() => onWorkspaceChange(project.id)}
+                className={`flex items-center w-60 px-4 py-3 rounded-full transition-all duration-300
+                  ${isActive ? 'shadow-lg scale-105' : 'hover:bg-gray-100/50 border border-gray-200/30'}`}
+                style={{
+                  backgroundColor: isActive ? project.color : 'transparent',
+                  color: isActive ? '#fff' : 'var(--text-primary)',
+                }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+                {/* Content Container with Left Padding (3 spaces approx) */}
+                <div className="flex items-center gap-3 pl-4 flex-1">
+                  {/* Circle Icon (Visible only when inactive) */}
+                  {!isActive && (
+                    <span
+                      className="w-4 h-4 rounded-full shrink-0"
+                      style={{
+                        backgroundColor: project.color,
+                        boxShadow: `0 0 8px ${project.color}`
+                      }}
+                    />
+                  )}
+
+                  {/* Icon (Visible only when active) */}
+                  {isActive && <span className="text-2xl shrink-0">{project.icon}</span>}
+
+                  <span className={`text-xl truncate ${isActive ? 'font-bold' : 'font-medium'}`}>
+                    {project.name}
+                  </span>
+                </div>
+
+                {/* Dropdown Arrow Trigger */}
+                <div
+                  className={`p-1 rounded-full transition-colors ${isActive ? 'hover:bg-white/20' : 'hover:bg-gray-200/50'}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenDropdown(isOpen ? null : project.id);
+                  }}
+                >
+                  <svg
+                    className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    style={{ opacity: isActive ? 0.9 : 0.5 }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+
+              {/* Dropdown Menu */}
+              {isOpen && (
+                <div className="absolute top-full left-0 mt-3 w-60 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 p-2">
+                  {project.links?.map((link) => (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100/80 rounded-xl transition-colors"
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      <span className="text-lg">{link.icon}</span>
+                      <span>{link.name}</span>
+                    </a>
+                  ))}
+                  {(!project.links || project.links.length === 0) && (
+                    <div className="px-4 py-3 text-sm text-gray-400 text-center italic">
+                      Нет ссылок
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
