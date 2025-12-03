@@ -1,44 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Пастельная цветовая палитра в стиле iOS */
-  /* Default values (SkinClinic purple) */
-  --primary-h: 250;
-  --primary-s: 84%;
-  --primary-l: 67%;
-
-  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
-  --primary-hover: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 10%));
-  --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
-
+  /* Pastel Palette - точная копия из референса */
+  --primary: #B8C5F2;
+  --primary-hover: #A4B4E8;
   --secondary: #E8D5F2;
-  /* Нежная сирень */
   --accent: #F2D5E5;
-  /* Пастельный розовый */
   --success: #C5E8D5;
-  /* Мятный */
   --warning: #F9E5C8;
-  /* Персиковый */
   --info: #D5E8F9;
-  /* Небесно-голубой */
 
-  /* Нейтральные цвета */
+  /* Neutral Colors */
   --background: #F5F7FA;
-  /* Светлый серо-голубой фон */
   --surface: #FFFFFF;
-  /* Белая поверхность */
-  --surface-glass: rgba(255, 255, 255, 0.7);
-  /* Матовое стекло */
-  --border: #E5E9F0;
-  /* Мягкая граница */
   --text-primary: #2E3A4D;
-  /* Темно-синий для текста */
   --text-secondary: #6B7A8F;
-  /* Серо-синий для вторичного текста */
-  --text-muted: #9BA8B8;
-  /* Приглушенный текст */
+  --text-muted: #9AA5B5;
+  --border: rgba(0, 0, 0, 0.1);
+
+  /* Workspace Colors */
+  --sk-color: #8B5CF6;
+  --mt-color: #3B82F6;
+  --ss-color: #10B981;
+  --cosmetic-color: #EC4899;
 
   /* Тени в стиле iOS */
   --shadow-sm: 0 2px 8px rgba(46, 58, 77, 0.06);
@@ -60,12 +48,11 @@
 }
 
 body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
   color: var(--text-primary);
-  background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF5 50%, #F0F3F9 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;
   overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* App-like feel */
 }
 
 /* Универсальные утилиты для кнопок и элементов */
@@ -121,19 +108,13 @@ body {
   background: linear-gradient(135deg, #B5DCC8 0%, #A5D0B8 100%);
 }
 
-/* Карточки с эффектом стекла */
+/* Glassmorphism Utilities - точная копия из референса */
 .card-glass {
-  background: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
-}
-
-.card-glass:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
 }
 
 /* Карточки без hover-эффекта для панелей */
@@ -145,47 +126,39 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* Инпуты в стиле iOS */
+/* iOS-style Input из референса */
 .input-ios {
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 12px 16px;
-  font-size: 16px;
-  color: var(--text-primary);
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
 .input-ios:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(184, 197, 242, 0.15), var(--shadow-md);
+  box-shadow: 0 0 0 3px rgba(184, 197, 242, 0.2);
 }
 
-.input-ios::placeholder {
-  color: var(--text-muted);
+/* Scrollbar - точная копия из референса */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* Кастомный скроллбар в стиле iOS */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(229, 233, 240, 0.3);
-  border-radius: var(--radius-sm);
-  margin: 4px;
+::-webkit-scrollbar-thumb {
+  background: rgba(107, 122, 143, 0.2);
+  border-radius: 3px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-hover) 100%);
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--primary-hover) 0%, #96A8DC 100%);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 122, 143, 0.4);
 }
 
 /* Скрытие скроллбара */
