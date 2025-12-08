@@ -60,8 +60,8 @@ export default function Home() {
         activeWorkspace={activeWorkspace}
         onWorkspaceChange={setActiveWorkspace}
       />}
-      sidebar={<ScriptRunnerMenu projectId={activeWorkspace} />}
-      rightSidebar={<AgentSidebar projectId={activeWorkspace} />}
+      sidebar={<ScriptRunnerMenu key={activeWorkspace} projectId={activeWorkspace} />}
+      rightSidebar={<AgentSidebar key={activeWorkspace} projectId={activeWorkspace} />}
       showSidebar={showSidebar}
       showRightSidebar={showRightSidebar}
     >

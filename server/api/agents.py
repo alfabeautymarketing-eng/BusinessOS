@@ -20,35 +20,64 @@ GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-fl
 async def chat_agent(task: AgentTask):
     """
     Direct Action Agent:
-    1. Analyzes the user's prompt to determine intent (ADD_ROW, UPDATE_CELL, QUESTION, etc.).
-    2. Executes the action directly via Google Sheets API.
-    3. Returns a natural language response.
+    1. Reads current sheet data
+    2. Analyzes the user's prompt to determine intent (ADD_ROW, UPDATE_CELL, QUESTION, etc.).
+    3. Executes the action directly via Google Sheets API.
+    4. Returns a natural language response.
     """
     try:
-        # 1. Intent Recognition with Gemini
+        # 1. Read current sheet data to provide context
+        sheet_data = []
+        try:
+            sheet_data = google_service.read_sheet(task.spreadsheet_id, task.sheet_name)
+        except Exception as e:
+            print(f"Warning: Could not read sheet data: {e}")
+
+        # Convert sheet data to readable format
+        sheet_context = ""
+        if sheet_data and len(sheet_data) > 0:
+            # Get headers (first row)
+            headers = sheet_data[0] if len(sheet_data) > 0 else []
+            # Get first 20 rows of data
+            data_rows = sheet_data[1:21] if len(sheet_data) > 1 else []
+
+            sheet_context = f"\nSheet Data (first 20 rows):\n"
+            sheet_context += f"Headers: {', '.join(headers)}\n"
+            for idx, row in enumerate(data_rows, start=2):
+                # Pad row to match headers length
+                padded_row = row + [''] * (len(headers) - len(row))
+                sheet_context += f"Row {idx}: {padded_row}\n"
+
+        # 2. Intent Recognition with Gemini
         system_prompt = f"""
         You are an AI Action Agent for Google Sheets.
         Your goal is to understand the user's request and output a JSON object representing the action to take.
-        
+
         Context:
         - Spreadsheet ID: {task.spreadsheet_id}
         - Active Sheet: {task.sheet_name}
-        
+        {sheet_context}
+
         Supported Actions:
         1. ADD_ROW: Append data to the sheet.
            Params: "values" (list of strings/numbers)
         2. UPDATE_CELL: Change a specific cell.
-           Params: "cell" (e.g., "A1"), "value" (string/number)
-        3. ANSWER: Just answer a question or acknowledge.
-           Params: "text" (your response)
-        
+           Params: "cell" (e.g., "G2"), "value" (string/number)
+        3. ANSWER: Answer a question using the sheet data or acknowledge.
+           Params: "text" (your response with specific data from the sheet)
+
         User Request: "{task.prompt}"
-        
+
+        Important:
+        - For questions about data, use ANSWER action and include specific information from the sheet
+        - For UPDATE_CELL, use exact cell reference like "G2" for column G row 2
+        - Answer in Russian language
+
         Output Format (JSON ONLY):
         {{
             "action": "ADD_ROW" | "UPDATE_CELL" | "ANSWER",
             "params": {{ ... }},
-            "response_text": "A short, friendly confirmation message for the user."
+            "response_text": "A short, friendly confirmation message for the user in Russian."
         }}
         """
         

@@ -61,6 +61,8 @@ const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string
     },
 };
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProps) {
     const [mode, setMode] = useState<Mode>('agent');
     const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -88,6 +90,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
     ]);
 
     const theme = PROJECT_THEMES[projectId] || PROJECT_THEMES.default;
+
+    console.log('🎨 AgentSidebar - projectId:', projectId, 'theme:', theme);
 
     // Project Configuration Mapping
     const PROJECT_CONFIG: Record<string, { sheetId: string; sheetName: string }> = {
@@ -121,7 +125,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
             try {
                 const config = PROJECT_CONFIG[projectId] || PROJECT_CONFIG.default;
 
-                const response = await fetch('http://localhost:8000/api/agents/chat', {
+                const response = await fetch(`${API_BASE_URL}/api/agents/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -561,9 +565,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             onClick={handleSend}
                             className="absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 hover:scale-105 border-2"
                             style={{
-                                backgroundColor: 'var(--primary)',
-                                borderColor: 'var(--primary)',
-                                color: 'var(--text-primary)',
+                                backgroundColor: theme.primary,
+                                borderColor: theme.primary,
+                                color: 'white',
                                 boxShadow: 'var(--shadow-md)'
                             }}
                         >
