@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Layout, LayoutPanelLeft, Square, ChevronDown } from 'lucide-react';
 
 interface TopNavProps {
@@ -113,12 +114,12 @@ export default function TopNav({
     <div className="glass-panel rounded-2xl h-16 flex items-center justify-between px-6 shrink-0 relative z-50">
       {/* Brand */}
       <div className="flex items-center gap-3 w-48">
-        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200/50 text-xl">
-          B
+        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-indigo-200/50 border border-white/60 bg-white flex items-center justify-center relative">
+          <Image src="/logo-agent.png" alt="CareAgent logo" fill className="object-contain p-1" sizes="40px" priority />
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-lg leading-none tracking-tight text-[var(--text-primary)]">Business OS</span>
-          <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest opacity-70">Workspace</span>
+          <span className="font-bold text-lg leading-none tracking-tight text-[var(--text-primary)]">CareAgent</span>
+          <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest opacity-80">Пропиши всё в документации</span>
         </div>
       </div>
 

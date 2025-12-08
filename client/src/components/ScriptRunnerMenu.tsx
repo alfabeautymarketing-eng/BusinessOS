@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import projectsConfig from '../config/projects.json';
 
 type ProjectConfig = { id: string; name: string };
+type ProjectId = 'sk' | 'mt' | 'ss' | 'cosmetic' | string;
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 const PROJECT_NAME_MAP = Object.fromEntries(
     (projectsConfig.projects as ProjectConfig[]).map((project) => [project.id, project.name])
 ) as Record<string, string>;
@@ -34,33 +38,25 @@ interface ScriptRunnerMenuProps {
     projectId?: string;
 }
 
-// Menu Data Configuration (Mirrors 01Config.js)
-const MENU_DATA: MenuSection[] = [
-    {
-        id: 'ORDER',
-        title: 'Заказ',
-        icon: '📦',
-        items: [
-            { id: 'MAIN', label: 'Обработка Б/З поставщик', fn: 'processSsPriceSheet', icon: '📝' },
-            { id: 'STOCKS', label: 'Загрузить остатки', fn: 'loadSsStockData', icon: '📥' },
-            { id: 'NEW_PRICE_YEAR', label: 'New год для динамика', fn: 'addNewYearColumnsToPriceDynamics', icon: '📅' },
-        ]
-    },
-    {
-        id: 'ORDER_STAGES',
-        title: 'Стадии по заказ',
-        icon: '📊',
-        items: [
-            { id: 'SORT_MANUFACTURER', label: 'Сортировать по производителю', fn: 'sortSsOrderByManufacturer', icon: '🏭' },
-            { id: 'SORT_PRICE', label: 'Сортировать по прайсу', fn: 'sortSsOrderByPrice', icon: '💰' },
-            { separator: true },
-            { id: 'STAGE_ALL', label: '1. Все данные', fn: 'showAllOrderData', icon: '1️⃣' },
-            { id: 'STAGE_ORDER', label: '2. Заказ', fn: 'showOrderStage', icon: '2️⃣' },
-            { id: 'STAGE_PROMOTIONS', label: '3. Акции', fn: 'showPromotionsStage', icon: '3️⃣' },
-            { id: 'STAGE_SET', label: '4. Набор', fn: 'showSetStage', icon: '4️⃣' },
-            { id: 'STAGE_PRICE', label: '5. Прайс', fn: 'showPriceStage', icon: '5️⃣' },
-        ]
-    },
+type StatusState = { type: 'idle' | 'running' | 'success' | 'error'; message: string };
+
+const ORDER_FUNCTIONS = {
+    MAIN: { sk: 'processSkPriceSheet', ss: 'processSsPriceSheet', mt: 'processMtMainPrice' },
+    STOCKS: { sk: 'loadSkStockData', ss: 'loadSsStockData', mt: 'loadMtStockData' },
+    NEW_PRICE_YEAR: 'addNewYearColumnsToPriceDynamics',
+};
+
+const ORDER_STAGE_FUNCTIONS = {
+    SORT_MANUFACTURER: { sk: 'sortSkOrderByManufacturer', ss: 'sortSsOrderByManufacturer', mt: 'sortMtOrderByManufacturer' },
+    SORT_PRICE: { sk: 'sortSkOrderByPrice', ss: 'sortSsOrderByPrice', mt: 'sortMtOrderByPrice' },
+    STAGE_ALL: 'showAllOrderData',
+    STAGE_ORDER: 'showOrderStage',
+    STAGE_PROMOTIONS: 'showPromotionsStage',
+    STAGE_SET: 'showSetStage',
+    STAGE_PRICE: 'showPriceStage',
+};
+
+const COMMON_SECTIONS: MenuSection[] = [
     {
         id: 'EXPORT',
         title: 'Выгрузка',
@@ -68,7 +64,7 @@ const MENU_DATA: MenuSection[] = [
         items: [
             { label: 'Выгрузить Акции', fn: 'exportPromotions', icon: '📤' },
             { label: 'Выгрузить Наборы', fn: 'exportSets', icon: '📦' },
-        ]
+        ],
     },
     {
         id: 'SUPPLY',
@@ -79,7 +75,7 @@ const MENU_DATA: MenuSection[] = [
             { separator: true },
             { label: "1. Создать лист 'Для инвойса'", fn: 'createFullInvoice', icon: '1️⃣' },
             { label: "2. Собрать документы", fn: 'collectAndCopyDocuments', icon: '2️⃣' },
-        ]
+        ],
     },
     {
         id: 'CERTIFICATION',
@@ -96,7 +92,7 @@ const MENU_DATA: MenuSection[] = [
             { label: 'Создать Макеты спирты', fn: 'generateSpiritProtocols', icon: '🖼️' },
             { separator: true },
             { label: 'Пересчитать каскады (Сертификация)', fn: 'runManualCascadeOnCertification', icon: '🔄' },
-        ]
+        ],
     },
     {
         id: 'SYNC',
@@ -115,7 +111,7 @@ const MENU_DATA: MenuSection[] = [
                     { separator: true },
                     { label: 'Синхронизировать строку', fn: 'syncSelectedRow', icon: '🔄' },
                     { label: 'Синхронизировать ВСЁ', fn: 'runFullSync', icon: '🔁' },
-                ]
+                ],
             },
             { separator: true },
             { label: 'Установить триггеры', fn: 'setupTriggers', icon: '⏰' },
@@ -126,23 +122,97 @@ const MENU_DATA: MenuSection[] = [
                 items: [
                     { label: 'Очистить (оставить 100)', fn: 'quickCleanLogSheet', icon: '🧹' },
                     { label: 'Пересоздать журнал', fn: 'recreateLogSheet', icon: '♻️' },
-                ]
+                ],
             },
-        ]
+        ],
     },
-    {
-        id: 'COSMETIC_ANALYSIS',
-        title: 'Анализ косметики',
-        icon: '💄',
-        special: true,
-        items: []
-    }
 ];
+
+const COSMETIC_SECTION: MenuSection = {
+    id: 'COSMETIC_ANALYSIS',
+    title: 'Анализ косметики',
+    icon: '💄',
+    special: true,
+    items: [],
+};
+
+const compactItems = (items: MenuItem[]): MenuItem[] => {
+    const result: MenuItem[] = [];
+
+    items.forEach((item) => {
+        if (item.separator) {
+            if (result.length === 0 || result[result.length - 1].separator) return;
+            result.push(item);
+            return;
+        }
+
+        if (item.submenu && item.items) {
+            const nested = compactItems(item.items);
+            if (nested.length === 0) return;
+            result.push({ ...item, items: nested });
+            return;
+        }
+
+        if (!item.fn) return;
+        result.push(item);
+    });
+
+    if (result[result.length - 1]?.separator) {
+        result.pop();
+    }
+
+    return result;
+};
+
+const buildMenuForProject = (projectId: ProjectId): MenuSection[] => {
+    const key = projectId.toLowerCase();
+
+    const sections: MenuSection[] = [
+        {
+            id: 'ORDER',
+            title: 'Заказ',
+            icon: '📦',
+            items: compactItems([
+                { id: 'MAIN', label: 'Обработка Б/З поставщик', fn: ORDER_FUNCTIONS.MAIN[key] },
+                { id: 'STOCKS', label: 'Загрузить остатки', fn: ORDER_FUNCTIONS.STOCKS[key] },
+                { id: 'NEW_PRICE_YEAR', label: 'New год для динамика', fn: ORDER_FUNCTIONS.NEW_PRICE_YEAR },
+            ]),
+        },
+        {
+            id: 'ORDER_STAGES',
+            title: 'Стадии по заказ',
+            icon: '📊',
+            items: compactItems([
+                { id: 'SORT_MANUFACTURER', label: 'Сортировать по производителю', fn: ORDER_STAGE_FUNCTIONS.SORT_MANUFACTURER[key] },
+                { id: 'SORT_PRICE', label: 'Сортировать по прайсу', fn: ORDER_STAGE_FUNCTIONS.SORT_PRICE[key] },
+                { separator: true },
+                { id: 'STAGE_ALL', label: '1. Все данные', fn: ORDER_STAGE_FUNCTIONS.STAGE_ALL },
+                { id: 'STAGE_ORDER', label: '2. Заказ', fn: ORDER_STAGE_FUNCTIONS.STAGE_ORDER },
+                { id: 'STAGE_PROMOTIONS', label: '3. Акции', fn: ORDER_STAGE_FUNCTIONS.STAGE_PROMOTIONS },
+                { id: 'STAGE_SET', label: '4. Набор', fn: ORDER_STAGE_FUNCTIONS.STAGE_SET },
+                { id: 'STAGE_PRICE', label: '5. Прайс', fn: ORDER_STAGE_FUNCTIONS.STAGE_PRICE },
+            ]),
+        },
+        ...COMMON_SECTIONS.map((section) => ({ ...section, items: compactItems(section.items) })),
+    ];
+
+    if (key === 'cosmetic') {
+        sections.push(COSMETIC_SECTION);
+    }
+
+    return sections.filter((section) => section.items.length > 0);
+};
 
 export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunnerMenuProps) {
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['ORDER', 'ORDER_STAGES']));
     const [expandedSubmenus, setExpandedSubmenus] = useState<Set<string>>(new Set());
-    const projectName = getProjectName(projectId);
+    const [runningFn, setRunningFn] = useState<string | null>(null);
+    const [status, setStatus] = useState<StatusState>({ type: 'idle', message: 'Система готова' });
+
+    const activeProjectId = (projectId === 'default' ? 'sk' : projectId) as ProjectId;
+    const normalizedProjectId = activeProjectId.toLowerCase();
+    const projectName = getProjectName(activeProjectId);
+    const menuSections = useMemo(() => buildMenuForProject(normalizedProjectId), [normalizedProjectId]);
 
     const toggleSection = (id: string) => {
         const newExpanded = new Set(expandedSections);
@@ -162,6 +232,36 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
             newExpanded.add(id);
         }
         setExpandedSubmenus(newExpanded);
+    };
+
+    const handleRunFunction = async (fn?: string) => {
+        if (!fn) return;
+        setRunningFn(fn);
+        setStatus({ type: 'running', message: `Запуск ${fn}...` });
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/scripts/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: normalizedProjectId,
+                    function_name: fn,
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok || data.status !== 'success') {
+                const errorMessage = data.detail || data.message || 'Ошибка выполнения';
+                throw new Error(errorMessage);
+            }
+
+            setStatus({ type: 'success', message: data.message || 'Готово' });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Неизвестная ошибка';
+            setStatus({ type: 'error', message });
+        } finally {
+            setRunningFn(null);
+        }
     };
 
     const renderMenuItem = (item: MenuItem, index: number, depth: number = 0) => {
@@ -197,23 +297,35 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
             );
         }
 
+        const isRunning = runningFn === item.fn;
+        const isDisabled = !item.fn || (!!runningFn && !isRunning);
+
         return (
             <button
-                key={`item-${index}`}
+                key={item.id || `item-${index}`}
                 className={`
                     w-full flex items-center gap-3 px-3 py-2 text-left text-xs font-medium rounded-lg
                     transition-all duration-200 border border-transparent
                     text-[var(--text-secondary)] hover:text-[var(--text-primary)]
                     hover:bg-white/50 hover:scale-105 hover:shadow-sm hover:border-white/40
+                    ${isDisabled ? 'opacity-60 cursor-not-allowed hover:scale-100 hover:bg-white/40' : ''}
                 `}
                 style={{ marginLeft: `${depth * 8}px` }}
-                onClick={() => console.log(`Running: ${item.fn}`)}
+                onClick={() => !isDisabled && handleRunFunction(item.fn)}
+                disabled={isDisabled}
             >
-                <span className="text-sm">{item.icon}</span>
+                <span className="text-sm">{isRunning ? '⏳' : item.icon}</span>
                 <span className="truncate">{item.label}</span>
             </button>
         );
     };
+
+    const statusDot = {
+        idle: 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]',
+        running: 'bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]',
+        success: 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]',
+        error: 'bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.8)]',
+    }[status.type];
 
     return (
         <div className="flex flex-col h-full w-full select-none">
@@ -227,7 +339,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
 
             {/* Script Tree */}
             <div className="flex-1 overflow-y-auto no-scrollbar py-2 px-2">
-                {MENU_DATA.map((section) => {
+                {menuSections.map((section) => {
                     const isExpanded = expandedSections.has(section.id);
                     const isSpecial = section.special;
 
@@ -270,8 +382,8 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
             {/* Status Footer */}
             <div className="px-4 py-3 border-t border-[var(--border)] bg-white/20 backdrop-blur-sm">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 border border-white/20 shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] animate-pulse" />
-                    <span className="text-[10px] font-medium text-[var(--text-secondary)]">Система готова</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${statusDot}`} />
+                    <span className="text-[10px] font-medium text-[var(--text-secondary)]">{status.message}</span>
                 </div>
             </div>
         </div>

@@ -200,8 +200,12 @@ class GoogleService:
 
         # Normalize error handling to raise Python exceptions with a friendly message
         if "error" in result:
-            error = result["error"]["details"][0]["errorMessage"]
-            raise Exception(error)
+            error_info = result.get("error", {})
+            details = error_info.get("details", [])
+            message = error_info.get("message", "Script execution failed")
+            if details and isinstance(details[0], dict):
+                message = details[0].get("errorMessage", message)
+            raise Exception(message)
 
         return result.get("response", {})
 

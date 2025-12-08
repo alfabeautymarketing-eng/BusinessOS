@@ -65,14 +65,14 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
 
                         {/* Resizer Handle */}
                         <div
-                            className="absolute top-0 right-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-50"
+                            className="absolute top-0 right-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('left');
                                 resizeRef.current = { startX: e.clientX, startWidth: leftWidth };
                             }}
                         >
-                            <div className="w-1 h-12 rounded-full bg-white/20 group-hover:bg-indigo-400/50 transition-colors backdrop-blur-sm" />
+                            <div className="w-1.5 h-12 rounded-full bg-gray-400/30 group-hover:bg-[var(--primary)] transition-colors backdrop-blur-md shadow-sm" />
                         </div>
                     </div>
                 )}
@@ -87,14 +87,14 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                     <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${rightWidth}px` }}>
                         {/* Resizer Handle */}
                         <div
-                            className="absolute top-0 left-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-50"
+                            className="absolute top-0 left-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('right');
                                 resizeRef.current = { startX: e.clientX, startWidth: rightWidth };
                             }}
                         >
-                            <div className="w-1 h-12 rounded-full bg-white/20 group-hover:bg-indigo-400/50 transition-colors backdrop-blur-sm" />
+                            <div className="w-1.5 h-12 rounded-full bg-gray-400/30 group-hover:bg-[var(--primary)] transition-colors backdrop-blur-md shadow-sm" />
                         </div>
 
                         <aside className="h-full w-full flex flex-col">
@@ -103,6 +103,10 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                     </div>
                 )}
             </div>
+            {/* usage of Global Overlay to capture mouse events over iframes during resize */}
+            {resizing && (
+                <div className="fixed inset-0 z-[9999] cursor-col-resize user-select-none" />
+            )}
         </div>
     );
 }
