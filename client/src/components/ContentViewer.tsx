@@ -9,25 +9,25 @@ interface ContentViewerProps {
 export default function ContentViewer({ tab }: ContentViewerProps) {
   if (!tab) {
     return (
-      <div className="flex items-center justify-center h-full" style={{ backgroundColor: 'var(--background)' }}>
-        <div className="text-center space-y-6 card-glass p-12 max-w-md animate-fade-in">
-          <div className="text-7xl mb-4">📋</div>
-          <div className="space-y-3">
-            <p className="text-sm tracking-[0.15em] uppercase font-semibold" style={{ color: 'var(--text-muted)' }}>
+      <div className="flex items-center justify-center h-full w-full">
+        <div className="text-center space-y-6 glass-panel p-12 max-w-md animate-fade-in rounded-3xl border border-white/60">
+          <div className="text-7xl mb-4 filter drop-shadow-sm">📋</div>
+          <div className="space-y-2">
+            <p className="text-xs tracking-[0.2em] uppercase font-bold text-[var(--text-secondary)]">
               Нет активных вкладок
             </p>
-            <p className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Откройте проект из меню выше
+            <p className="text-xl font-bold text-[var(--text-primary)]">
+              Выберите проект или инструмент
             </p>
           </div>
-          <div className="flex items-center justify-center gap-3 mt-6">
-            <div className="badge" style={{ background: 'var(--info)' }}>
+          <div className="flex items-center justify-center gap-3 mt-8">
+            <div className="px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-100 shadow-sm flex items-center gap-2">
               <span>📊</span>
-              <span style={{ color: 'var(--text-primary)' }}>Google Таблицы</span>
+              <span>Google Таблицы</span>
             </div>
-            <div className="badge" style={{ background: 'var(--secondary)' }}>
+            <div className="px-4 py-2 rounded-full bg-pink-50 text-pink-700 text-xs font-semibold border border-pink-100 shadow-sm flex items-center gap-2">
               <span>🤖</span>
-              <span style={{ color: 'var(--text-primary)' }}>Чат-боты</span>
+              <span>Чат-боты</span>
             </div>
           </div>
         </div>

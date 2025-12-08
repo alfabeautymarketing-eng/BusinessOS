@@ -187,5 +187,23 @@ class GoogleService:
         ).execute()
         return result
 
+    def run_script_function(self, script_id: str, function_name: str, parameters=None):
+        """
+        Executes a Google Apps Script function via the Execution API.
+        """
+        service = self.get_script_service()
+        body = {"function": function_name, "devMode": True}
+        if parameters is not None:
+            body["parameters"] = parameters
+
+        result = service.scripts().run(scriptId=script_id, body=body).execute()
+
+        # Normalize error handling to raise Python exceptions with a friendly message
+        if "error" in result:
+            error = result["error"]["details"][0]["errorMessage"]
+            raise Exception(error)
+
+        return result.get("response", {})
+
 # Создание синглтона для импорта в других модулях
 google_service = GoogleService()

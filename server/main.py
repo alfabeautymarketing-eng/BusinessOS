@@ -21,6 +21,8 @@ from api.drive import router as drive_router
 app.include_router(drive_router)
 from api.agents import router as agents_router
 app.include_router(agents_router)
+from api.scripts import router as scripts_router
+app.include_router(scripts_router)
 
 @app.get("/")
 async def root():

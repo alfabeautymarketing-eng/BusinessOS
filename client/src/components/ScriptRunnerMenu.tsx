@@ -1,6 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import projectsConfig from '../config/projects.json';
+
+type ProjectConfig = { id: string; name: string };
+const PROJECT_NAME_MAP = Object.fromEntries(
+    (projectsConfig.projects as ProjectConfig[]).map((project) => [project.id, project.name])
+) as Record<string, string>;
+
+const getProjectName = (projectId: string) => PROJECT_NAME_MAP[projectId] || projectId.toUpperCase();
 
 // Types for the menu structure
 interface MenuItem {
@@ -134,6 +142,7 @@ const MENU_DATA: MenuSection[] = [
 export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunnerMenuProps) {
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['ORDER', 'ORDER_STAGES']));
     const [expandedSubmenus, setExpandedSubmenus] = useState<Set<string>>(new Set());
+    const projectName = getProjectName(projectId);
 
     const toggleSection = (id: string) => {
         const newExpanded = new Set(expandedSections);
@@ -212,7 +221,7 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-white/30 backdrop-blur-md sticky top-0 z-10">
                 <div className="w-2 h-2 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] animate-pulse" />
                 <h2 className="text-xs font-bold tracking-wider uppercase text-[var(--text-primary)]">
-                    Функции <span className="text-[var(--primary)] opacity-80">({projectId === 'default' ? 'SK' : projectId.toUpperCase()})</span>
+                    Функции <span className="text-[var(--primary)] opacity-80">{projectName}</span>
                 </h2>
             </div>
 

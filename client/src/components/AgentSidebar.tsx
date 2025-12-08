@@ -1,6 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import projectsConfig from '../config/projects.json';
+
+type ProjectConfig = { id: string; name: string };
+const PROJECT_NAME_MAP = Object.fromEntries(
+    (projectsConfig.projects as ProjectConfig[]).map((project) => [project.id, project.name])
+) as Record<string, string>;
+
+const getProjectName = (projectId: string) => PROJECT_NAME_MAP[projectId] || projectId.toUpperCase();
 
 type Tab = 'chat' | 'history' | 'controls' | 'dev-chat' | 'logs' | 'git';
 type Mode = 'agent' | 'dev';
@@ -53,6 +61,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         '[14:05:23] ℹ️ Подключение к Google Drive...',
         '[14:05:24] ✅ Подключение установлено'
     ]);
+    const projectName = getProjectName(projectId);
 
     const PROJECT_CONFIG: Record<string, { sheetId: string; sheetName: string }> = {
         sk: { sheetId: '1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw', sheetName: 'Sheet1' },
@@ -163,7 +172,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
 
         const newHistory: ChatHistory = {
             id: Date.now().toString(),
-            title: `Сессия ${projectId.toUpperCase()} - ${new Date().toLocaleString()}`,
+            title: `Сессия ${projectName} - ${new Date().toLocaleString()}`,
             messages: currentMessages,
             created: Date.now(),
             updated: Date.now()
@@ -263,7 +272,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             <div className="flex flex-col items-center justify-center h-full text-center p-6 text-[var(--text-secondary)]">
                                 <div className="text-5xl mb-4 opacity-50">{activeTab === 'chat' ? '💬' : '💻'}</div>
                                 <p className="text-sm font-medium">
-                                    Нет сообщений для проекта {projectId.toUpperCase()}
+                                    Нет сообщений для проекта {projectName}
                                 </p>
                             </div>
                         )}
@@ -404,7 +413,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                            placeholder={`✍️ Сообщение для ${projectId.toUpperCase()}...`}
+                            placeholder={`✍️ Сообщение для ${projectName}...`}
                             className="input-ios w-full min-h-[50px] max-h-[150px] resize-none pr-24 py-3 shadow-inner bg-white/50 focus:bg-white transition-colors"
                             rows={1}
                         />
