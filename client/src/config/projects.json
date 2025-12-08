@@ -131,7 +131,7 @@
         {
           "id": "declarations",
           "name": "Декларации",
-          "type": "Папка"0,
+          "type": "Папка",
           "url": "https://drive.google.com/drive/folders/[SS_DECLARATIONS_FOLDER_ID]",
           "folderId": "[SS_DECLARATIONS_FOLDER_ID]",
           "icon": "📜"
