@@ -17,6 +17,11 @@ type WorkspaceProject = {
   icon: string;
   color: string;
   type?: string;
+  theme?: {
+    h: number;
+    s: string;
+    l: string;
+  };
 };
 
 export default function Home() {
@@ -51,32 +56,55 @@ export default function Home() {
     openTab(tab);
   };
 
-  return (
-    <Shell
-      topNav={<TopNav
-        onOpenTab={handleOpenTab}
-        layoutMode={layoutMode}
-        onLayoutChange={setLayoutMode}
-        activeWorkspace={activeWorkspace}
-        onWorkspaceChange={setActiveWorkspace}
-      />}
-      sidebar={<ScriptRunnerMenu key={activeWorkspace} projectId={activeWorkspace} />}
-      rightSidebar={<AgentSidebar key={activeWorkspace} projectId={activeWorkspace} />}
-      showSidebar={showSidebar}
-      showRightSidebar={showRightSidebar}
-    >
-      <div className="flex flex-col w-full h-full gap-3 px-0 py-2">
-        <TabsBar
-          tabs={workspaceTabs}
-          activeTabId={workspaceActiveTabId}
-          onTabClick={switchTab}
-          onTabClose={closeTab}
-        />
+  // Get active project to determine theme colors
+  const activeProject = (projectsConfig.projects as WorkspaceProject[]).find(p => p.id === activeWorkspace);
 
-        <div className="flex-1 card-static animate-fade-in overflow-hidden">
-          <ContentViewer tab={workspaceActiveTab} />
+  // Calculate dynamic theme styles
+  const themeStyles = React.useMemo(() => {
+    if (activeProject && activeProject.theme) {
+      const { h, s, l } = activeProject.theme;
+      return {
+        '--primary': `hsl(${h}, ${s}, ${l})`,
+        '--primary-hover': `hsl(${h}, ${s}, calc(${parseInt(l.toString())} - 10%))`,
+        '--secondary': `hsl(${h}, ${s}, 96%)`, // Light background tint
+      } as React.CSSProperties;
+    } else if (activeProject && activeProject.color) {
+      return {
+        '--primary': activeProject.color,
+        '--primary-hover': activeProject.color, // Fallback
+      } as React.CSSProperties;
+    }
+    return {};
+  }, [activeProject]);
+
+  return (
+    <div style={themeStyles} className="contents">
+      <Shell
+        topNav={<TopNav
+          onOpenTab={handleOpenTab}
+          layoutMode={layoutMode}
+          onLayoutChange={setLayoutMode}
+          activeWorkspace={activeWorkspace}
+          onWorkspaceChange={setActiveWorkspace}
+        />}
+        sidebar={<ScriptRunnerMenu key={activeWorkspace} projectId={activeWorkspace} />}
+        rightSidebar={<AgentSidebar key={activeWorkspace} projectId={activeWorkspace} />}
+        showSidebar={showSidebar}
+        showRightSidebar={showRightSidebar}
+      >
+        <div className="flex flex-col w-full h-full">
+          <TabsBar
+            tabs={workspaceTabs}
+            activeTabId={workspaceActiveTabId}
+            onTabClick={switchTab}
+            onTabClose={closeTab}
+          />
+
+          <div className="flex-1 glass-card-strong rounded-[32px] animate-fade-in overflow-hidden relative border border-white/50 shadow-2xl backdrop-blur-xl">
+            <ContentViewer tab={workspaceActiveTab} />
+          </div>
         </div>
-      </div>
-    </Shell>
+      </Shell>
+    </div>
   );
 }

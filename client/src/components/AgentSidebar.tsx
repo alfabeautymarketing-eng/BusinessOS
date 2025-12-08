@@ -26,41 +26,6 @@ interface AgentSidebarProps {
     projectId?: string;
 }
 
-const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string; shadow: string; primary: string; primaryHover: string }> = {
-    sk: {
-        color: 'text-purple-400',
-        bg: 'bg-purple-500/10',
-        border: 'border-purple-500/30',
-        shadow: 'shadow-purple-500/20',
-        primary: '#8B5CF6',
-        primaryHover: '#7C3AED'
-    },
-    mt: {
-        color: 'text-blue-400',
-        bg: 'bg-blue-500/10',
-        border: 'border-blue-500/30',
-        shadow: 'shadow-blue-500/20',
-        primary: '#3B82F6',
-        primaryHover: '#2563EB'
-    },
-    ss: {
-        color: 'text-green-400',
-        bg: 'bg-green-500/10',
-        border: 'border-green-500/30',
-        shadow: 'shadow-green-500/20',
-        primary: '#10B981',
-        primaryHover: '#059669'
-    },
-    default: {
-        color: 'text-cyan-400',
-        bg: 'bg-cyan-500/10',
-        border: 'border-cyan-500/30',
-        shadow: 'shadow-cyan-500/20',
-        primary: '#B8C5F2',
-        primaryHover: '#A4B4E8'
-    },
-};
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProps) {
@@ -89,13 +54,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         '[14:05:24] ✅ Подключение установлено'
     ]);
 
-    const theme = PROJECT_THEMES[projectId] || PROJECT_THEMES.default;
-
-    console.log('🎨 AgentSidebar - projectId:', projectId, 'theme:', theme);
-
-    // Project Configuration Mapping
     const PROJECT_CONFIG: Record<string, { sheetId: string; sheetName: string }> = {
-        sk: { sheetId: '1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw', sheetName: 'Sheet1' }, // Defaulting to Sheet1
+        sk: { sheetId: '1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw', sheetName: 'Sheet1' },
         mt: { sheetId: '1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw', sheetName: 'Sheet1' },
         ss: { sheetId: 'placeholder_ss_id', sheetName: 'Sheet1' },
         default: { sheetId: 'placeholder_default_id', sheetName: 'Sheet1' }
@@ -121,62 +81,60 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         setAttachments([]);
 
         if (mode === 'agent') {
-            // Real Agent API Call
             try {
                 const config = PROJECT_CONFIG[projectId] || PROJECT_CONFIG.default;
 
                 const response = await fetch(`${API_BASE_URL}/api/agents/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: userMessage.text,
-                    spreadsheet_id: config.sheetId,
-                    sheet_name: config.sheetName,
-                    context: {}
-                })
-            });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: userMessage.text,
+                        spreadsheet_id: config.sheetId,
+                        sheet_name: config.sheetName,
+                        context: {}
+                    })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (data.status === 'success') {
-                const agentMessage: Message = {
-                    id: (Date.now() + 1).toString(),
-                    sender: 'agent',
-                    text: data.message, // Display the natural language response
-                    timestamp: Date.now()
-                };
-                setChats(prev => ({
-                    ...prev,
-                    [projectId]: [...(prev[projectId] || []), agentMessage]
-                }));
-            } else {
+                if (data.status === 'success') {
+                    const agentMessage: Message = {
+                        id: (Date.now() + 1).toString(),
+                        sender: 'agent',
+                        text: data.message,
+                        timestamp: Date.now()
+                    };
+                    setChats(prev => ({
+                        ...prev,
+                        [projectId]: [...(prev[projectId] || []), agentMessage]
+                    }));
+                } else {
+                    const errorMessage: Message = {
+                        id: (Date.now() + 1).toString(),
+                        sender: 'agent',
+                        text: `❌ Ошибка: ${data.message}`,
+                        timestamp: Date.now()
+                    };
+                    setChats(prev => ({
+                        ...prev,
+                        [projectId]: [...(prev[projectId] || []), errorMessage]
+                    }));
+                }
+
+            } catch (error) {
+                console.error('Agent API Error:', error);
                 const errorMessage: Message = {
                     id: (Date.now() + 1).toString(),
                     sender: 'agent',
-                    text: `❌ Ошибка: ${data.message}`,
+                    text: '❌ Ошибка соединения с сервером.',
                     timestamp: Date.now()
                 };
-                setChats(prev => ({
-                    ...prev,
-                    [projectId]: [...(prev[projectId] || []), errorMessage]
-                }));
-            }
-
-        } catch (error) {
-            console.error('Agent API Error:', error);
-            const errorMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                sender: 'agent',
-                text: '❌ Ошибка соединения с сервером.',
-                timestamp: Date.now()
-            };
                 setChats(prev => ({
                     ...prev,
                     [projectId]: [...(prev[projectId] || []), errorMessage]
                 }));
             }
         } else {
-            // Developer mode - simulate response
             setTimeout(() => {
                 const devMessage: Message = {
                     id: (Date.now() + 1).toString(),
@@ -212,8 +170,6 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         };
 
         setChatHistories(prev => [newHistory, ...prev]);
-
-        // TODO: Save to Google Drive
         setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] 💾 История сохранена на Google Drive`]);
     };
 
@@ -250,106 +206,99 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
     }, [mode, projectId]);
 
     return (
-        <div className="flex flex-col h-full text-base">
+        <div className="flex flex-col h-full text-base font-sans select-none">
             {/* Mode Switcher */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
+            <div className="flex items-center gap-2 px-4 py-3 bg-white/40 sticky top-0 z-10 backdrop-blur-md">
                 {(['agent', 'dev'] as Mode[]).map((m) => {
                     const active = m === mode;
                     return (
                         <button
                             key={m}
                             onClick={() => setMode(m)}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 border-2 flex items-center justify-center emoji-gap
-                            ${active ? 'button-rounded' : ''}`}
-                            style={{
-                                backgroundColor: active ? 'var(--primary)' : 'transparent',
-                                borderColor: active ? 'var(--primary)' : 'var(--border)',
-                                color: active ? 'var(--text-primary)' : 'var(--text-muted)',
-                                boxShadow: active ? 'var(--shadow-md)' : 'none'
-                            }}
+                            className={`
+                                flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300
+                                flex items-center justify-center gap-2 border shadow-sm
+                                ${active
+                                    ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-md transform scale-[1.02]'
+                                    : 'bg-white/60 border-transparent text-[var(--text-secondary)] hover:bg-white'}
+                            `}
                         >
-                            {m === 'agent' ? (
-                                <>
-                                    <span className="text-lg">🤖</span>
-                                    <span>Агент</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="text-lg">👨‍💻</span>
-                                    <span>Разработчик</span>
-                                </>
-                            )}
+                            <span className="text-base">{m === 'agent' ? '🤖' : '👨‍💻'}</span>
+                            <span>{m === 'agent' ? 'Агент' : 'Dev'}</span>
                         </button>
                     );
                 })}
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b overflow-x-auto no-scrollbar" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
-                {visibleTabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex-1 min-w-[100px] py-3 px-2 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-200 flex items-center justify-center emoji-gap`}
-                        style={{
-                            color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
-                            backgroundColor: activeTab === tab.id ? 'var(--primary)' : 'transparent',
-                            borderRadius: activeTab === tab.id ? '8px 8px 0 0' : '0'
-                        }}
-                    >
-                        <span className="text-sm leading-none">{tab.icon}</span>
-                        <span className="text-[10px]">{tab.label}</span>
-                        {activeTab === tab.id && (
-                            <div className="absolute bottom-0 left-4 right-4 h-1 rounded-full" style={{ backgroundColor: 'var(--text-primary)' }}></div>
-                        )}
-                    </button>
-                ))}
+            <div className="px-4 pb-2 bg-white/40 backdrop-blur-md">
+                <div className="flex bg-gray-100/50 p-1 rounded-xl">
+                    {visibleTabs.map((tab) => {
+                        const active = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`
+                                    flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200
+                                    flex items-center justify-center gap-2
+                                    ${active
+                                        ? 'bg-white text-[var(--text-primary)] shadow-sm'
+                                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}
+                                `}
+                            >
+                                <span className="text-xs">{tab.icon}</span>
+                                <span>{tab.label}</span>
+                            </button>
+                        )
+                    })}
+                </div>
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar" style={{ backgroundColor: 'var(--background)' }}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
                 {(activeTab === 'chat' || activeTab === 'dev-chat') && (
                     <>
                         {currentChat.length === 0 && (
-                            <div className="text-center mt-10 text-xs card-glass p-6">
-                                <div className="text-4xl mb-3">{activeTab === 'chat' ? '💬' : '💻'}</div>
-                                <p style={{ color: 'var(--text-secondary)' }}>
+                            <div className="flex flex-col items-center justify-center h-full text-center p-6 text-[var(--text-secondary)]">
+                                <div className="text-5xl mb-4 opacity-50">{activeTab === 'chat' ? '💬' : '💻'}</div>
+                                <p className="text-sm font-medium">
                                     Нет сообщений для проекта {projectId.toUpperCase()}
                                 </p>
                             </div>
                         )}
 
-                        {currentChat.map((msg) => (
-                            <div key={msg.id} className={`flex flex-col space-y-1.5 animate-fade-in`}>
-                                <span className="text-xs font-semibold" style={{
-                                    color: 'var(--text-secondary)',
-                                    textAlign: msg.sender === 'user' ? 'right' : 'left'
-                                }}>
-                                    {msg.sender === 'user' ? '👤 Пользователь' : (activeTab === 'dev-chat' ? '👨‍💻 Разработчик' : '🤖 Агент')}
-                                </span>
-                                <div className={`
-                                    card-glass p-4 max-w-[90%] border-2
-                                    ${msg.sender === 'user'
-                                        ? 'rounded-tr-md self-end'
-                                        : 'rounded-tl-md self-start'}
-                                `}
-                                    style={{
-                                        borderColor: msg.sender === 'user' ? 'var(--secondary)' : 'var(--primary)'
-                                    }}>
-                                    <p style={{ color: 'var(--text-primary)' }}>{msg.text}</p>
-                                    {msg.attachments && msg.attachments.length > 0 && (
-                                        <div className="mt-2 pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
-                                            {msg.attachments.map((file, idx) => (
-                                                <div key={idx} className="text-xs flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
-                                                    <span>📎</span>
-                                                    <span>{file.name}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                        {currentChat.map((msg) => {
+                            const isUser = msg.sender === 'user';
+                            const isError = msg.text.startsWith('❌');
+
+                            return (
+                                <div key={msg.id} className={`flex flex-col space-y-1 animate-fade-in ${isUser ? 'items-end' : 'items-start'}`}>
+                                    <div className={`
+                                        max-w-[90%] p-4 text-sm leading-relaxed shadow-sm backdrop-blur-sm
+                                        ${isUser
+                                            ? 'bg-white rounded-2xl rounded-tr-sm text-[var(--text-primary)] border border-white/60'
+                                            : isError
+                                                ? 'bg-red-50/90 border border-red-200 text-red-700 rounded-2xl rounded-tl-sm shadow-red-100'
+                                                : 'bg-blue-50/60 border border-blue-100 text-[var(--text-primary)] rounded-2xl rounded-tl-sm'}
+                                    `}>
+                                        <p>{msg.text}</p>
+                                        {msg.attachments && msg.attachments.length > 0 && (
+                                            <div className="mt-2 pt-2 border-t border-black/5 flex flex-wrap gap-2">
+                                                {msg.attachments.map((file, idx) => (
+                                                    <span key={idx} className="inline-flex items-center gap-1 text-xs bg-black/5 px-2 py-1 rounded-md">
+                                                        📎 {file.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span className="text-[10px] text-[var(--text-muted)] font-medium px-1">
+                                        {isUser ? 'Вы' : (activeTab === 'dev-chat' ? 'Dev' : 'Agent')} • {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </>
                 )}
 
@@ -357,24 +306,15 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                     <div className="space-y-3">
                         <button
                             onClick={handleSaveHistory}
-                            className="w-full py-2.5 text-xs font-semibold flex items-center justify-center emoji-gap rounded-xl border-2 transition-all duration-200 hover:scale-[1.02]"
-                            style={{
-                                backgroundColor: theme.primary,
-                                borderColor: theme.primary,
-                                color: 'white',
-                                boxShadow: 'var(--shadow-md)'
-                            }}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] text-white font-semibold text-xs shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                         >
                             <span>💾</span>
                             <span>Сохранить текущий чат</span>
                         </button>
 
                         {chatHistories.length === 0 ? (
-                            <div className="text-center mt-10 text-xs card-glass p-6">
-                                <div className="text-4xl mb-3">📚</div>
-                                <p style={{ color: 'var(--text-secondary)' }}>
-                                    Нет сохраненных сессий
-                                </p>
+                            <div className="text-center py-10 text-[var(--text-secondary)] italic text-sm">
+                                Нет сохраненных сессий
                             </div>
                         ) : (
                             <div className="space-y-2">
@@ -382,20 +322,13 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                     <button
                                         key={history.id}
                                         onClick={() => handleLoadHistory(history.id)}
-                                        className={`w-full card-glass p-4 text-left border-2 transition-all duration-200 hover:scale-[1.02]`}
-                                        style={{
-                                            borderColor: selectedHistory === history.id ? 'var(--primary)' : 'var(--border)'
-                                        }}
+                                        className="w-full glass-panel p-4 rounded-xl text-left hover:bg-white/80 transition-all group"
                                     >
-                                        <div className="flex items-start justify-between mb-2">
-                                            <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                                                {history.title}
-                                            </span>
-                                            <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>
-                                                {history.messages.length} сообщений
-                                            </span>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-sm font-semibold text-[var(--text-primary)]">{history.title}</span>
+                                            <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">{history.messages.length}</span>
                                         </div>
-                                        <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>
+                                        <span className="text-[10px] text-[var(--text-secondary)]">
                                             {new Date(history.created).toLocaleString()}
                                         </span>
                                     </button>
@@ -405,108 +338,49 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                     </div>
                 )}
                 {activeTab === 'logs' && (
-                    <div className="space-y-2">
-                        <div className="card-glass p-4 text-xs font-mono space-y-2">
-                            {logs.map((log, idx) => (
-                                <div key={idx} className="flex items-start gap-2" style={{ color: 'var(--text-primary)' }}>
-                                    <span style={{ color: 'var(--text-secondary)' }}>{log}</span>
-                                </div>
+                    <div className="glass-panel p-4 rounded-xl font-mono text-[10px] space-y-1.5 bg-gray-900/5 border-gray-200">
+                        {logs.map((log, idx) => (
+                            <div key={idx} className="flex gap-2 text-[var(--text-secondary)] border-b border-dashed border-gray-200/50 pb-1 last:border-0">
+                                {log}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {activeTab === 'controls' && (
+                    <div className="space-y-4">
+                        <div className="glass-panel p-4 rounded-xl flex items-center gap-3 bg-emerald-50/50 border-emerald-100">
+                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse" />
+                            <span className="text-sm font-semibold text-emerald-800">Система активна</span>
+                        </div>
+
+                        <div className="space-y-2">
+                            {['Просмотр Google Drive', 'Управление таблицами', 'Обучение агента'].map((action, i) => (
+                                <button key={i} className="w-full glass-panel p-3 rounded-xl flex items-center gap-3 hover:bg-white/80 transition-all text-sm font-medium text-[var(--text-primary)]">
+                                    <span className="text-lg">{['📁', '📊', '🎓'][i]}</span>
+                                    {action}
+                                </button>
                             ))}
                         </div>
                     </div>
                 )}
-                {activeTab === 'controls' && (
-                    <div className="space-y-3">
-                        <div className="card-glass p-3 flex items-center gap-2 border" style={{ borderColor: 'var(--success)' }}>
-                            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 4px var(--success)' }}></div>
-                            <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>✅ Доступ к Google</span>
-                        </div>
-
-                        <div className="card-glass p-4">
-                            <p className="text-xs font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>⚡ Быстрые действия</p>
-                            <div className="space-y-2">
-                                <button
-                                    className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
-                                    style={{
-                                        borderColor: theme.primary,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                        backdropFilter: 'blur(10px)'
-                                    }}
-                                >
-                                    <span className="text-lg">📁</span>
-                                    <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Просмотр Google Drive</span>
-                                </button>
-                                <button
-                                    className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
-                                    style={{
-                                        borderColor: theme.primary,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                        backdropFilter: 'blur(10px)'
-                                    }}
-                                >
-                                    <span className="text-lg">📊</span>
-                                    <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Управление таблицами</span>
-                                </button>
-                                <button
-                                    className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
-                                    style={{
-                                        borderColor: theme.primary,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                        backdropFilter: 'blur(10px)'
-                                    }}
-                                >
-                                    <span className="text-lg">🎓</span>
-                                    <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Обучение агента</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
                 {activeTab === 'git' && (
-                    <div className="space-y-3">
-                        <div className="card-glass p-3 flex items-center justify-between border" style={{ borderColor: 'var(--info)' }}>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--info)', boxShadow: '0 0 4px var(--info)' }}></div>
-                                <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>📊 Git для {projectId.toUpperCase()}</span>
+                    <div className="space-y-4">
+                        <div className="glass-panel p-4 rounded-xl space-y-3">
+                            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Status</span>
+                                <span className="text-xs font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Clean</span>
                             </div>
-                            <button
-                                className="text-xs px-2 py-1 rounded-md border-2 transition-all duration-200 hover:scale-105"
-                                style={{
-                                    borderColor: theme.primary,
-                                    color: 'var(--text-primary)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                    backdropFilter: 'blur(10px)'
-                                }}
-                            >
-                                🔄 Обновить
-                            </button>
-                        </div>
-
-                        <div className="card-glass p-4 space-y-3">
-                            <div className="pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
-                                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>📌 Статус</p>
-                                <p className="text-[10px] font-mono" style={{ color: 'var(--success)' }}>Готов к коммиту</p>
-                            </div>
-
-                            <div>
-                                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>🕐 Последние коммиты</p>
-                                <div className="space-y-2 font-mono">
-                                    <div className="p-2 rounded border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-glass)' }}>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px]">🔨</span>
-                                            <span className="text-[10px]" style={{ color: 'var(--text-primary)' }}>feat: обновление UI панели</span>
-                                        </div>
-                                        <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>2 часа назад</span>
-                                    </div>
-                                    <div className="p-2 rounded border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-glass)' }}>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px]">🐛</span>
-                                            <span className="text-[10px]" style={{ color: 'var(--text-primary)' }}>fix: исправление CORS</span>
-                                        </div>
-                                        <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>5 часов назад</span>
-                                    </div>
+                            <div className="space-y-2">
+                                <div className="text-xs font-mono text-[var(--text-primary)] bg-white/50 p-2 rounded-lg border border-white/50">
+                                    feat: UI updates
+                                </div>
+                                <div className="text-xs font-mono text-[var(--text-primary)] bg-white/50 p-2 rounded-lg border border-white/50">
+                                    fix: layout responsiveness
                                 </div>
                             </div>
+                            <button className="w-full py-2 bg-[var(--text-primary)] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">
+                                Sync Changes
+                            </button>
                         </div>
                     </div>
                 )}
@@ -514,20 +388,13 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
 
             {/* Input Area */}
             {(activeTab === 'chat' || activeTab === 'dev-chat') && (
-                <div className="p-5 border-t" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
+                <div className="p-4 bg-white/40 backdrop-blur-md border-t border-[var(--border)]">
                     {attachments.length > 0 && (
-                        <div className="mb-2 flex flex-wrap gap-2">
+                        <div className="flex gap-2 overflow-x-auto pb-2 mb-1">
                             {attachments.map((file, idx) => (
-                                <div key={idx} className="card-glass px-3 py-1.5 text-xs flex items-center gap-2 border" style={{ borderColor: 'var(--border)' }}>
-                                    <span>📎</span>
-                                    <span style={{ color: 'var(--text-primary)' }}>{file.name}</span>
-                                    <button
-                                        onClick={() => setAttachments(attachments.filter((_, i) => i !== idx))}
-                                        className="text-[10px] hover:scale-110 transition-transform"
-                                        style={{ color: 'var(--text-secondary)' }}
-                                    >
-                                        ✕
-                                    </button>
+                                <div key={idx} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full text-xs shadow-sm border border-gray-100">
+                                    <span>📎 {file.name}</span>
+                                    <button onClick={() => setAttachments(attachments.filter((_, i) => i !== idx))} className="hover:text-red-500">✕</button>
                                 </div>
                             ))}
                         </div>
@@ -537,8 +404,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                            placeholder={`✍️ Задача для ${projectId.toUpperCase()}...`}
-                            className="input-ios w-full min-h-[90px] resize-none pr-24"
+                            placeholder={`✍️ Сообщение для ${projectId.toUpperCase()}...`}
+                            className="input-ios w-full min-h-[50px] max-h-[150px] resize-none pr-24 py-3 shadow-inner bg-white/50 focus:bg-white transition-colors"
+                            rows={1}
                         />
                         <input
                             ref={fileInputRef}
@@ -547,34 +415,21 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             onChange={handleFileSelect}
                             className="hidden"
                         />
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="absolute bottom-4 right-16 p-3 rounded-xl transition-all duration-300 hover:scale-105"
-                            style={{
-                                backgroundColor: 'var(--surface-glass)',
-                                borderColor: 'var(--border)',
-                                border: '1px solid',
-                                color: 'var(--text-secondary)'
-                            }}
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={handleSend}
-                            className="absolute bottom-4 right-4 p-3 rounded-xl transition-all duration-300 hover:scale-105 border-2"
-                            style={{
-                                backgroundColor: theme.primary,
-                                borderColor: theme.primary,
-                                color: 'white',
-                                boxShadow: 'var(--shadow-md)'
-                            }}
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                            </svg>
-                        </button>
+                        <div className="absolute bottom-1.5 right-1.5 flex gap-1">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="p-2 rounded-lg text-gray-400 hover:text-[var(--primary)] hover:bg-indigo-50 transition-colors"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                            </button>
+                            <button
+                                onClick={handleSend}
+                                disabled={!input.trim() && attachments.length === 0}
+                                className="p-2 rounded-lg bg-[var(--primary)] text-white shadow-sm hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
