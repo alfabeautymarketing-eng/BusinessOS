@@ -26,11 +26,39 @@ interface AgentSidebarProps {
     projectId?: string;
 }
 
-const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string; shadow: string }> = {
-    sk: { color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', shadow: 'shadow-purple-500/20' },
-    mt: { color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', shadow: 'shadow-blue-500/20' },
-    ss: { color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', shadow: 'shadow-green-500/20' },
-    default: { color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', shadow: 'shadow-cyan-500/20' },
+const PROJECT_THEMES: Record<string, { color: string; bg: string; border: string; shadow: string; primary: string; primaryHover: string }> = {
+    sk: {
+        color: 'text-purple-400',
+        bg: 'bg-purple-500/10',
+        border: 'border-purple-500/30',
+        shadow: 'shadow-purple-500/20',
+        primary: '#8B5CF6',
+        primaryHover: '#7C3AED'
+    },
+    mt: {
+        color: 'text-blue-400',
+        bg: 'bg-blue-500/10',
+        border: 'border-blue-500/30',
+        shadow: 'shadow-blue-500/20',
+        primary: '#3B82F6',
+        primaryHover: '#2563EB'
+    },
+    ss: {
+        color: 'text-green-400',
+        bg: 'bg-green-500/10',
+        border: 'border-green-500/30',
+        shadow: 'shadow-green-500/20',
+        primary: '#10B981',
+        primaryHover: '#059669'
+    },
+    default: {
+        color: 'text-cyan-400',
+        bg: 'bg-cyan-500/10',
+        border: 'border-cyan-500/30',
+        shadow: 'shadow-cyan-500/20',
+        primary: '#B8C5F2',
+        primaryHover: '#A4B4E8'
+    },
 };
 
 export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProps) {
@@ -327,9 +355,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             onClick={handleSaveHistory}
                             className="w-full py-2.5 text-xs font-semibold flex items-center justify-center emoji-gap rounded-xl border-2 transition-all duration-200 hover:scale-[1.02]"
                             style={{
-                                backgroundColor: 'var(--primary)',
-                                borderColor: 'var(--primary)',
-                                color: 'var(--text-primary)',
+                                backgroundColor: theme.primary,
+                                borderColor: theme.primary,
+                                color: 'white',
                                 boxShadow: 'var(--shadow-md)'
                             }}
                         >
@@ -396,8 +424,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                 <button
                                     className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
                                     style={{
-                                        borderColor: 'var(--primary)',
-                                        backgroundColor: 'var(--surface-glass)',
+                                        borderColor: theme.primary,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                         backdropFilter: 'blur(10px)'
                                     }}
                                 >
@@ -407,8 +435,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                 <button
                                     className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
                                     style={{
-                                        borderColor: 'var(--primary)',
-                                        backgroundColor: 'var(--surface-glass)',
+                                        borderColor: theme.primary,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                         backdropFilter: 'blur(10px)'
                                     }}
                                 >
@@ -418,8 +446,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                 <button
                                     className="w-full p-3 text-left border-2 transition-all duration-200 hover:scale-[1.02] flex items-center gap-3 rounded-lg"
                                     style={{
-                                        borderColor: 'var(--primary)',
-                                        backgroundColor: 'var(--surface-glass)',
+                                        borderColor: theme.primary,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                         backdropFilter: 'blur(10px)'
                                     }}
                                 >
@@ -440,9 +468,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                             <button
                                 className="text-xs px-2 py-1 rounded-md border-2 transition-all duration-200 hover:scale-105"
                                 style={{
-                                    borderColor: 'var(--primary)',
+                                    borderColor: theme.primary,
                                     color: 'var(--text-primary)',
-                                    backgroundColor: 'var(--surface-glass)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                     backdropFilter: 'blur(10px)'
                                 }}
                             >
