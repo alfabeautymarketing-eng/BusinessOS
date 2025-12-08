@@ -4,12 +4,14 @@ services:
     name: business-os-frontend
     env: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     rootDir: client
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
 
   # Backend Service
   - type: web
