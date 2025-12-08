@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  /* Pastel Palette - точная копия из референса */
+  /* Pastel Palette */
   --primary: #B8C5F2;
   --primary-hover: #A4B4E8;
   --secondary: #E8D5F2;
@@ -13,155 +11,88 @@
   --success: #C5E8D5;
   --warning: #F9E5C8;
   --info: #D5E8F9;
+  --error: #F2D5D5;
 
-  /* Neutral Colors */
-  --background: #F5F7FA;
-  --surface: #FFFFFF;
+  /* Neutral & Glass */
+  --background: #F0F3F8;
+  --surface-glass: rgba(255, 255, 255, 0.65);
   --text-primary: #2E3A4D;
   --text-secondary: #6B7A8F;
-  --text-muted: #9AA5B5;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(255, 255, 255, 0.4);
 
   /* Workspace Colors */
   --sk-color: #8B5CF6;
+  /* Violet */
   --mt-color: #3B82F6;
+  /* Blue */
   --ss-color: #10B981;
+  /* Emerald */
   --cosmetic-color: #EC4899;
+  /* Pink */
 
-  /* Тени в стиле iOS */
-  --shadow-sm: 0 2px 8px rgba(46, 58, 77, 0.06);
-  --shadow-md: 0 4px 16px rgba(46, 58, 77, 0.08);
-  --shadow-lg: 0 8px 24px rgba(46, 58, 77, 0.12);
-  --shadow-xl: 0 16px 40px rgba(46, 58, 77, 0.16);
-
-  /* Радиусы скругления */
-  --radius-sm: 10px;
-  --radius-md: 16px;
+  /* Radius & Shadows */
   --radius-lg: 24px;
-  --radius-xl: 32px;
   --radius-full: 9999px;
-
-  /* Переходы */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 8px 32px rgba(46, 58, 77, 0.08);
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  /* Mesh Gradient Background */
   background-color: var(--background);
+  background-image:
+    radial-gradient(at 10% 10%, rgba(184, 197, 242, 0.2) 0px, transparent 50%),
+    radial-gradient(at 90% 0%, rgba(232, 213, 242, 0.2) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(242, 213, 229, 0.2) 0px, transparent 50%);
+  background-attachment: fixed;
   color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
-  /* App-like feel */
 }
 
-/* Универсальные утилиты для кнопок и элементов */
-.glass-effect {
+/* Glass Utility Classes */
+.glass-panel {
   background: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
-.button-rounded {
-  border-radius: var(--radius-full);
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-sm);
+.glass-card-strong {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
-.button-rounded:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.button-rounded:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Стилизованные кнопки с пастельными цветами */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-  color: var(--text-primary);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-hover) 0%, #96A8DC 100%);
-}
-
-.btn-secondary {
-  background: linear-gradient(135deg, var(--secondary) 0%, #DCC5E8 100%);
-  color: var(--text-primary);
-}
-
-.btn-secondary:hover {
-  background: linear-gradient(135deg, #DCC5E8 0%, #D0B8DC 100%);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, var(--success) 0%, #B5DCC8 100%);
-  color: var(--text-primary);
-}
-
-.btn-success:hover {
-  background: linear-gradient(135deg, #B5DCC8 0%, #A5D0B8 100%);
-}
-
-/* Glassmorphism Utilities - точная копия из референса */
-.card-glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-}
-
-/* Карточки без hover-эффекта для панелей */
-.card-static {
-  background: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-}
-
-/* iOS-style Input из референса */
+/* iOS-style Input */
 .input-ios {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px 16px;
   font-size: 14px;
   transition: all 0.2s;
+  color: var(--text-primary);
 }
 
 .input-ios:focus {
   outline: none;
+  background: rgba(255, 255, 255, 0.8);
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(184, 197, 242, 0.2);
 }
 
-/* Scrollbar - точная копия из референса */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(107, 122, 143, 0.2);
-  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(107, 122, 143, 0.4);
 }
 
-/* Скрытие скроллбара */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -171,96 +102,18 @@ body {
   scrollbar-width: none;
 }
 
-/* Анимации появления */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(5px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.animate-fade-in {
-  animation: fadeIn var(--transition-base) ease-out;
-}
-
-/* Пульсирующий эффект для важных элементов */
-@keyframes pulse-soft {
-
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(184, 197, 242, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 0 0 8px rgba(184, 197, 242, 0);
-  }
-}
-
-.pulse-effect {
-  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Разделители */
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--border) 50%, transparent 100%);
-  margin: 24px 0;
-}
-
-/* Бейджи и теги */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--surface-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  transition: all var(--transition-fast);
-}
-
-.badge:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-sm);
-}
-
-.emoji-gap {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Тултипы */
-.tooltip {
-  position: relative;
-}
-
-.tooltip::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 12px;
-  background: var(--text-primary);
-  color: var(--surface);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-fast);
-  box-shadow: var(--shadow-md);
-}
-
-.tooltip:hover::after {
-  opacity: 1;
 }

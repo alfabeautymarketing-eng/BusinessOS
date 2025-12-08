@@ -18,6 +18,7 @@ const PROJECTS = [
     name: "SkinClinic",
     shortName: "SC",
     color: "#8B5CF6",
+    tailwindTheme: "violet",
     icon: "🟣",
     links: [
       { id: "sk-crm", name: "CRM System", url: "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit", icon: "📊", type: "sheets" },
@@ -29,6 +30,7 @@ const PROJECTS = [
     name: "Montibello",
     shortName: "MT",
     color: "#3B82F6",
+    tailwindTheme: "blue",
     icon: "🔵",
     links: [
       { id: "mt-orders", name: "Orders Sheet", url: "https://docs.google.com/spreadsheets/d/1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw/edit", icon: "📝", type: "sheets" }
@@ -39,6 +41,7 @@ const PROJECTS = [
     name: "Soskin",
     shortName: "SS",
     color: "#10B981",
+    tailwindTheme: "emerald",
     icon: "🟢",
     links: []
   },
@@ -47,6 +50,7 @@ const PROJECTS = [
     name: "Анализ косметики",
     shortName: "CA",
     color: "#EC4899",
+    tailwindTheme: "pink",
     icon: "💄",
     links: [
       { id: "cosmetic-dash", name: "Dashboard", url: "/cosmetic-analysis", icon: "📈", type: "cosmetic-dashboard" }
@@ -91,77 +95,72 @@ export default function TopNav({
     setOpenDropdown(null);
   };
 
+  const getWorkspaceButtonStyles = (project: any, isActive: boolean) => {
+    if (!isActive) return 'bg-transparent text-[var(--text-secondary)] hover:bg-white/40 border-transparent';
+
+    // Using inline styles for specific colors to match the exact palette if needed, 
+    // or we can map tailwind classes. Given the prompt asks for specific feeling:
+    switch (project.id) {
+      case 'sk': return 'bg-violet-100 text-violet-700 border-violet-200 shadow-md';
+      case 'mt': return 'bg-blue-100 text-blue-700 border-blue-200 shadow-md';
+      case 'ss': return 'bg-emerald-100 text-emerald-700 border-emerald-200 shadow-md';
+      case 'cosmetic': return 'bg-pink-100 text-pink-700 border-pink-200 shadow-md';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
   return (
-    <div className="relative flex items-center justify-between w-full h-full px-4">
-      {/* Brand - Left */}
-      <div className="flex items-center gap-3 min-w-[200px]">
-        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200 text-xl">
+    <div className="glass-panel rounded-2xl h-16 flex items-center justify-between px-6 shrink-0 relative z-50">
+      {/* Brand */}
+      <div className="flex items-center gap-3 w-48">
+        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200/50 text-xl">
           B
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-lg leading-none text-[var(--text-primary)]">Business OS</span>
-          <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-wider">Workspace</span>
+          <span className="font-bold text-lg leading-none tracking-tight text-[var(--text-primary)]">Business OS</span>
+          <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest opacity-70">Workspace</span>
         </div>
       </div>
 
-      {/* Workspace Selectors - Centered */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 z-50" ref={dropdownRef}>
+      {/* Workspace Selectors centered */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2" ref={dropdownRef}>
         {PROJECTS.map((project) => {
           const isActive = activeWorkspace === project.id;
+          const buttonStyle = getWorkspaceButtonStyles(project, isActive);
 
           return (
             <div key={project.id} className="relative">
               <button
                 onClick={() => handleWorkspaceClick(project.id)}
-                className={`
-                  flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-200 border-2
-                  ${isActive
-                    ? 'text-white shadow-lg transform scale-105'
-                    : 'bg-white/60 text-[var(--text-primary)] border-gray-200 hover:bg-white hover:shadow-md hover:scale-102'}
-                `}
-                style={{
-                  backgroundColor: isActive ? project.color : undefined,
-                  borderColor: isActive ? project.color : undefined,
-                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 ${buttonStyle}`}
               >
-                <span className="text-lg">{project.icon}</span>
+                <span className="text-lg filter drop-shadow-sm">{project.icon}</span>
                 <span className="font-semibold text-sm">{project.name}</span>
                 {project.links && project.links.length > 0 && (
-                  <ChevronDown
-                    size={14}
-                    className={`ml-0.5 transition-transform duration-200 ${openDropdown === project.id ? 'rotate-180' : ''}`}
-                  />
+                  <ChevronDown size={14} className={`ml-1 opacity-60 transition-transform duration-300 ${openDropdown === project.id ? 'rotate-180' : ''}`} />
                 )}
               </button>
 
               {/* Dropdown */}
               {openDropdown === project.id && project.links && project.links.length > 0 && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 card-glass rounded-2xl shadow-2xl z-[100] overflow-hidden animate-fade-in">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-200/50">
-                      <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Документы</span>
-                    </div>
-                    {project.links.map((link) => (
-                      <button
-                        key={link.id}
-                        onClick={() => handleLinkClick(project, link)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/70 transition-all text-left group"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-xl group-hover:scale-110 transition-transform shadow-sm">
-                          {link.icon}
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-[var(--text-primary)] group-hover:text-indigo-600 transition-colors">
-                            {link.name}
-                          </div>
-                          <div className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wide font-medium">
-                            {link.type.replace('-', ' ')}
-                          </div>
-                        </div>
-                        <ChevronDown size={14} className="text-gray-400 -rotate-90" />
-                      </button>
-                    ))}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 glass-card-strong rounded-2xl p-2 z-[100] animate-fade-in origin-top">
+                  <div className="px-3 py-2 text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider opacity-60">
+                    доступно
                   </div>
+                  {project.links.map((link) => (
+                    <button
+                      key={link.id}
+                      onClick={() => handleLinkClick(project, link)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/60 transition-all text-left group"
+                    >
+                      <span className="text-lg group-hover:scale-110 transition-transform">{link.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[var(--text-primary)] truncate">
+                          {link.name}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -169,29 +168,31 @@ export default function TopNav({
         })}
       </div>
 
-      {/* Layout Controls - Right */}
-      <div className="flex items-center gap-1 bg-white/60 p-1.5 rounded-xl border border-gray-200 shadow-sm min-w-[200px] justify-end">
-        <button
-          onClick={() => onLayoutChange('all')}
-          className={`p-2 rounded-lg transition-all ${layoutMode === 'all' ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
-          title="Полный вид"
-        >
-          <Layout size={16} />
-        </button>
-        <button
-          onClick={() => onLayoutChange('left')}
-          className={`p-2 rounded-lg transition-all ${layoutMode === 'left' ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
-          title="Скрыть левую панель"
-        >
-          <LayoutPanelLeft size={16} />
-        </button>
-        <button
-          onClick={() => onLayoutChange('right')}
-          className={`p-2 rounded-lg transition-all ${layoutMode === 'right' ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
-          title="Скрыть правую панель"
-        >
-          <Square size={16} />
-        </button>
+      {/* Layout Controls */}
+      <div className="flex items-center gap-2 w-48 justify-end">
+        <div className="bg-white/40 p-1 rounded-xl border border-white/40 flex items-center gap-1 backdrop-blur-sm">
+          <button
+            onClick={() => onLayoutChange('all')}
+            className={`p-1.5 rounded-lg transition-all ${layoutMode === 'all' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600 hover:bg-white/20'}`}
+            title="Full View"
+          >
+            <Layout size={18} />
+          </button>
+          <button
+            onClick={() => onLayoutChange('left')}
+            className={`p-1.5 rounded-lg transition-all ${layoutMode === 'left' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600 hover:bg-white/20'}`}
+            title="Hide Left"
+          >
+            <LayoutPanelLeft size={18} />
+          </button>
+          <button
+            onClick={() => onLayoutChange('right')}
+            className={`p-1.5 rounded-lg transition-all ${layoutMode === 'right' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600 hover:bg-white/20'}`}
+            title="Hide Right"
+          >
+            <Square size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );

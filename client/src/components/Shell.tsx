@@ -12,8 +12,8 @@ interface ShellProps {
 type ResizeTarget = 'left' | 'right' | null;
 
 export default function Shell({ children, sidebar, topNav, rightSidebar, showSidebar = true, showRightSidebar = true }: ShellProps) {
-    const [leftWidth, setLeftWidth] = useState(340);
-    const [rightWidth, setRightWidth] = useState(340);
+    const [leftWidth, setLeftWidth] = useState(300);
+    const [rightWidth, setRightWidth] = useState(360);
     const [resizing, setResizing] = useState<ResizeTarget>(null);
     const resizeRef = useRef({ startX: 0, startWidth: 0 });
 
@@ -22,11 +22,11 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
             if (!resizing) return;
             const delta = e.clientX - resizeRef.current.startX;
             if (resizing === 'left') {
-                const next = Math.min(520, Math.max(240, resizeRef.current.startWidth + delta));
+                const next = Math.min(450, Math.max(240, resizeRef.current.startWidth + delta));
                 setLeftWidth(next);
             }
             if (resizing === 'right') {
-                const next = Math.min(520, Math.max(240, resizeRef.current.startWidth - delta));
+                const next = Math.min(450, Math.max(280, resizeRef.current.startWidth - delta));
                 setRightWidth(next);
             }
         };
@@ -45,77 +45,63 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
             window.removeEventListener('mouseup', handleMouseUp);
             document.body.style.userSelect = '';
             document.body.style.cursor = '';
-            document.body.style.webkitUserSelect = '';
         };
     }, [resizing]);
 
-    const startResize = (target: ResizeTarget, clientX: number, currentWidth: number) => {
-        setResizing(target);
-        resizeRef.current = { startX: clientX, startWidth: currentWidth };
-    };
-
-    const handleResizeStart = (target: ResizeTarget, e: React.MouseEvent | React.TouchEvent, currentWidth: number) => {
-        e.preventDefault();
-        const point = 'touches' in e ? e.touches[0] : e;
-        startResize(target, point.clientX, currentWidth);
-    };
-
     return (
-        <div className="relative min-h-screen w-screen overflow-hidden font-sans" style={{
-            background: 'linear-gradient(135deg, var(--background) 0%, var(--primary-light) 100%)',
-            color: 'var(--text-primary)'
-        }}>
-            <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full blur-3xl" style={{ background: 'var(--primary)', opacity: 0.15 }} />
-                <div className="absolute right-0 top-10 h-72 w-72 rounded-full blur-3xl" style={{ background: 'var(--secondary)', opacity: 0.1 }} />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-40 w-[80%] blur-3xl" style={{
-                    background: 'linear-gradient(90deg, var(--info), var(--primary), var(--info))',
-                    opacity: 0.1
-                }} />
+        <div className="flex flex-col h-screen w-full relative">
+            {/* Top Navigation Capsule */}
+            <div className="shrink-0 z-50 px-6 pt-4 pb-2">
+                {topNav}
             </div>
 
-            <div className="relative flex h-screen flex-col gap-4 px-6 pt-5 pb-6">
-                <header className="card-static px-5 h-16 flex items-center relative z-50 overflow-visible" style={{ borderRadius: 'var(--radius-lg)' }}>
-                    {topNav}
-                </header>
+            <div className="flex flex-1 overflow-hidden px-6 pb-6 gap-6 items-stretch">
+                {/* Left Sidebar */}
+                {showSidebar && sidebar && (
+                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${leftWidth}px` }}>
+                        <aside className="h-full w-full flex flex-col">
+                            {sidebar}
+                        </aside>
 
-                <div className="flex flex-1 gap-4 overflow-hidden items-stretch">
-                    {showSidebar && sidebar && (
-                        <div className="relative flex h-full" style={{ width: `${leftWidth}px` }}>
-                            <aside className="w-full card-static flex flex-col overflow-hidden" style={{ borderRadius: 'var(--radius-lg)' }}>
-                                {sidebar}
-                            </aside>
-                            <div
-                                className="absolute top-0 right-[-6px] h-full w-3 md:w-4 cursor-col-resize flex items-center justify-center group select-none z-20"
-                                onMouseDown={(e) => handleResizeStart('left', e, leftWidth)}
-                                onTouchStart={(e) => handleResizeStart('left', e, leftWidth)}
-                                title="Изменить ширину панели"
-                            >
-                                <span className="h-16 w-[6px] rounded-full bg-gray-300/40 group-hover:bg-gray-400/70 group-active:bg-gray-500 transition-all shadow-sm" />
-                            </div>
+                        {/* Resizer Handle */}
+                        <div
+                            className="absolute top-0 right-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-50"
+                            onMouseDown={(e) => {
+                                e.preventDefault();
+                                setResizing('left');
+                                resizeRef.current = { startX: e.clientX, startWidth: leftWidth };
+                            }}
+                        >
+                            <div className="w-1 h-12 rounded-full bg-white/20 group-hover:bg-indigo-400/50 transition-colors backdrop-blur-sm" />
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    <main className="flex-1 relative flex flex-col overflow-hidden card-static" style={{ borderRadius: 'var(--radius-xl)' }}>
-                        {children}
-                    </main>
+                {/* Main Content Area */}
+                <main className="flex-1 relative min-w-0 h-full flex flex-col">
+                    {children}
+                </main>
 
-                    {showRightSidebar && rightSidebar && (
-                        <div className="relative flex h-full" style={{ width: `${rightWidth}px` }}>
-                            <div
-                                className="absolute top-0 left-[-6px] h-full w-3 md:w-4 cursor-col-resize flex items-center justify-center group select-none z-20"
-                                onMouseDown={(e) => handleResizeStart('right', e, rightWidth)}
-                                onTouchStart={(e) => handleResizeStart('right', e, rightWidth)}
-                                title="Изменить ширину панели"
-                            >
-                                <span className="h-16 w-[6px] rounded-full bg-gray-300/40 group-hover:bg-gray-400/70 group-active:bg-gray-500 transition-all shadow-sm" />
-                            </div>
-                            <aside className="w-full card-static flex flex-col overflow-hidden" style={{ borderRadius: 'var(--radius-lg)' }}>
-                                {rightSidebar}
-                            </aside>
+                {/* Right Sidebar */}
+                {showRightSidebar && rightSidebar && (
+                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${rightWidth}px` }}>
+                        {/* Resizer Handle */}
+                        <div
+                            className="absolute top-0 left-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-50"
+                            onMouseDown={(e) => {
+                                e.preventDefault();
+                                setResizing('right');
+                                resizeRef.current = { startX: e.clientX, startWidth: rightWidth };
+                            }}
+                        >
+                            <div className="w-1 h-12 rounded-full bg-white/20 group-hover:bg-indigo-400/50 transition-colors backdrop-blur-sm" />
                         </div>
-                    )}
-                </div>
+
+                        <aside className="h-full w-full flex flex-col">
+                            {rightSidebar}
+                        </aside>
+                    </div>
+                )}
             </div>
         </div>
     );
