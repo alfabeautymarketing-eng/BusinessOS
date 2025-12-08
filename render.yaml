@@ -24,6 +24,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: CORS_ORIGINS
+        value: https://business-os-frontend.onrender.com,http://localhost:3000
       # You must upload credentials.json as a 'Secret File' in Render dashboard
       # and mount it to /etc/secrets/google-creds
       - key: GOOGLE_APPLICATION_CREDENTIALS
