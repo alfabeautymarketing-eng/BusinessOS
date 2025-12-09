@@ -21,14 +21,24 @@ async def run_script(request: ScriptRunRequest):
     """
     project_key = request.project_id.lower()
     script_id = PROJECT_SCRIPT_IDS.get(project_key, DEFAULT_SCRIPT_ID)
+    
+    print(f"🔧 Script execution request:")
+    print(f"   Project: {project_key}")
+    print(f"   Script ID: {script_id}")
+    print(f"   Function: {request.function_name}")
+    print(f"   Parameters: {request.parameters}")
 
     if not script_id:
         raise HTTPException(status_code=404, detail="Script not configured for this project")
 
     try:
         result = google_service.run_script_function(script_id, request.function_name, request.parameters)
+        print(f"✅ Script executed successfully: {result}")
         return {"status": "success", "result": result, "message": "Function executed"}
     except Exception as e:
+        print(f"❌ Script execution error: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Script execution failed: {str(e)}")
 
 
