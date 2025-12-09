@@ -11,7 +11,6 @@ SCOPES = [
     'https://www.googleapis.com/auth/script.projects',
     'https://www.googleapis.com/auth/script.external_request',
     'https://www.googleapis.com/auth/script.scriptapp',
-    'https://www.googleapis.com/auth/script.container.ui',
     'https://www.googleapis.com/auth/script.storage',
     'https://www.googleapis.com/auth/documents',
     'https://www.googleapis.com/auth/userinfo.email'
