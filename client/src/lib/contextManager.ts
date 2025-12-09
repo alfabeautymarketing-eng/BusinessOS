@@ -65,6 +65,14 @@ export class ContextManager {
       return false;
     }
 
+    // Проверка ID документа (spreadsheet)
+    if (
+      match.spreadsheetId &&
+      match.spreadsheetId !== context.activeTab.documentContext?.spreadsheetId
+    ) {
+      return false;
+    }
+
     // Проверка типа документа
     if (match.type && match.type !== context.activeTab.type) {
       return false;

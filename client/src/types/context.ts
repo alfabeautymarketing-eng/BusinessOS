@@ -156,6 +156,7 @@ export interface ContextRule {
     contentType?: ContentType;
     sheetName?: string;
     type?: TabType;
+    spreadsheetId?: string;  // ID документа Google Sheets
   };
   menu: {
     sections: MenuSection[];

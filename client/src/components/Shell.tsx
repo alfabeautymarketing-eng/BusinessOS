@@ -55,17 +55,17 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                 {topNav}
             </div>
 
-            <div className="flex flex-1 overflow-hidden px-6 pb-6 gap-6 items-stretch">
+            <div className="flex flex-1 overflow-hidden px-6 pb-6 gap-0 items-stretch">
                 {/* Left Sidebar */}
                 {showSidebar && sidebar && (
-                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${leftWidth}px` }}>
+                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out mr-1" style={{ width: `${leftWidth}px` }}>
                         <aside className="h-full w-full flex flex-col">
                             {sidebar}
                         </aside>
 
-                        {/* Resizer Handle - LEFT */}
+                        {/* Resizer Handle - LEFT (VSCode style) */}
                         <div
-                            className="absolute top-0 right-[-24px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
+                            className="absolute top-0 right-0 h-full w-1 cursor-col-resize group select-none z-[100] hover:w-1.5 transition-all"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('left');
@@ -74,10 +74,10 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                             title="Изменить ширину панели"
                         >
                             <div
-                                className={`h-20 rounded-full transition-all backdrop-blur-md shadow-lg ${
+                                className={`h-full w-full transition-all ${
                                     resizing === 'left'
-                                        ? 'w-2 bg-[var(--primary)]'
-                                        : 'w-1.5 bg-gray-400/60 group-hover:bg-[var(--primary)] group-hover:w-2'
+                                        ? 'bg-blue-500'
+                                        : 'bg-gray-300/40 group-hover:bg-blue-400'
                                 }`}
                             />
                         </div>
@@ -91,10 +91,10 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
 
                 {/* Right Sidebar */}
                 {showRightSidebar && rightSidebar && (
-                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${rightWidth}px` }}>
-                        {/* Resizer Handle - RIGHT */}
+                    <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out ml-1" style={{ width: `${rightWidth}px` }}>
+                        {/* Resizer Handle - RIGHT (VSCode style) */}
                         <div
-                            className="absolute top-0 left-[-24px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
+                            className="absolute top-0 left-0 h-full w-1 cursor-col-resize group select-none z-[100] hover:w-1.5 transition-all"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('right');
@@ -103,10 +103,10 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                             title="Изменить ширину панели"
                         >
                             <div
-                                className={`h-20 rounded-full transition-all backdrop-blur-md shadow-lg ${
+                                className={`h-full w-full transition-all ${
                                     resizing === 'right'
-                                        ? 'w-2 bg-[var(--primary)]'
-                                        : 'w-1.5 bg-gray-400/60 group-hover:bg-[var(--primary)] group-hover:w-2'
+                                        ? 'bg-blue-500'
+                                        : 'bg-gray-300/40 group-hover:bg-blue-400'
                                 }`}
                             />
                         </div>
