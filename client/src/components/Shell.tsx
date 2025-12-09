@@ -63,16 +63,23 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                             {sidebar}
                         </aside>
 
-                        {/* Resizer Handle */}
+                        {/* Resizer Handle - LEFT */}
                         <div
-                            className="absolute top-0 right-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
+                            className="absolute top-0 right-[-24px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('left');
                                 resizeRef.current = { startX: e.clientX, startWidth: leftWidth };
                             }}
+                            title="Изменить ширину панели"
                         >
-                            <div className="w-1.5 h-12 rounded-full bg-gray-400/30 group-hover:bg-[var(--primary)] transition-colors backdrop-blur-md shadow-sm" />
+                            <div
+                                className={`h-20 rounded-full transition-all backdrop-blur-md shadow-lg ${
+                                    resizing === 'left'
+                                        ? 'w-2 bg-[var(--primary)]'
+                                        : 'w-1.5 bg-gray-400/60 group-hover:bg-[var(--primary)] group-hover:w-2'
+                                }`}
+                            />
                         </div>
                     </div>
                 )}
@@ -85,16 +92,23 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                 {/* Right Sidebar */}
                 {showRightSidebar && rightSidebar && (
                     <div className="relative shrink-0 flex flex-col h-full transition-all duration-300 ease-in-out" style={{ width: `${rightWidth}px` }}>
-                        {/* Resizer Handle */}
+                        {/* Resizer Handle - RIGHT */}
                         <div
-                            className="absolute top-0 left-[-14px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
+                            className="absolute top-0 left-[-24px] h-full w-6 cursor-col-resize flex items-center justify-center group select-none z-[100]"
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setResizing('right');
                                 resizeRef.current = { startX: e.clientX, startWidth: rightWidth };
                             }}
+                            title="Изменить ширину панели"
                         >
-                            <div className="w-1.5 h-12 rounded-full bg-gray-400/30 group-hover:bg-[var(--primary)] transition-colors backdrop-blur-md shadow-sm" />
+                            <div
+                                className={`h-20 rounded-full transition-all backdrop-blur-md shadow-lg ${
+                                    resizing === 'right'
+                                        ? 'w-2 bg-[var(--primary)]'
+                                        : 'w-1.5 bg-gray-400/60 group-hover:bg-[var(--primary)] group-hover:w-2'
+                                }`}
+                            />
                         </div>
 
                         <aside className="h-full w-full flex flex-col">
@@ -103,9 +117,12 @@ export default function Shell({ children, sidebar, topNav, rightSidebar, showSid
                     </div>
                 )}
             </div>
-            {/* usage of Global Overlay to capture mouse events over iframes during resize */}
+            {/* Global Overlay to capture mouse events over iframes during resize */}
             {resizing && (
-                <div className="fixed inset-0 z-[9999] cursor-col-resize user-select-none" />
+                <div
+                    className="fixed inset-0 z-[9999] cursor-col-resize"
+                    style={{ userSelect: 'none' }}
+                />
             )}
         </div>
     );
