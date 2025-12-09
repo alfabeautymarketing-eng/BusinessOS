@@ -54,20 +54,24 @@ async function detectSheetContext(
     const parsed = ContextManager.parseGoogleSheetsUrl(tab.url);
 
     if (!parsed) {
-      console.warn('Could not parse Google Sheets URL:', tab.url);
+      console.warn('[ContextDetector] Could not parse Google Sheets URL:', tab.url);
       onContextChange(tab.id, { contentType: 'unknown' });
       return;
     }
 
-    // Получаем имя листа через API
+    // Пытаемся получить имя листа через API
     const sheetName = await fetchSheetName(parsed.spreadsheetId, parsed.sheetId);
 
     if (!sheetName) {
-      console.warn('Could not fetch sheet name for:', parsed);
+      // FALLBACK: Используем имя вкладки для определения contentType
+      console.warn('[ContextDetector] API unavailable, using tab title as fallback');
+      const fallbackContentType = ContextManager.detectContentType(tab.title || '');
+
       onContextChange(tab.id, {
         spreadsheetId: parsed.spreadsheetId,
         sheetId: parsed.sheetId,
-        contentType: 'unknown',
+        sheetName: tab.title || undefined, // Используем название вкладки как fallback
+        contentType: fallbackContentType !== 'unknown' ? fallbackContentType : 'sheets',
       });
       return;
     }
@@ -83,8 +87,13 @@ async function detectSheetContext(
       contentType,
     });
   } catch (error) {
-    console.error('Error detecting sheet context:', error);
-    onContextChange(tab.id, { contentType: 'unknown' });
+    console.error('[ContextDetector] Error detecting sheet context:', error);
+    // FALLBACK: Даже при ошибке пытаемся дать базовый контекст
+    const parsed = ContextManager.parseGoogleSheetsUrl(tab.url);
+    onContextChange(tab.id, {
+      spreadsheetId: parsed?.spreadsheetId,
+      contentType: 'sheets'
+    });
   }
 }
 

@@ -15,6 +15,7 @@ export type ContentType =
   | 'database-sheet'      // Лист "База" / "Главная"
   | 'drive-folder'        // Папка Drive
   | 'doc-folder'          // Папка с документами
+  | 'sheets'              // Общий тип для Google Sheets (fallback)
   | 'unknown';            // Неизвестный тип
 
 /**

@@ -145,6 +145,7 @@ export class ContextManager {
 
 /**
  * Утилита для получения имени листа через API
+ * При ошибке возвращает null и приложение продолжает работать
  */
 export async function fetchSheetName(
   spreadsheetId: string,
@@ -153,17 +154,28 @@ export async function fetchSheetName(
   try {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     const response = await fetch(
-      `${API_BASE_URL}/api/scripts/sheets/${spreadsheetId}/sheet-name?sheet_id=${sheetId}`
+      `${API_BASE_URL}/api/scripts/sheets/${spreadsheetId}/sheet-name?sheet_id=${sheetId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Таймаут 5 секунд
+        signal: AbortSignal.timeout(5000),
+      }
     );
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      // Graceful fallback - логируем но не бросаем ошибку
+      console.warn(`[ContextManager] Sheet name API returned ${response.status}, using fallback`);
+      return null;
     }
 
     const data = await response.json();
     return data.sheet_name || null;
   } catch (error) {
-    console.error('Error fetching sheet name:', error);
+    // Graceful fallback - приложение продолжает работать
+    console.warn('[ContextManager] Could not fetch sheet name, using fallback:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }

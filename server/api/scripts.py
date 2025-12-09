@@ -1,3 +1,4 @@
+from typing import Union, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -10,7 +11,7 @@ router = APIRouter(prefix="/api/scripts", tags=["scripts"])
 class ScriptRunRequest(BaseModel):
     project_id: str
     function_name: str
-    parameters: list | dict | None = None
+    parameters: Optional[Union[list, dict]] = None
 
 
 @router.post("/run")
@@ -32,7 +33,7 @@ async def run_script(request: ScriptRunRequest):
 
 
 @router.get("/sheets/{spreadsheet_id}/sheet-name")
-async def get_sheet_name(spreadsheet_id: str, sheet_id: int):
+async def get_sheet_name(spreadsheet_id: str, sheet_id: int = 0):
     """
     Get the name of a specific sheet by its ID within a spreadsheet.
     Used for context detection in iframes.
@@ -50,7 +51,21 @@ async def get_sheet_name(spreadsheet_id: str, sheet_id: int):
                     "spreadsheet_id": spreadsheet_id
                 }
 
+        # Если лист не найден, вернуть первый лист по умолчанию
+        if metadata.get('sheets'):
+            first_sheet = metadata['sheets'][0]
+            return {
+                "status": "success",
+                "sheet_name": first_sheet['title'],
+                "sheet_id": first_sheet['id'],
+                "spreadsheet_id": spreadsheet_id,
+                "fallback": True
+            }
+
         raise HTTPException(status_code=404, detail=f"Sheet with ID {sheet_id} not found in spreadsheet")
 
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"Error getting sheet name: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get sheet name: {str(e)}")
