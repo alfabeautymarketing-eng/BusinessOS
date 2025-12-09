@@ -2,6 +2,9 @@
 
 import React, { useMemo, useState } from 'react';
 import projectsConfig from '../config/projects.json';
+import { useAppContext } from '../hooks/useAppContext';
+import { ContextManager } from '../lib/contextManager';
+import type { MenuSection } from '../types/context';
 
 type ProjectConfig = { id: string; name: string };
 type ProjectId = 'sk' | 'mt' | 'ss' | 'cosmetic' | string;
@@ -14,28 +17,8 @@ const PROJECT_NAME_MAP = Object.fromEntries(
 
 const getProjectName = (projectId: string) => PROJECT_NAME_MAP[projectId] || projectId.toUpperCase();
 
-// Types for the menu structure
-interface MenuItem {
-    id?: string;
-    label?: string;
-    fn?: string;
-    separator?: boolean;
-    submenu?: string;
-    items?: MenuItem[];
-    icon?: string;
-}
-
-interface MenuSection {
-    id: string;
-    title: string;
-    icon?: string;
-    items: MenuItem[];
-    special?: boolean;
-    action?: () => void;
-}
-
 interface ScriptRunnerMenuProps {
-    projectId?: string;
+    projectId?: string; // Kept for backward compatibility but will use context instead
 }
 
 type StatusState = { type: 'idle' | 'running' | 'success' | 'error'; message: string };
@@ -209,10 +192,26 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
     const [runningFn, setRunningFn] = useState<string | null>(null);
     const [status, setStatus] = useState<StatusState>({ type: 'idle', message: 'Система готова' });
 
-    const activeProjectId = (projectId === 'default' ? 'sk' : projectId) as ProjectId;
+    // Get global context
+    const { state } = useAppContext();
+
+    // Determine active project (prioritize context over prop)
+    const activeProjectId = (state.workspace?.id || projectId === 'default' ? 'sk' : projectId) as ProjectId;
     const normalizedProjectId = activeProjectId.toLowerCase();
-    const projectName = getProjectName(activeProjectId);
-    const menuSections = useMemo(() => buildMenuForProject(normalizedProjectId), [normalizedProjectId]);
+    const projectName = state.workspace?.name || getProjectName(activeProjectId);
+
+    // Get contextual menu from ContextManager
+    const menuSections = useMemo(() => {
+        // Use ContextManager to get dynamic menu based on full context
+        const contextualMenu = ContextManager.getContextualMenu(state);
+
+        // Fallback to static menu if no contextual menu found
+        if (contextualMenu.length === 0) {
+            return buildMenuForProject(normalizedProjectId);
+        }
+
+        return contextualMenu;
+    }, [state.workspace?.id, state.activeTab?.id, state.activeTab?.documentContext, normalizedProjectId]);
 
     const toggleSection = (id: string) => {
         const newExpanded = new Set(expandedSections);
@@ -330,11 +329,32 @@ export default function ScriptRunnerMenu({ projectId = 'default' }: ScriptRunner
     return (
         <div className="flex flex-col h-full w-full select-none">
             {/* Header */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-white/30 backdrop-blur-md sticky top-0 z-10">
-                <div className="w-2 h-2 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] animate-pulse" />
-                <h2 className="text-xs font-bold tracking-wider uppercase text-[var(--text-primary)]">
-                    Функции <span className="text-[var(--primary)] opacity-80">{projectName}</span>
-                </h2>
+            <div className="px-4 py-3 border-b border-[var(--border)] bg-white/30 backdrop-blur-md sticky top-0 z-10">
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] animate-pulse" />
+                    <h2 className="text-xs font-bold tracking-wider uppercase text-[var(--text-primary)]">
+                        Функции <span className="text-[var(--primary)] opacity-80">{projectName}</span>
+                    </h2>
+                </div>
+
+                {/* Breadcrumb - Context Path */}
+                {state.activeTab && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)] px-2">
+                        <span className="font-medium">{state.workspace?.shortName || state.workspace?.name}</span>
+                        <span className="opacity-40">→</span>
+                        <span className="truncate max-w-[120px]" title={state.activeTab.title}>
+                            {state.activeTab.icon} {state.activeTab.title}
+                        </span>
+                        {state.activeTab.documentContext?.sheetName && (
+                            <>
+                                <span className="opacity-40">→</span>
+                                <span className="font-medium text-[var(--primary)]" title={state.activeTab.documentContext.sheetName}>
+                                    {state.activeTab.documentContext.sheetName}
+                                </span>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Script Tree */}

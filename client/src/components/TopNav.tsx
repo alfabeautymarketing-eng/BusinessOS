@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Layout, LayoutPanelLeft, Square, ChevronDown } from 'lucide-react';
+import projectsConfig from '../config/projects.json';
+import tabsConfig from '../config/tabs.config.json';
 
 interface TopNavProps {
   onOpenTab: (tab: any) => void;
@@ -12,52 +14,9 @@ interface TopNavProps {
   onWorkspaceChange: (workspaceId: string) => void;
 }
 
-// Project data structure matching the reference style
-const PROJECTS = [
-  {
-    id: "sk",
-    name: "SkinClinic",
-    shortName: "SC",
-    color: "#8B5CF6",
-    tailwindTheme: "violet",
-    icon: "🟣",
-    links: [
-      { id: "sk-crm", name: "CRM System", url: "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit", icon: "📊", type: "sheets" },
-      { id: "sk-drive", name: "Drive Folder", url: "https://drive.google.com/drive/u/0/folders/1T4X-i_tOqfO_rG-4Zg_wFk_qD", icon: "📂", type: "drive-folder" }
-    ]
-  },
-  {
-    id: "mt",
-    name: "Montibello",
-    shortName: "MT",
-    color: "#3B82F6",
-    tailwindTheme: "blue",
-    icon: "🔵",
-    links: [
-      { id: "mt-orders", name: "Orders Sheet", url: "https://docs.google.com/spreadsheets/d/1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw/edit", icon: "📝", type: "sheets" }
-    ]
-  },
-  {
-    id: "ss",
-    name: "Soskin",
-    shortName: "SS",
-    color: "#10B981",
-    tailwindTheme: "emerald",
-    icon: "🟢",
-    links: []
-  },
-  {
-    id: "cosmetic",
-    name: "Анализ косметики",
-    shortName: "CA",
-    color: "#EC4899",
-    tailwindTheme: "pink",
-    icon: "💄",
-    links: [
-      { id: "cosmetic-dash", name: "Dashboard", url: "/cosmetic-analysis", icon: "📈", type: "cosmetic-dashboard" }
-    ]
-  }
-];
+// Define types for the configuration
+type ProjectConfig = typeof projectsConfig.projects[0];
+type WorkspaceConfig = typeof tabsConfig.workspaces[0];
 
 export default function TopNav({
   onOpenTab,
@@ -68,6 +27,37 @@ export default function TopNav({
 }: TopNavProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Build PROJECTS from configuration files
+  const PROJECTS = useMemo(() => {
+    return projectsConfig.projects.map((project: any) => {
+      // Find workspace tabs for this project
+      const workspace = tabsConfig.workspaces.find((w: any) => w.id === project.id);
+
+      // Convert tabs to links format
+      const links = workspace?.tabs
+        ? workspace.tabs
+            .filter((tab: any) => tab.pinned !== false) // Only pinned tabs appear in dropdown
+            .map((tab: any) => ({
+              id: tab.id,
+              name: tab.name,
+              url: tab.url,
+              icon: tab.icon || '📄',
+              type: tab.type
+            }))
+        : [];
+
+      return {
+        id: project.id,
+        name: project.name,
+        shortName: project.shortName,
+        color: project.color,
+        tailwindTheme: project.tailwindTheme,
+        icon: project.icon,
+        links
+      };
+    });
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

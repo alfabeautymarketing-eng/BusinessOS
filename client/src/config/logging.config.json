@@ -1,0 +1,201 @@
+{
+  "_comment": "===== КОНФИГУРАЦИЯ СИСТЕМЫ ЛОГИРОВАНИЯ =====",
+  "_description": "Система логирования с 3 источниками: Google Sheets, файлы сервера, WebSocket",
+
+  "sources": [
+    {
+      "id": "google-sheets",
+      "name": "Google Sheets (Журнал синхро)",
+      "icon": "📊",
+      "type": "google-sheets",
+      "enabled": true,
+      "priority": 1,
+
+      "_comment_config": "Настройки подключения к Google Sheets",
+      "config": {
+        "spreadsheetId": "1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw",
+        "sheetName": "Журнал синхро",
+        "pollInterval": 5000,
+        "_comment_pollInterval": "Интервал опроса в миллисекундах (5000 = 5 секунд)",
+        "maxRecords": 100,
+        "_comment_maxRecords": "Максимальное количество записей для загрузки"
+      },
+
+      "_comment_format": "Формат логов в Google Sheets",
+      "format": {
+        "columns": ["Timestamp", "Level", "Message", "Function", "Details"],
+        "timestampFormat": "yyyy-MM-dd HH:mm:ss"
+      }
+    },
+
+    {
+      "id": "server-files",
+      "name": "Файлы сервера (Python/Node)",
+      "icon": "📁",
+      "type": "file-logs",
+      "enabled": true,
+      "priority": 2,
+
+      "_comment_config": "Настройки для чтения логов из файлов сервера",
+      "config": {
+        "apiEndpoint": "/api/logs/server",
+        "_comment_apiEndpoint": "API endpoint для получения логов",
+        "logFiles": [
+          "/var/log/businessos/server.log",
+          "/var/log/businessos/scripts.log"
+        ],
+        "_comment_logFiles": "Список файлов логов на сервере",
+        "tailLines": 100,
+        "_comment_tailLines": "Количество последних строк для загрузки",
+        "pollInterval": 3000,
+        "_comment_pollInterval": "Интервал опроса в миллисекундах (3000 = 3 секунды)"
+      }
+    },
+
+    {
+      "id": "websocket",
+      "name": "Real-time (WebSocket)",
+      "icon": "⚡",
+      "type": "websocket",
+      "enabled": true,
+      "priority": 3,
+
+      "_comment_config": "Настройки WebSocket для real-time логов",
+      "config": {
+        "wsUrl": "ws://localhost:8000/ws/logs",
+        "_comment_wsUrl": "URL WebSocket сервера",
+        "reconnectInterval": 5000,
+        "_comment_reconnectInterval": "Интервал переподключения в мс при обрыве связи",
+        "maxReconnectAttempts": 10,
+        "_comment_maxReconnectAttempts": "Максимальное количество попыток переподключения"
+      }
+    }
+  ],
+
+  "_comment_logEmojis": "===== ЭМОДЗИ ДЛЯ ЛОГИРОВАНИЯ =====",
+  "logEmojis": {
+    "_comment_stages": "Эмодзи для стадий выполнения скриптов",
+    "stages": {
+      "start": "🚀",
+      "_comment_start": "Скрипт запущен",
+
+      "processing": "⏳",
+      "_comment_processing": "Обработка данных",
+
+      "success": "✅",
+      "_comment_success": "Успешно завершено",
+
+      "error": "❌",
+      "_comment_error": "Ошибка",
+
+      "warning": "⚠️",
+      "_comment_warning": "Предупреждение",
+
+      "info": "ℹ️",
+      "_comment_info": "Информационное сообщение",
+
+      "debug": "🐛",
+      "_comment_debug": "Debug информация",
+
+      "finish": "🏁",
+      "_comment_finish": "Скрипт завершен"
+    },
+
+    "_comment_operations": "Эмодзи для операций",
+    "operations": {
+      "sync": "🔄",
+      "_comment_sync": "Синхронизация",
+
+      "upload": "📤",
+      "_comment_upload": "Выгрузка/Upload",
+
+      "download": "📥",
+      "_comment_download": "Загрузка/Download",
+
+      "delete": "🗑️",
+      "_comment_delete": "Удаление",
+
+      "create": "➕",
+      "_comment_create": "Создание",
+
+      "update": "✏️",
+      "_comment_update": "Обновление",
+
+      "read": "👁️",
+      "_comment_read": "Чтение",
+
+      "write": "✍️",
+      "_comment_write": "Запись",
+
+      "validate": "✔️",
+      "_comment_validate": "Валидация",
+
+      "parse": "🔍",
+      "_comment_parse": "Парсинг",
+
+      "export": "📊",
+      "_comment_export": "Экспорт данных",
+
+      "import": "📥",
+      "_comment_import": "Импорт данных"
+    },
+
+    "_comment_levels": "Эмодзи для уровней логирования",
+    "levels": {
+      "DEBUG": "🐛",
+      "INFO": "ℹ️",
+      "WARN": "⚠️",
+      "ERROR": "❌",
+      "SUCCESS": "✅"
+    }
+  },
+
+  "_comment_colors": "===== ЦВЕТОВАЯ СХЕМА ДЛЯ ЛОГОВ =====",
+  "logColors": {
+    "DEBUG": {
+      "bg": "bg-gray-50",
+      "text": "text-gray-700",
+      "border": "border-gray-200"
+    },
+    "INFO": {
+      "bg": "bg-blue-50",
+      "text": "text-blue-700",
+      "border": "border-blue-200"
+    },
+    "WARN": {
+      "bg": "bg-yellow-50",
+      "text": "text-yellow-700",
+      "border": "border-yellow-200"
+    },
+    "ERROR": {
+      "bg": "bg-red-50",
+      "text": "text-red-700",
+      "border": "border-red-200"
+    },
+    "SUCCESS": {
+      "bg": "bg-green-50",
+      "text": "text-green-700",
+      "border": "border-green-200"
+    }
+  },
+
+  "defaultSource": "google-sheets",
+  "_comment_defaultSource": "Источник логов по умолчанию при открытии приложения",
+
+  "_comment_logFormat": "===== ФОРМАТ ЛОГОВ =====",
+  "logFormat": {
+    "timestamp": "yyyy-MM-dd HH:mm:ss",
+    "includeFunction": true,
+    "_comment_includeFunction": "Включать ли название функции в лог",
+    "includeDetails": true,
+    "_comment_includeDetails": "Включать ли детали (stack trace, дополнительная информация)"
+  },
+
+  "_instructions": {
+    "_how_to_add_emoji": "Чтобы добавить новое эмодзи:",
+    "_step_1": "1. Найдите нужную категорию (stages, operations, levels)",
+    "_step_2": "2. Добавьте новое поле с ключом и эмодзи",
+    "_step_3": "3. Добавьте комментарий с _comment_[key] для описания",
+    "_example": "\"my_operation\": \"🎯\", \"_comment_my_operation\": \"Моя операция\""
+  }
+}

@@ -1,12 +1,28 @@
 'use client';
 
+import { useCallback } from 'react';
 import type { Tab } from '../hooks/useTabs';
+import { useAppContext } from '../hooks/useAppContext';
+import { useIframeContextDetector } from '../hooks/useIframeContextDetector';
+import type { DocumentContext } from '../types/context';
 
 interface ContentViewerProps {
   tab: Tab | null;
 }
 
 export default function ContentViewer({ tab }: ContentViewerProps) {
+  const { dispatch } = useAppContext();
+
+  // Callback to update document context when iframe changes
+  const handleContextChange = useCallback((tabId: string, context: DocumentContext) => {
+    dispatch({
+      type: 'UPDATE_DOCUMENT_CONTEXT',
+      payload: { tabId, context }
+    });
+  }, [dispatch]);
+
+  // Detect context changes in iframe
+  useIframeContextDetector(tab, handleContextChange);
   if (!tab) {
     return (
       <div className="flex items-center justify-center h-full w-full">

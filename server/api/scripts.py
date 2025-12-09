@@ -29,3 +29,28 @@ async def run_script(request: ScriptRunRequest):
         return {"status": "success", "result": result, "message": "Function executed"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Script execution failed: {str(e)}")
+
+
+@router.get("/sheets/{spreadsheet_id}/sheet-name")
+async def get_sheet_name(spreadsheet_id: str, sheet_id: int):
+    """
+    Get the name of a specific sheet by its ID within a spreadsheet.
+    Used for context detection in iframes.
+    """
+    try:
+        metadata = google_service.get_spreadsheet_metadata(spreadsheet_id)
+
+        # Find the sheet with matching sheetId
+        for sheet in metadata.get('sheets', []):
+            if sheet['id'] == sheet_id:
+                return {
+                    "status": "success",
+                    "sheet_name": sheet['title'],
+                    "sheet_id": sheet_id,
+                    "spreadsheet_id": spreadsheet_id
+                }
+
+        raise HTTPException(status_code=404, detail=f"Sheet with ID {sheet_id} not found in spreadsheet")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get sheet name: {str(e)}")

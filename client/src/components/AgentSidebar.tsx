@@ -2,6 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import projectsConfig from '../config/projects.json';
+import {
+  getLogAggregator,
+  GoogleSheetsLogSource,
+  FileLogSource,
+  WebSocketLogSource,
+  type LogEntry,
+  type LogSourceType
+} from '../services/LogAggregator';
 
 type ProjectConfig = { id: string; name: string };
 const PROJECT_NAME_MAP = Object.fromEntries(
@@ -10,8 +18,8 @@ const PROJECT_NAME_MAP = Object.fromEntries(
 
 const getProjectName = (projectId: string) => PROJECT_NAME_MAP[projectId] || projectId.toUpperCase();
 
-type Tab = 'chat' | 'history' | 'controls' | 'dev-chat' | 'logs' | 'git';
-type Mode = 'agent' | 'dev';
+type Tab = 'chat' | 'history' | 'controls' | 'dev-chat' | 'logs';
+type Mode = 'agent' | 'tester';
 
 interface Message {
     id: string;
@@ -55,12 +63,9 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
     const [chatHistories, setChatHistories] = useState<ChatHistory[]>([]);
     const [selectedHistory, setSelectedHistory] = useState<string | null>(null);
 
-    // Dev logs state
-    const [logs, setLogs] = useState<string[]>([
-        '[14:05:22] ✅ Система запущена',
-        '[14:05:23] ℹ️ Подключение к Google Drive...',
-        '[14:05:24] ✅ Подключение установлено'
-    ]);
+    // Logs state
+    const [logs, setLogs] = useState<LogEntry[]>([]);
+    const [activeLogSource, setActiveLogSource] = useState<LogSourceType>('google-sheets');
     const projectName = getProjectName(projectId);
 
     const PROJECT_CONFIG: Record<string, { sheetId: string; sheetName: string }> = {
@@ -202,11 +207,33 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         ]
         : [
             { id: 'dev-chat', label: 'Чат', icon: '💻' },
-            { id: 'logs', label: 'Логи', icon: '📋' },
-            { id: 'git', label: 'Git', icon: '📊' },
+            { id: 'logs', label: 'ЛОГИ', icon: '📋' },
         ];
 
     const currentChat = chats[projectId] || [];
+
+    // Initialize LogAggregator
+    useEffect(() => {
+        const aggregator = getLogAggregator();
+
+        // Get spreadsheet ID for current project
+        const config = PROJECT_CONFIG[projectId] || PROJECT_CONFIG.default;
+
+        // Register all sources
+        aggregator.registerSource(new GoogleSheetsLogSource(config.sheetId, 'Журнал синхро', 5000));
+        aggregator.registerSource(new FileLogSource(3000));
+        aggregator.registerSource(new WebSocketLogSource());
+
+        // Subscribe to active source
+        aggregator.subscribe(activeLogSource, (newLogs) => {
+            setLogs(newLogs);
+        });
+
+        // Cleanup
+        return () => {
+            aggregator.stopAll();
+        };
+    }, [projectId, activeLogSource]);
 
     useEffect(() => {
         if (!visibleTabs.find(t => t.id === activeTab)) {
@@ -218,7 +245,7 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
         <div className="flex flex-col h-full text-base font-sans select-none">
             {/* Mode Switcher */}
             <div className="flex items-center gap-2 px-4 py-3 bg-white/40 sticky top-0 z-10 backdrop-blur-md">
-                {(['agent', 'dev'] as Mode[]).map((m) => {
+                {(['agent', 'tester'] as Mode[]).map((m) => {
                     const active = m === mode;
                     return (
                         <button
@@ -232,8 +259,8 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                     : 'bg-white/60 border-transparent text-[var(--text-secondary)] hover:bg-white'}
                             `}
                         >
-                            <span className="text-base">{m === 'agent' ? '🤖' : '👨‍💻'}</span>
-                            <span>{m === 'agent' ? 'Агент' : 'Dev'}</span>
+                            <span className="text-base">{m === 'agent' ? '🤖' : '🧪'}</span>
+                            <span>{m === 'agent' ? 'Агент' : 'Тестер'}</span>
                         </button>
                     );
                 })}
@@ -347,12 +374,84 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                     </div>
                 )}
                 {activeTab === 'logs' && (
-                    <div className="glass-panel p-4 rounded-xl font-mono text-[10px] space-y-1.5 bg-gray-900/5 border-gray-200">
-                        {logs.map((log, idx) => (
-                            <div key={idx} className="flex gap-2 text-[var(--text-secondary)] border-b border-dashed border-gray-200/50 pb-1 last:border-0">
-                                {log}
-                            </div>
-                        ))}
+                    <div className="space-y-3">
+                        {/* Source Switcher */}
+                        <div className="flex gap-2">
+                            {(['google-sheets', 'server-files', 'websocket'] as LogSourceType[]).map((source) => {
+                                const isActive = activeLogSource === source;
+                                const labels = {
+                                    'google-sheets': '📊 Sheets',
+                                    'server-files': '📁 Server',
+                                    'websocket': '⚡ Live'
+                                };
+
+                                return (
+                                    <button
+                                        key={source}
+                                        onClick={() => setActiveLogSource(source)}
+                                        className={`
+                                            flex-1 py-2 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200
+                                            ${isActive
+                                                ? 'bg-[var(--primary)] text-white shadow-md'
+                                                : 'bg-white/60 text-[var(--text-secondary)] hover:bg-white'}
+                                        `}
+                                    >
+                                        {labels[source]}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Logs Display */}
+                        <div className="glass-panel p-3 rounded-xl font-mono text-[10px] space-y-1 bg-gray-900/5 border-gray-200 max-h-[400px] overflow-y-auto">
+                            {logs.length === 0 ? (
+                                <div className="text-center py-8 text-[var(--text-secondary)] italic">
+                                    Нет логов
+                                </div>
+                            ) : (
+                                logs.map((log, idx) => {
+                                    // Color scheme by level
+                                    const levelColors = {
+                                        DEBUG: 'bg-gray-50 border-l-gray-400',
+                                        INFO: 'bg-blue-50/50 border-l-blue-400',
+                                        WARN: 'bg-yellow-50 border-l-yellow-500',
+                                        ERROR: 'bg-red-50 border-l-red-500'
+                                    };
+
+                                    const colorClass = levelColors[log.level] || levelColors.INFO;
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className={`flex flex-col gap-1 p-2 rounded border-l-2 ${colorClass} transition-all hover:shadow-sm`}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm">{log.emoji}</span>
+                                                <span className="font-bold text-[9px] uppercase opacity-60">
+                                                    {log.level}
+                                                </span>
+                                                <span className="text-[9px] opacity-50 ml-auto">
+                                                    {log.timestamp}
+                                                </span>
+                                            </div>
+                                            <div className="text-[var(--text-primary)]">
+                                                {log.message}
+                                            </div>
+                                            {log.function && (
+                                                <div className="text-[9px] opacity-60">
+                                                    📦 {log.function}
+                                                </div>
+                                            )}
+                                            {log.details && (
+                                                <div className="text-[9px] opacity-50 bg-white/50 p-1 rounded mt-1">
+                                                    {log.details}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
                 )}
                 {activeTab === 'controls' && (
@@ -369,27 +468,6 @@ export default function AgentSidebar({ projectId = 'default' }: AgentSidebarProp
                                     {action}
                                 </button>
                             ))}
-                        </div>
-                    </div>
-                )}
-                {activeTab === 'git' && (
-                    <div className="space-y-4">
-                        <div className="glass-panel p-4 rounded-xl space-y-3">
-                            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Status</span>
-                                <span className="text-xs font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Clean</span>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-xs font-mono text-[var(--text-primary)] bg-white/50 p-2 rounded-lg border border-white/50">
-                                    feat: UI updates
-                                </div>
-                                <div className="text-xs font-mono text-[var(--text-primary)] bg-white/50 p-2 rounded-lg border border-white/50">
-                                    fix: layout responsiveness
-                                </div>
-                            </div>
-                            <button className="w-full py-2 bg-[var(--text-primary)] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">
-                                Sync Changes
-                            </button>
                         </div>
                     </div>
                 )}

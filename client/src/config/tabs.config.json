@@ -1,0 +1,267 @@
+{
+  "_comment": "===== КОНФИГУРАЦИЯ ВКЛАДОК РАБОЧИХ СТОЛОВ ПРИЛОЖЕНИЯ =====",
+  "_description": "Этот файл содержит конфигурацию вкладок для каждого workspace (рабочего стола) приложения.",
+  "_usage": "Здесь вы можете добавлять новые вкладки, изменять их порядок и настраивать отображение.",
+  "_tip": "Для быстрого заполнения: скопируйте секцию workspace или tab и измените значения полей",
+
+  "workspaces": [
+    {
+      "_comment_workspace": "=== WORKSPACE 1: SkinClinic (SK) ===",
+      "id": "sk",
+      "name": "SkinClinic",
+      "shortName": "SC",
+      "icon": "🟣",
+      "color": "#8B5CF6",
+      "theme": {
+        "h": 258,
+        "s": "90%",
+        "l": "66%"
+      },
+
+      "_comment_tabs": "--- ВКЛАДКИ ДЛЯ РАБОЧЕГО СТОЛА SK ---",
+      "_tip_tabs": "Каждая вкладка представляет документ (Google Sheets, папку Drive, или внешнее приложение)",
+      "tabs": [
+        {
+          "_comment": "Вкладка 1: Главная база данных SK",
+          "id": "sk-database",
+          "name": "База SK",
+          "icon": "🌟",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw/edit",
+          "spreadsheetId": "1CpYYLvRYslsyCkuLzL9EbbjsvbNpWCEZcmhKqMoX5zw",
+          "defaultSheet": "Главная",
+          "pinned": true
+        },
+        {
+          "_comment": "Вкладка 2: Документы от производителя SK",
+          "id": "sk-source-docs",
+          "name": "Док-ты от производителя",
+          "icon": "📄",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs/edit",
+          "spreadsheetId": "1zSu0PzKKa5wvwMZCicwLN8N7Rwhs8XlJVrTrt2LMzQs",
+          "defaultSheet": "-Б/З поставщик"
+        },
+        {
+          "_comment": "Вкладка 3: Папка с ИНСИ документами SK",
+          "id": "sk-inci",
+          "name": "ИНСИ",
+          "icon": "⚗️",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1",
+          "folderId": "1hYhOGJE54ZGd9oYcD9jm23Kp4rG2yyw1"
+        },
+        {
+          "_comment": "Вкладка 4: Папка с декларациями SK",
+          "id": "sk-declarations",
+          "name": "Декларации",
+          "icon": "📜",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/1es2TNgGoAJgOLhe1pwgyYe-4oDjiFoOI",
+          "folderId": "1es2TNgGoAJgOLhe1pwgyYe-4oDjiFoOI"
+        }
+      ]
+    },
+
+    {
+      "_comment_workspace": "=== WORKSPACE 2: Montibello (MT) ===",
+      "id": "mt",
+      "name": "Montibello",
+      "shortName": "MT",
+      "icon": "🔵",
+      "color": "#3B82F6",
+      "theme": {
+        "h": 217,
+        "s": "91%",
+        "l": "60%"
+      },
+
+      "_comment_tabs": "--- ВКЛАДКИ ДЛЯ РАБОЧЕГО СТОЛА MT ---",
+      "tabs": [
+        {
+          "_comment": "Вкладка 1: Главная база данных MT",
+          "id": "mt-database",
+          "name": "База",
+          "icon": "🌟",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw/edit",
+          "spreadsheetId": "1fMOjUE7oZV96fCY5j5rPxnhWGJkDqg-GfwPZ8jUVgPw",
+          "defaultSheet": "Главная",
+          "pinned": true
+        },
+        {
+          "_comment": "Вкладка 2: Документы от производителя MT",
+          "_tip": "ЗАМЕНИТЕ [MT_SOURCE_DOC_ID] на реальный ID таблицы",
+          "id": "mt-source-docs",
+          "name": "Док-ты от производителя",
+          "icon": "📄",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/1BW8Gk5_X2EZVjbnaa2yDm-bPzzlggwQrHepeNCcPCc0/edit",
+          "spreadsheetId": "1BW8Gk5_X2EZVjbnaa2yDm-bPzzlggwQrHepeNCcPCc0",
+          "defaultSheet": "-Б/З поставщик"
+        },
+        {
+          "_comment": "Вкладка 3: Папка с ИНСИ документами MT",
+          "_tip": "ЗАМЕНИТЕ [MT_INCI_FOLDER_ID] на реальный ID папки Drive",
+          "id": "mt-inci",
+          "name": "ИНСИ",
+          "icon": "⚗️",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/[MT_INCI_FOLDER_ID]",
+          "folderId": "[MT_INCI_FOLDER_ID]"
+        },
+        {
+          "_comment": "Вкладка 4: Папка с декларациями MT",
+          "_tip": "ЗАМЕНИТЕ [MT_DECLARATIONS_FOLDER_ID] на реальный ID папки Drive",
+          "id": "mt-declarations",
+          "name": "Декларации",
+          "icon": "📜",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/[MT_DECLARATIONS_FOLDER_ID]",
+          "folderId": "[MT_DECLARATIONS_FOLDER_ID]"
+        }
+      ]
+    },
+
+    {
+      "_comment_workspace": "=== WORKSPACE 3: Soskin (SS) ===",
+      "id": "ss",
+      "name": "Soskin",
+      "shortName": "SS",
+      "icon": "🟢",
+      "color": "#10B981",
+      "theme": {
+        "h": 160,
+        "s": "84%",
+        "l": "39%"
+      },
+
+      "_comment_tabs": "--- ВКЛАДКИ ДЛЯ РАБОЧЕГО СТОЛА SS ---",
+      "_tip": "Добавьте вкладки для SS по аналогии с SK и MT",
+      "tabs": [
+        {
+          "_comment": "Вкладка 1: Главная база данных SS",
+          "_tip": "ЗАМЕНИТЕ [SS_SPREADSHEET_ID] на реальный ID таблицы",
+          "id": "ss-database",
+          "name": "База",
+          "icon": "🌟",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/12yIL1CuESZxeUUd-oKK2brtN1FnXE9q95N7SqzNc7vk/edit",
+          "spreadsheetId": "12yIL1CuESZxeUUd-oKK2brtN1FnXE9q95N7SqzNc7vk",
+          "defaultSheet": "Главная",
+          "pinned": true
+        },
+        {
+          "_comment": "Вкладка 2: Документы от производителя SS",
+          "_tip": "ЗАМЕНИТЕ [SS_SOURCE_DOC_ID] на реальный ID таблицы",
+          "id": "ss-source-docs",
+          "name": "Док-ты от производителя",
+          "icon": "📄",
+          "type": "sheets",
+          "url": "https://docs.google.com/spreadsheets/d/1J8Yzfz9621gqJkPh5ZKBa0v34nv3v9_7OL4JIROlHj0/edit",
+          "spreadsheetId": "1J8Yzfz9621gqJkPh5ZKBa0v34nv3v9_7OL4JIROlHj0",
+          "defaultSheet": "-Б/З поставщик"
+        },
+        {
+          "_comment": "Вкладка 3: Папка с ИНСИ документами SS",
+          "_tip": "ЗАМЕНИТЕ [SS_INCI_FOLDER_ID] на реальный ID папки Drive",
+          "id": "ss-inci",
+          "name": "ИНСИ",
+          "icon": "⚗️",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/[SS_INCI_FOLDER_ID]",
+          "folderId": "[SS_INCI_FOLDER_ID]"
+        },
+        {
+          "_comment": "Вкладка 4: Папка с декларациями SS",
+          "_tip": "ЗАМЕНИТЕ [SS_DECLARATIONS_FOLDER_ID] на реальный ID папки Drive",
+          "id": "ss-declarations",
+          "name": "Декларации",
+          "icon": "📜",
+          "type": "drive-folder",
+          "url": "https://drive.google.com/drive/folders/[SS_DECLARATIONS_FOLDER_ID]",
+          "folderId": "[SS_DECLARATIONS_FOLDER_ID]"
+        }
+      ]
+    },
+
+    {
+      "_comment_workspace": "=== WORKSPACE 4: Помощник (бывший Cosmetic) ===",
+      "_note": "Этот workspace открывает внешнее приложение для анализа косметики",
+      "id": "cosmetic",
+      "name": "Помощник",
+      "shortName": "💄",
+      "icon": "💄",
+      "color": "#EC4899",
+      "theme": {
+        "h": 330,
+        "s": "81%",
+        "l": "60%"
+      },
+
+      "_comment_tabs": "--- ВКЛАДКА ДЛЯ РАБОЧЕГО СТОЛА ПОМОЩНИК ---",
+      "_note_tabs": "Только одна вкладка - внешнее приложение анализа косметики",
+      "tabs": [
+        {
+          "_comment": "Вкладка 1: Анализ косметики (внешнее приложение)",
+          "id": "cosmetic-analyzer",
+          "name": "Анализ косметики",
+          "icon": "💄",
+          "type": "external-app",
+          "url": "http://localhost:3001",
+          "pinned": true
+        }
+      ]
+    }
+  ],
+
+  "_instructions": {
+    "_how_to_add_tab": "Чтобы добавить новую вкладку:",
+    "_step_1": "1. Найдите нужный workspace (sk, mt, ss, cosmetic)",
+    "_step_2": "2. Скопируйте любой объект из массива 'tabs'",
+    "_step_3": "3. Измените поля: id, name, icon, url, spreadsheetId/folderId",
+    "_step_4": "4. Для Google Sheets используйте type: 'sheets'",
+    "_step_5": "5. Для папок Drive используйте type: 'drive-folder'",
+    "_step_6": "6. Для внешних приложений используйте type: 'external-app'",
+    "_step_7": "7. Поле 'pinned: true' закрепляет вкладку (она всегда видна)"
+  },
+
+  "_field_types": {
+    "id": "string - уникальный идентификатор (например: 'sk-database')",
+    "name": "string - название вкладки (отображается пользователю)",
+    "icon": "string - эмодзи для вкладки",
+    "type": "string - тип вкладки: 'sheets' | 'drive-folder' | 'external-app'",
+    "url": "string - полный URL документа/папки/приложения",
+    "spreadsheetId": "string - ID таблицы Google Sheets (только для type: 'sheets')",
+    "folderId": "string - ID папки Google Drive (только для type: 'drive-folder')",
+    "defaultSheet": "string - название листа по умолчанию (опционально)",
+    "pinned": "boolean - закрепить вкладку (опционально, по умолчанию false)"
+  },
+
+  "_examples": {
+    "_google_sheets_tab": {
+      "id": "my-sheet",
+      "name": "Моя таблица",
+      "icon": "📊",
+      "type": "sheets",
+      "url": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit",
+      "spreadsheetId": "YOUR_SPREADSHEET_ID",
+      "defaultSheet": "Лист1"
+    },
+    "_drive_folder_tab": {
+      "id": "my-folder",
+      "name": "Моя папка",
+      "icon": "📁",
+      "type": "drive-folder",
+      "url": "https://drive.google.com/drive/folders/YOUR_FOLDER_ID",
+      "folderId": "YOUR_FOLDER_ID"
+    },
+    "_external_app_tab": {
+      "id": "my-app",
+      "name": "Моё приложение",
+      "icon": "🚀",
+      "type": "external-app",
+      "url": "http://localhost:3000"
+    }
+  }
+}
